@@ -1,0 +1,7 @@
+domain: sigs.k8s.io
+repo: hardware-classification-controller
+resources:
+- group: metal3.io
+  kind: HardwareClassificationController
+  version: v1alpha1
+version: "2"
