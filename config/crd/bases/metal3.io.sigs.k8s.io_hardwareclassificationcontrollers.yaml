@@ -36,14 +36,90 @@ spec:
           description: HardwareClassificationControllerSpec defines the desired state
             of HardwareClassificationController
           properties:
-            foo:
-              description: Foo is an example field of HardwareClassificationController.
-                Edit HardwareClassificationController_types.go to remove/update
+            expectedValidationConfiguration:
+              items:
+                description: ExpectedHardwareConfiguration details to match with the
+                  host
+                properties:
+                  firmware:
+                    description: Firmware details
+                    properties:
+                      version:
+                        description: Firmware Version details
+                        properties:
+                          BIOS:
+                            type: string
+                          BaseBandManagement:
+                            type: string
+                          IDRAC:
+                            type: string
+                          RAID:
+                            type: string
+                        type: object
+                    required:
+                    - version
+                    type: object
+                  minimumCPU:
+                    description: Minimum cpu count
+                    properties:
+                      count:
+                        type: integer
+                    required:
+                    - count
+                    type: object
+                  minimumDisk:
+                    description: MinimumDisk size and number of disks
+                    properties:
+                      numberOfDisks:
+                        type: integer
+                      sizeBytesGB:
+                        format: int64
+                        type: integer
+                    required:
+                    - numberOfDisks
+                    - sizeBytesGB
+                    type: object
+                  minimumNICS:
+                    description: MinimumNICS count of nics cards
+                    properties:
+                      numberOfNICS:
+                        type: integer
+                    required:
+                    - numberOfNICS
+                    type: object
+                  minimumRAM:
+                    type: integer
+                  profileName:
+                    type: string
+                  systemVendor:
+                    description: SystemVendor details
+                    properties:
+                      name:
+                        type: string
+                    required:
+                    - name
+                    type: object
+                required:
+                - minimumCPU
+                - minimumDisk
+                - minimumNICS
+                - minimumRAM
+                - profileName
+                type: object
+              type: array
+            namespace:
+              description: Namespace under which BareMetalHosts are present
               type: string
+          required:
+          - expectedValidationConfiguration
+          - namespace
           type: object
         status:
           description: HardwareClassificationControllerStatus defines the observed
             state of HardwareClassificationController
+          properties:
+            errorMessage:
+              type: string
           type: object
       type: object
   version: v1alpha1

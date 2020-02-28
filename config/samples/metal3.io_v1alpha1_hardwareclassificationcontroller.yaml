@@ -3,5 +3,28 @@ kind: HardwareClassificationController
 metadata:
   name: hardwareclassificationcontroller-sample
 spec:
-  # Add fields here
-  foo: bar
+  namespace: metal3
+  expectedValidationConfiguration:
+        - profileName: Profile 1
+          minimumCPU:
+                count: 4
+          minimumDisk:
+                sizeBytesGB: 25
+                numberOfDisks: 2
+          minimumNICS:
+                numberOfNICS: 4
+          minimumRAM: 8
+          systemVendor:
+                name: Dell Inc.
+          firmware:
+                version:
+                    RAID: "25.5.3.0005"
+        - profileName: Profile 2
+          minimumCPU:
+                count: 8
+          minimumDisk:
+                sizeBytesGB: 50
+                numberOfDisks: 4
+          minimumNICS:
+                numberOfNICS: 8
+          minimumRAM: 16
