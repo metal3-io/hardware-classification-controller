@@ -1,0 +1,7 @@
+domain: sigs.k8s.io
+repo: ashu/new/hardware-classification-controller
+resources:
+- group: metal3.io
+  kind: HardwareClassification
+  version: v1alpha1
+version: "2"
