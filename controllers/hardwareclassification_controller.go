@@ -26,27 +26,27 @@ import (
 	metal3iov1alpha1 "hardware-classification-controller/api/v1alpha1"
 )
 
-// HardwareClassificationControllerReconciler reconciles a HardwareClassificationController object
-type HardwareClassificationControllerReconciler struct {
+// HardwareClassificationReconciler reconciles a HardwareClassification object
+type HardwareClassificationReconciler struct {
 	client.Client
 	Log    logr.Logger
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassificationcontrollers/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassifications,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassifications/status,verbs=get;update;patch
 
-func (r *HardwareClassificationControllerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+func (r *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
-	_ = r.Log.WithValues("hardwareclassificationcontroller", req.NamespacedName)
+	_ = r.Log.WithValues("hardwareclassification", req.NamespacedName)
 
 	// your logic here
 
 	return ctrl.Result{}, nil
 }
 
-func (r *HardwareClassificationControllerReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *HardwareClassificationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&metal3iov1alpha1.HardwareClassificationController{}).
+		For(&metal3iov1alpha1.HardwareClassification{}).
 		Complete(r)
 }

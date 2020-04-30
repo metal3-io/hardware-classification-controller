@@ -9,7 +9,7 @@ rules:
 - apiGroups:
   - metal3.io.sigs.k8s.io
   resources:
-  - hardwareclassificationcontrollers
+  - hardwareclassifications
   verbs:
   - create
   - delete
@@ -21,7 +21,7 @@ rules:
 - apiGroups:
   - metal3.io.sigs.k8s.io
   resources:
-  - hardwareclassificationcontrollers/status
+  - hardwareclassifications/status
   verbs:
   - get
   - patch

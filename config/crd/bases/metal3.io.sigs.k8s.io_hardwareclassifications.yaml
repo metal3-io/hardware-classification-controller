@@ -6,18 +6,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.2.4
   creationTimestamp: null
-  name: hardwareclassificationcontrollers.metal3.io.sigs.k8s.io
+  name: hardwareclassifications.metal3.io.sigs.k8s.io
 spec:
   group: metal3.io.sigs.k8s.io
   names:
-    kind: HardwareClassificationController
-    listKind: HardwareClassificationControllerList
-    plural: hardwareclassificationcontrollers
-    singular: hardwareclassificationcontroller
+    kind: HardwareClassification
+    listKind: HardwareClassificationList
+    plural: hardwareclassifications
+    singular: hardwareclassification
   scope: Namespaced
   validation:
     openAPIV3Schema:
-      description: HardwareClassificationController is the Schema for the hardwareclassificationcontrollers
+      description: HardwareClassification is the Schema for the hardwareclassifications
         API
       properties:
         apiVersion:
@@ -33,17 +33,16 @@ spec:
         metadata:
           type: object
         spec:
-          description: HardwareClassificationControllerSpec defines the desired state
-            of HardwareClassificationController
+          description: HardwareClassificationSpec defines the desired state of HardwareClassification
           properties:
             foo:
-              description: Foo is an example field of HardwareClassificationController.
-                Edit HardwareClassificationController_types.go to remove/update
+              description: Foo is an example field of HardwareClassification. Edit
+                HardwareClassification_types.go to remove/update
               type: string
           type: object
         status:
-          description: HardwareClassificationControllerStatus defines the observed
-            state of HardwareClassificationController
+          description: HardwareClassificationStatus defines the observed state of
+            HardwareClassification
           type: object
       type: object
   version: v1alpha1

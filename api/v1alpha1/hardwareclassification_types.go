@@ -22,41 +22,41 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// HardwareClassificationControllerSpec defines the desired state of HardwareClassificationController
-type HardwareClassificationControllerSpec struct {
+// HardwareClassificationSpec defines the desired state of HardwareClassification
+type HardwareClassificationSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of HardwareClassificationController. Edit HardwareClassificationController_types.go to remove/update
+	// Foo is an example field of HardwareClassification. Edit HardwareClassification_types.go to remove/update
 	Foo string `json:"foo,omitempty"`
 }
 
-// HardwareClassificationControllerStatus defines the observed state of HardwareClassificationController
-type HardwareClassificationControllerStatus struct {
+// HardwareClassificationStatus defines the observed state of HardwareClassification
+type HardwareClassificationStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
 
 // +kubebuilder:object:root=true
 
-// HardwareClassificationController is the Schema for the hardwareclassificationcontrollers API
-type HardwareClassificationController struct {
+// HardwareClassification is the Schema for the hardwareclassifications API
+type HardwareClassification struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   HardwareClassificationControllerSpec   `json:"spec,omitempty"`
-	Status HardwareClassificationControllerStatus `json:"status,omitempty"`
+	Spec   HardwareClassificationSpec   `json:"spec,omitempty"`
+	Status HardwareClassificationStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// HardwareClassificationControllerList contains a list of HardwareClassificationController
-type HardwareClassificationControllerList struct {
+// HardwareClassificationList contains a list of HardwareClassification
+type HardwareClassificationList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []HardwareClassificationController `json:"items"`
+	Items           []HardwareClassification `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&HardwareClassificationController{}, &HardwareClassificationControllerList{})
+	SchemeBuilder.Register(&HardwareClassification{}, &HardwareClassificationList{})
 }
