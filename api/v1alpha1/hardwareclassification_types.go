@@ -1,11 +1,8 @@
 /*
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,8 +24,61 @@ type HardwareClassificationSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of HardwareClassification. Edit HardwareClassification_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// ExpectedHardwareConfiguration defines expected hardware configurations for CPU, RAM, Disk, NIC.
+	ExpectedHardwareConfiguration ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
+}
+
+// ExpectedHardwareConfiguration details to match with the host
+type ExpectedHardwareConfiguration struct {
+	Namespace string `json:"namespace"`
+	// +optional
+	CPU CPU `json:"CPU"`
+	// +optional
+	Disk Disk `json:"Disk"`
+	// +optional
+	NIC NIC `json:"NIC"`
+	// +optional
+	RAM RAM `json:"RAM"`
+}
+
+// CPU count
+type CPU struct {
+	// +optional
+	MinimumCount int `json:"minimumCount"`
+	// +optional
+	MaximumCount int `json:"maximumCount"`
+	// +optional
+	MinimumSpeed string `json:"minimumSpeed"`
+	// +optional
+	MaximumSpeed string `json:"maximumSpeed"`
+}
+
+// Disk size and number of disks
+type Disk struct {
+	// +optional
+	MinimumCount int `json:"minimumCount"`
+	// +optional
+	MinimumIndividualSizeGB int64 `json:"minimumIndividualSizeGB"`
+	// +optional
+	MaximumCount int `json:"maximumCount"`
+	// +optional
+	MaximumIndividualSizeGB int64 `json:"maximumIndividualSizeGB"`
+}
+
+// NIC count of nics cards
+type NIC struct {
+	// +optional
+	MinimumCount int `json:"minimumCount"`
+	// +optional
+	MaximumCount int `json:"maximumCount"`
+}
+
+// RAM size
+type RAM struct {
+	// +optional
+	MinimumSizeGB int `json:"minimumSizeGB"`
+	// +optional
+	MaximumSizeGB int `json:"maximumSizeGB"`
 }
 
 // HardwareClassificationStatus defines the observed state of HardwareClassification

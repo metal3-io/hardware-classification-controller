@@ -35,10 +35,59 @@ spec:
         spec:
           description: HardwareClassificationSpec defines the desired state of HardwareClassification
           properties:
-            foo:
-              description: Foo is an example field of HardwareClassification. Edit
-                HardwareClassification_types.go to remove/update
-              type: string
+            expectedValidationConfiguration:
+              description: ExpectedHardwareConfiguration defines expected hardware
+                configurations for CPU, RAM, Disk, NIC.
+              properties:
+                CPU:
+                  description: CPU count
+                  properties:
+                    maximumCount:
+                      type: integer
+                    maximumSpeed:
+                      type: string
+                    minimumCount:
+                      type: integer
+                    minimumSpeed:
+                      type: string
+                  type: object
+                Disk:
+                  description: Disk size and number of disks
+                  properties:
+                    maximumCount:
+                      type: integer
+                    maximumIndividualSizeGB:
+                      format: int64
+                      type: integer
+                    minimumCount:
+                      type: integer
+                    minimumIndividualSizeGB:
+                      format: int64
+                      type: integer
+                  type: object
+                NIC:
+                  description: NIC count of nics cards
+                  properties:
+                    maximumCount:
+                      type: integer
+                    minimumCount:
+                      type: integer
+                  type: object
+                RAM:
+                  description: RAM size
+                  properties:
+                    maximumSizeGB:
+                      type: integer
+                    minimumSizeGB:
+                      type: integer
+                  type: object
+                namespace:
+                  type: string
+              required:
+              - namespace
+              type: object
+          required:
+          - expectedValidationConfiguration
           type: object
         status:
           description: HardwareClassificationStatus defines the observed state of

@@ -20,8 +20,9 @@ import (
 	"os"
 
 	metal3iov1alpha1 "hardware-classification-controller/api/v1alpha1"
-
 	"hardware-classification-controller/controllers"
+
+	bmoapis "github.com/metal3-io/baremetal-operator/pkg/apis"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -40,6 +41,7 @@ func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
 
 	_ = metal3iov1alpha1.AddToScheme(scheme)
+	_ = bmoapis.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 
