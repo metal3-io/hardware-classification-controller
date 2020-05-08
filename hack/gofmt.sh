@@ -10,7 +10,7 @@ if [ "${IS_CONTAINER}" != "false" ]; then
   export XDG_CACHE_HOME="/tmp/.cache"
 
   if [ -n "$(gofmt -l "${TOP_DIR}/pkg" "${TOP_DIR}/cmd")" ]; then
-      gofmt -d "${TOP_DIR}"/pkg "${TOP_DIR}"/cmd
+      gofmt -d "${TOP_DIR}"/api "${TOP_DIR}"/controllers
       exit 1
   fi
 else

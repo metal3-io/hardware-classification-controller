@@ -8,7 +8,7 @@ CONTAINER_RUNTIME="${CONTAINER_RUNTIME:-podman}"
 if [ "${IS_CONTAINER}" != "false" ]; then
   TOP_DIR="${1:-.}"
   export XDG_CACHE_HOME="/tmp/.cache"
-  go vet "${TOP_DIR}"/pkg/... "${TOP_DIR}"/cmd/...
+  go vet "${TOP_DIR}"/api/... "${TOP_DIR}"/controllers/...
 else
   "${CONTAINER_RUNTIME}" run --rm \
     --env IS_CONTAINER=TRUE \

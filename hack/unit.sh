@@ -10,7 +10,7 @@ if [ "${IS_CONTAINER}" != "false" ]; then
   eval "$(go env)"
   cd "${GOPATH}"/src/github.com/metal3-io/hardware-classification-controller
   export XDG_CACHE_HOME="/tmp/.cache"
-  go test -v ./pkg/... ./cmd/... -coverprofile "${ARTIFACTS}"/cover.out
+  go test -v ./api/... ./controllers/... -coverprofile "${ARTIFACTS}"/cover.out
 else
   "${CONTAINER_RUNTIME}" run --rm \
     --env IS_CONTAINER=TRUE \
