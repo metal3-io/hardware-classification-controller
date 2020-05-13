@@ -21,6 +21,8 @@ import (
 
 	"github.com/go-logr/logr"
 
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	filter "hardware-classification-controller/classification_filter"
 	validate "hardware-classification-controller/validation"
@@ -91,9 +93,85 @@ func (r *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Res
 		validatedHardwareDetails := validate.Validation(extractedHardwareDetails)
 		comparedHost := filter.MinMaxComparison(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 		r.Log.Info("List of all compared Host", "Validated Hosts", comparedHost)
+		setValidLabel(ctx, r, hardwareClassification.ObjectMeta, comparedHost, hardwareClassification.ObjectMeta.Labels)
 	}
 
 	return ctrl.Result{}, nil
+}
+
+// setValidLabel will add label to the hosts which matched ExpectedHardwareConfiguraton
+func setValidLabel(ctx context.Context, r *HardwareClassificationReconciler, profile v1.ObjectMeta, matchedHosts []string, extractedLabels map[string]string) {
+
+	profileName := profile.Name
+	// Get updated object to set labels on
+	bmhHostList := bmh.BareMetalHostList{}
+	opts := &client.ListOptions{
+		Namespace: profile.Namespace,
+	}
+
+	r.Log.Info("Getting updated host list to set labels")
+	err := r.Client.List(ctx, &bmhHostList, opts)
+	if err != nil {
+		r.Log.Error(err, "Failed to get updated host list for labels")
+	} else {
+		r.Log.Info("Received updated host list to set labels")
+	}
+
+	labelKey := "hardwareclassification.metal3.io/" + profileName
+
+	// Delete existing labels for the same profile.
+	r.Log.Info("Checking if labels are already present for this profile")
+	for i, host := range bmhHostList.Items {
+		if host.Status.Provisioning.State == "ready" {
+			existingLabels := bmhHostList.Items[i].GetLabels()
+			for key := range existingLabels {
+				if key == labelKey {
+					delete(existingLabels, key)
+				}
+			}
+			bmhHostList.Items[i].SetLabels(existingLabels)
+			err = r.Client.Update(ctx, &bmhHostList.Items[i])
+			if err != nil {
+				r.Log.Error(err, "Failed to delete existing labels with this profile")
+			}
+		}
+	}
+
+	// Set latest labels on the hosts which matches ExpectedHardwareConfiguraton Profile
+	for _, validHost := range matchedHosts {
+		for i, host := range bmhHostList.Items {
+			m := make(map[string]string)
+			if validHost == host.Name {
+				// Getting all the existing labels on the matched host.
+				availableLabels := bmhHostList.Items[i].GetLabels()
+				r.Log.Info("Existing Labels ", validHost, availableLabels)
+				for key, value := range availableLabels {
+					m[key] = value
+				}
+				if extractedLabels != nil {
+					for _, value := range extractedLabels {
+						if value == "" {
+							m[labelKey] = "matches"
+						} else {
+							m[labelKey] = value
+						}
+					}
+				} else {
+					m[labelKey] = "matches"
+				}
+				r.Log.Info("Labels to be applied ", validHost, m)
+
+				// Setting labels on the matched host.
+				bmhHostList.Items[i].SetLabels(m)
+				err = r.Client.Update(ctx, &bmhHostList.Items[i])
+				if err != nil {
+					r.Log.Error(err, "Failed to set labels")
+				} else {
+					r.Log.Info("Labels updated successfully")
+				}
+			}
+		}
+	}
 }
 
 // fetchBmhHostList this function will fetch and return baremetal hosts in ready state
