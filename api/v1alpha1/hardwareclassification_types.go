@@ -1,8 +1,11 @@
 /*
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,55 +33,66 @@ type HardwareClassificationSpec struct {
 
 // ExpectedHardwareConfiguration details to match with the host
 type ExpectedHardwareConfiguration struct {
-	Namespace string `json:"namespace"`
 	// +optional
-	CPU CPU `json:"CPU"`
+	CPU *CPU `json:"CPU"`
 	// +optional
-	Disk Disk `json:"Disk"`
+	Disk *Disk `json:"Disk"`
 	// +optional
-	NIC NIC `json:"NIC"`
+	NIC *NIC `json:"NIC"`
 	// +optional
-	RAM RAM `json:"RAM"`
+	RAM *RAM `json:"RAM"`
 }
 
-// CPU count
+// CPU contains CPU details extracted from the hardware profile
 type CPU struct {
 	// +optional
-	MinimumCount int `json:"minimumCount"`
+	// +kubebuilder:validation:Minimum=1
+	MinimumCount int `json:"minimumCount" description:"minimum cpu count, greater than 0"`
 	// +optional
-	MaximumCount int `json:"maximumCount"`
+	// +kubebuilder:validation:Minimum=1
+	MaximumCount int `json:"maximumCount" description:"maximum cpu count, greater than 0"`
 	// +optional
-	MinimumSpeed string `json:"minimumSpeed"`
+	// +kubebuilder:validation:Pattern=`^(0\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$`
+	MinimumSpeed string `json:"minimumSpeed" description:"minimum speed of cpu, greater than 0"`
 	// +optional
-	MaximumSpeed string `json:"maximumSpeed"`
+	// +kubebuilder:validation:Pattern=`^(0\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$`
+	MaximumSpeed string `json:"maximumSpeed" description:"maximum speed of cpu, greater than 0"`
 }
 
-// Disk size and number of disks
+// Disk contains disk details extracted from the hardware profile
 type Disk struct {
 	// +optional
-	MinimumCount int `json:"minimumCount"`
+	// +kubebuilder:validation:Minimum=1
+	MinimumCount int `json:"minimumCount" description:"minimum count of disk, greater than 0"`
 	// +optional
-	MinimumIndividualSizeGB int64 `json:"minimumIndividualSizeGB"`
+	// +kubebuilder:validation:Minimum=1
+	MinimumIndividualSizeGB int64 `json:"minimumIndividualSizeGB" description:"minimum individual size of disk, greater than 0"`
 	// +optional
-	MaximumCount int `json:"maximumCount"`
+	// +kubebuilder:validation:Minimum=1
+	MaximumCount int `json:"maximumCount" description:"maximum count of disk, greater than 0"`
 	// +optional
-	MaximumIndividualSizeGB int64 `json:"maximumIndividualSizeGB"`
+	// +kubebuilder:validation:Minimum=1
+	MaximumIndividualSizeGB int64 `json:"maximumIndividualSizeGB" description:"maximum individual size of disk, greater than 0"`
 }
 
-// NIC count of nics cards
+// NIC contains nic details extracted from the hardware profile
 type NIC struct {
 	// +optional
-	MinimumCount int `json:"minimumCount"`
+	// +kubebuilder:validation:Minimum=1
+	MinimumCount int `json:"minimumCount" description:"minimum count of nics, greater than 0"`
 	// +optional
-	MaximumCount int `json:"maximumCount"`
+	// +kubebuilder:validation:Minimum=1
+	MaximumCount int `json:"maximumCount" description:"maximum count of nics, greater than 0"`
 }
 
-// RAM size
+// RAM contains ram details extracted from the hardware profile
 type RAM struct {
 	// +optional
-	MinimumSizeGB int `json:"minimumSizeGB"`
+	// +kubebuilder:validation:Minimum=1
+	MinimumSizeGB int `json:"minimumSizeGB" description:"minimun size of ram, greater than 0"`
 	// +optional
-	MaximumSizeGB int `json:"maximumSizeGB"`
+	// +kubebuilder:validation:Minimum=1
+	MaximumSizeGB int `json:"maximumSizeGB" description:"maximum size of ram, greater than 0"`
 }
 
 // HardwareClassificationStatus defines the observed state of HardwareClassification
@@ -94,7 +108,7 @@ type HardwareClassification struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   HardwareClassificationSpec   `json:"spec,omitempty"`
+	Spec   HardwareClassificationSpec   `json:"spec"`
 	Status HardwareClassificationStatus `json:"status,omitempty"`
 }
 

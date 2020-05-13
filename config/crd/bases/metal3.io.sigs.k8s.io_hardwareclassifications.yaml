@@ -40,51 +40,63 @@ spec:
                 configurations for CPU, RAM, Disk, NIC.
               properties:
                 CPU:
-                  description: CPU count
+                  description: CPU contains CPU details extracted from the hardware
+                    profile
                   properties:
                     maximumCount:
+                      minimum: 1
                       type: integer
                     maximumSpeed:
+                      pattern: ^(0\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$
                       type: string
                     minimumCount:
+                      minimum: 1
                       type: integer
                     minimumSpeed:
+                      pattern: ^(0\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$
                       type: string
                   type: object
                 Disk:
-                  description: Disk size and number of disks
+                  description: Disk contains disk details extracted from the hardware
+                    profile
                   properties:
                     maximumCount:
+                      minimum: 1
                       type: integer
                     maximumIndividualSizeGB:
                       format: int64
+                      minimum: 1
                       type: integer
                     minimumCount:
+                      minimum: 1
                       type: integer
                     minimumIndividualSizeGB:
                       format: int64
+                      minimum: 1
                       type: integer
                   type: object
                 NIC:
-                  description: NIC count of nics cards
+                  description: NIC contains nic details extracted from the hardware
+                    profile
                   properties:
                     maximumCount:
+                      minimum: 1
                       type: integer
                     minimumCount:
+                      minimum: 1
                       type: integer
                   type: object
                 RAM:
-                  description: RAM size
+                  description: RAM contains ram details extracted from the hardware
+                    profile
                   properties:
                     maximumSizeGB:
+                      minimum: 1
                       type: integer
                     minimumSizeGB:
+                      minimum: 1
                       type: integer
                   type: object
-                namespace:
-                  type: string
-              required:
-              - namespace
               type: object
           required:
           - expectedValidationConfiguration
@@ -93,6 +105,8 @@ spec:
           description: HardwareClassificationStatus defines the observed state of
             HardwareClassification
           type: object
+      required:
+      - spec
       type: object
   version: v1alpha1
   versions:

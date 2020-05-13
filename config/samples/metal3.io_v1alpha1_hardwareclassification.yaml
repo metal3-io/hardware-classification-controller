@@ -2,11 +2,11 @@ apiVersion: metal3.io.sigs.k8s.io/v1alpha1
 kind: HardwareClassification
 metadata:
   name: hardwareclassification-sample
+  namespace: metal3
   labels:
-    test: pass
+    hardwareclassification-sample: matches
 spec:
   expectedValidationConfiguration:
-      namespace: metal3
       CPU:
          minimumCount: 48
          maximumCount: 72
