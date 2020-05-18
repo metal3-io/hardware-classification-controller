@@ -13,8 +13,13 @@ spec:
     kind: HardwareClassification
     listKind: HardwareClassificationList
     plural: hardwareclassifications
+    shortNames:
+    - hwcc
+    - hcc
     singular: hardwareclassification
   scope: Namespaced
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       description: HardwareClassification is the Schema for the hardwareclassifications

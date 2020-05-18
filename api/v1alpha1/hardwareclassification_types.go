@@ -38,6 +38,8 @@ type HardwareClassificationStatus struct {
 }
 
 // +kubebuilder:object:root=true
+// +kubebuilder:resource:shortName=hwcc;hcc
+// +kubebuilder:subresource:status
 
 // HardwareClassification is the Schema for the hardwareclassifications API
 type HardwareClassification struct {
