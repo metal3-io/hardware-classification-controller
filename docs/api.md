@@ -1,6 +1,8 @@
 # API and Resource Definitions
 
-Currently Hardware-classification supports CREATE, GET, LIST, UPDATE, DELETE, PATCH API's. 
-Also we are implementing API's to fetch the BaremetalHost details from BMO.
+## HardwareClassification
 
-This document will be updated with api and resource definitions in follow up PR's.
+**Metal³** introduces the concept of **HardwareClassification** resource, which
+classifies the hosts based on profiles.
+
+This document will be updated with api and resource definitions.
