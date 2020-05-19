@@ -22,6 +22,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	
+	errors "k8s.io/apimachinery/pkg/api/errors"
 
 	metal3iov1alpha1 "hardware-classification-controller/api/v1alpha1"
 )
@@ -40,6 +42,15 @@ func (r *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Res
 	ctx = context.Background()
 	reqLogger = r.Log.WithValues("hardwareclassification", req.NamespacedName)
 	
+        instance := &metal3iov1alpha1.HardwareClassification{}
+	err := r.Get(context.TODO(), req.NamespacedName, instance
+        if err != nil {
+	    if errors.IsNotFound(err){
+		//Request object not found, could have been deleted after
+		// reconcile request-return and don't requeue.
+		return reconcile.Result{}, nil
+	    }
+	}
 
 	// your logic here
 
