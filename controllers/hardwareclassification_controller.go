@@ -43,7 +43,7 @@ func (r *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Res
 	reqLogger = r.Log.WithValues("hardwareclassification", req.NamespacedName)
 	
         instance := &metal3iov1alpha1.HardwareClassification{}
-	err := r.Get(context.TODO(), req.NamespacedName, instance
+	err := r.Get(context.TODO(), req.NamespacedName, instance)
         if err != nil {
 	    if errors.IsNotFound(err){
 		//Request object not found, could have been deleted after
