@@ -14,7 +14,7 @@ spec:
     listKind: HardwareClassificationList
     plural: hardwareclassifications
     shortNames:
-    - hwcc
+    - hwc
     - hcc
     singular: hardwareclassification
   scope: Namespaced
