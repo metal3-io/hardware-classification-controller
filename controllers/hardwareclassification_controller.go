@@ -41,10 +41,10 @@ type HardwareClassificationReconciler struct {
 func (r *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 	reqLogger := r.Log.WithValues("hardwareclassification", req.NamespacedName)
+	instance := &metal3iov1alpha1.HardwareClassification{}
 	
-        instance := &metal3iov1alpha1.HardwareClassification{}
 	err := r.Get(context.TODO(), req.NamespacedName, instance)
-        if err != nil {
+	if err != nil {
 	    if errors.IsNotFound(err){
 		//Request object not found, could have been deleted after
 		// reconcile request-return and don't requeue.
