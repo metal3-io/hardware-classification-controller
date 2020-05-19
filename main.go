@@ -66,12 +66,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.HardwareClassificationControllerReconciler{
+	if err = (&controllers.HardwareClassificationReconciler{
 		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("HardwareClassificationController"),
+		Log:    ctrl.Log.WithName("controllers").WithName("HardwareClassification"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "HardwareClassificationController")
+		setupLog.Error(err, "unable to create controller", "controller", "HardwareClassification")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

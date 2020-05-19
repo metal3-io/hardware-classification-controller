@@ -1,4 +1,8 @@
 # API and Resource Definitions
 
-Fetch `baremetalhost` list and extract profiles from metal3.io_v1alpha1_hardwareclassificationcontroller.yaml logic will come in next commit.
+## HardwareClassification
+
+**Metal³** introduces the concept of **HardwareClassification** resource, which
+classifies the hosts based on profiles.
+
 This document will be updated with api and resource definitions.
