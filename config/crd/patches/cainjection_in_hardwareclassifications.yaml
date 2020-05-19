@@ -5,4 +5,4 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: $(CERTIFICATE_NAMESPACE)/$(CERTIFICATE_NAME)
-  name: hardwareclassifications.metal3.io.sigs.k8s.io
+  name: hardwareclassifications.metal3.io

@@ -5,7 +5,7 @@ metadata:
   name: hardwareclassification-editor-role
 rules:
 - apiGroups:
-  - metal3.io.sigs.k8s.io
+  - metal3.io
   resources:
   - hardwareclassifications
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - metal3.io.sigs.k8s.io
+  - metal3.io
   resources:
   - hardwareclassifications/status
   verbs:

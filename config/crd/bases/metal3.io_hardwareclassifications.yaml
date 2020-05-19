@@ -6,15 +6,15 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.2.4
   creationTimestamp: null
-  name: hardwareclassifications.metal3.io.sigs.k8s.io
+  name: hardwareclassifications.metal3.io
 spec:
-  group: metal3.io.sigs.k8s.io
+  group: metal3.io
   names:
     kind: HardwareClassification
     listKind: HardwareClassificationList
     plural: hardwareclassifications
     shortNames:
-    - hwc
+    - hwcc
     - hcc
     singular: hardwareclassification
   scope: Namespaced
