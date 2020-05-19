@@ -37,8 +37,9 @@ type HardwareClassificationReconciler struct {
 // +kubebuilder:rbac:groups=metal3.io.sigs.k8s.io,resources=hardwareclassifications/status,verbs=get;update;patch
 
 func (r *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
-	_ = r.Log.WithValues("hardwareclassification", req.NamespacedName)
+	ctx = context.Background()
+	reqLogger = r.Log.WithValues("hardwareclassification", req.NamespacedName)
+	
 
 	// your logic here
 
