@@ -1,7 +1,6 @@
 # API and Resource Definitions
 
-Fetch `baremetalhost` list and extract profiles
-from metal3.io_v1alpha1_hardwareclassification.yaml
-logic will come in next commit.
+Currently Hardware-classification supports CREATE, GET, LIST, UPDATE, DELETE, PATCH API's. 
+Also we are implementing API's to fetch the BaremetalHost details from BMO.
 
-This document will be updated with api and resource definitions.
+This document will be updated with api and resource definitions in follow up PR's.
