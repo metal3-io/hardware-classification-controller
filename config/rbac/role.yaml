@@ -9,6 +9,20 @@ rules:
 - apiGroups:
   - metal3.io
   resources:
+  - baremetalhosts
+  verbs:
+  - get
+  - list
+  - update
+- apiGroups:
+  - metal3.io
+  resources:
+  - baremetalhosts/status
+  verbs:
+  - get
+- apiGroups:
+  - metal3.io
+  resources:
   - hardwareclassifications
   verbs:
   - create
