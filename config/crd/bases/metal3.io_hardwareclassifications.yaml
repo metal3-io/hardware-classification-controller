@@ -40,10 +40,71 @@ spec:
         spec:
           description: HardwareClassificationSpec defines the desired state of HardwareClassification
           properties:
-            foo:
-              description: Foo is an example field of HardwareClassification. Edit
-                HardwareClassification_types.go to remove/update
-              type: string
+            expectedValidationConfiguration:
+              description: ExpectedHardwareConfiguration defines expected hardware
+                configurations for CPU, RAM, Disk, NIC.
+              properties:
+                CPU:
+                  description: CPU contains CPU details extracted from the hardware
+                    profile
+                  properties:
+                    maximumCount:
+                      minimum: 1
+                      type: integer
+                    maximumSpeed:
+                      pattern: ^(0\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$
+                      type: string
+                    minimumCount:
+                      minimum: 1
+                      type: integer
+                    minimumSpeed:
+                      pattern: ^(0\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$
+                      type: string
+                  type: object
+                Disk:
+                  description: Disk contains disk details extracted from the hardware
+                    profile
+                  properties:
+                    maximumCount:
+                      minimum: 1
+                      type: integer
+                    maximumIndividualSizeGB:
+                      format: int64
+                      minimum: 1
+                      type: integer
+                    minimumCount:
+                      minimum: 1
+                      type: integer
+                    minimumIndividualSizeGB:
+                      format: int64
+                      minimum: 1
+                      type: integer
+                  type: object
+                NIC:
+                  description: NIC contains nic details extracted from the hardware
+                    profile
+                  properties:
+                    maximumCount:
+                      minimum: 1
+                      type: integer
+                    minimumCount:
+                      minimum: 1
+                      type: integer
+                  type: object
+                RAM:
+                  description: RAM contains ram details extracted from the hardware
+                    profile
+                  properties:
+                    maximumSizeGB:
+                      minimum: 1
+                      type: integer
+                    minimumSizeGB:
+                      minimum: 1
+                      type: integer
+                  type: object
+              type: object
+          required:
+          - expectedValidationConfiguration
           type: object
         status:
           description: HardwareClassificationStatus defines the observed state of

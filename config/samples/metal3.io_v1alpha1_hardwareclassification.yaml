@@ -2,6 +2,24 @@ apiVersion: metal3.io/v1alpha1
 kind: HardwareClassification
 metadata:
   name: hardwareclassification-sample
+  namespace: metal3
+  labels:
+    hardwareclassification-sample: matches
 spec:
-  # Add fields here
-  foo: bar
+  expectedValidationConfiguration:
+      CPU:
+         minimumCount: 48
+         maximumCount: 72
+         minimumSpeed: "2.7"
+         maximumSpeed: "3.6"
+      Disk:
+         minimumCount: 1
+         maximumCount: 7
+         minimumIndividualSizeGB: 200
+         maximumIndividualSizeGB: 3000
+      RAM:
+         minimumSizeGB: 6
+         maximumSizeGB: 180
+      NIC:
+         minimumCount: 1
+         maximumCount: 7
