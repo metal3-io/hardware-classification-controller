@@ -6,20 +6,20 @@ metadata:
   labels:
     hardwareclassification-sample: matches
 spec:
-  expectedValidationConfiguration:
-      CPU:
+  hardwareCharacteristics:
+      cpu:
          minimumCount: 48
          maximumCount: 72
-         minimumSpeed: "2.7"
-         maximumSpeed: "3.6"
-      Disk:
+         minimumSpeed: 2600
+         maximumSpeed: 3600
+      disk:
          minimumCount: 1
          maximumCount: 7
          minimumIndividualSizeGB: 200
          maximumIndividualSizeGB: 3000
-      RAM:
+      ram:
          minimumSizeGB: 6
          maximumSizeGB: 180
-      NIC:
+      nic:
          minimumCount: 1
          maximumCount: 7

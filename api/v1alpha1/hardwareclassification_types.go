@@ -28,7 +28,7 @@ type HardwareClassificationSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// HardwareCharacteristics defines expected hardware configurations for Cpu, Disk, Nic and Ram.
-	HardwareCharacteristics HardwareCharacteristics `json:"hardwarecharacteristics,omitemty"`
+	HardwareCharacteristics HardwareCharacteristics `json:"hardwareCharacteristics,omitemty"`
 }
 
 // ExpectedHardwareConfiguration details to match with the host
@@ -60,12 +60,14 @@ type Cpu struct {
 	// MinimumSpeed of cpu should be greater than 0
 	// Ex. MinimumSpeed > 0
 	// Ex. MinimumSpeed: 2600
+	// User wants CPU speed 2.6 (in GHz), then s/he should specify as 2600 MHz
 	MinimumSpeed int32 `json:"minimumSpeed,omitempty"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1000
 	// Maximum speed of cpu should be greater than 0 and greater than MinimumSpeed
 	// Ex. MaximumSpeed > 0 && MaximumSpeed > MinimumSpeed
 	// Ex. MaximumSpeed: 3200
+	// User wants CPU speed 3.2 (in GHz), then he should specify as 3200 MHz
 	MaximumSpeed int32 `json:"maximumSpeed,omitempty"`
 }
 
