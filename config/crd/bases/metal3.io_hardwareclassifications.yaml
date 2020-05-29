@@ -40,10 +40,104 @@ spec:
         spec:
           description: HardwareClassificationSpec defines the desired state of HardwareClassification
           properties:
-            foo:
-              description: Foo is an example field of HardwareClassification. Edit
-                HardwareClassification_types.go to remove/update
-              type: string
+            hardwareCharacteristics:
+              description: HardwareCharacteristics defines expected hardware configurations
+                for Cpu, Disk, Nic and Ram.
+              properties:
+                cpu:
+                  description: Cpu contains cpu details extracted from the hardware
+                    profile
+                  properties:
+                    maximumCount:
+                      description: MaximumCount of cpu should be greater than 0 and
+                        greater than MinimumCount Ex. MaximumCount > 0 && MaximumCount
+                        > MinimumCount
+                      minimum: 1
+                      type: integer
+                    maximumSpeedMHz:
+                      description: 'Maximum speed of cpu should be greater than 0
+                        and greater than MinimumSpeed Ex. MaximumSpeed > 0 && MaximumSpeed
+                        > MinimumSpeed Ex. MaximumSpeed: 3200 User wants CPU speed
+                        3.2 (in GHz), then he should specify as 3200 MHz'
+                      format: int32
+                      minimum: 1000
+                      type: integer
+                    minimumCount:
+                      description: MinimumCount of cpu should be greater than 0 Ex.
+                        MinimumCount > 0
+                      minimum: 1
+                      type: integer
+                    minimumSpeedMHz:
+                      description: 'MinimumSpeed of cpu should be greater than 0 Ex.
+                        MinimumSpeed > 0 Ex. MinimumSpeed: 2600 User wants CPU speed
+                        2.6 (in GHz), then s/he should specify as 2600 MHz'
+                      format: int32
+                      minimum: 1000
+                      type: integer
+                  type: object
+                disk:
+                  description: Disk contains disk details extracted from the hardware
+                    profile
+                  properties:
+                    maximumCount:
+                      description: MaximumCount of disk should be greater than 0 and
+                        greter than MinimumCount Ex. MaximumCount > 0 && MaximumCount
+                        > MinimumCount
+                      minimum: 1
+                      type: integer
+                    maximumIndividualSizeGB:
+                      description: Maximum individual size should be greater than
+                        0 and greater than MinimumIndividualSizeGB Ex. MaximumIndividualSizeGB
+                        > 0 && MaximumIndividualSizeGB > MinimumIndividualSizeGB
+                      format: int64
+                      minimum: 1
+                      type: integer
+                    minimumCount:
+                      description: MinimumCount of disk should be greater than 0 MinimumCount
+                        > 0
+                      minimum: 1
+                      type: integer
+                    minimumIndividualSizeGB:
+                      description: MinimumIndividualSizeGB should be greater than
+                        0 Ex. MinimumIndividualSizeGB > 0
+                      format: int64
+                      minimum: 1
+                      type: integer
+                  type: object
+                nic:
+                  description: Nic contains nic details extracted from the hardware
+                    profile
+                  properties:
+                    maximumCount:
+                      description: Maximum count should be greater than 0 and grear
+                        than MinimumCount Ex. MaximumCount > 0 && MaximumCount > MinimumCount
+                      minimum: 1
+                      type: integer
+                    minimumCount:
+                      description: Minimum count should be greater than 0 Ex. MinumumCount
+                        > 0
+                      minimum: 1
+                      type: integer
+                  type: object
+                ram:
+                  description: Ram contains ram details extracted from the hardware
+                    profile
+                  properties:
+                    maximumSizeGB:
+                      description: MaximumSizeGB should be greater than 0 or greater
+                        than MinimumSizeGB Ex. MaximumSizeGB > 0 && MaximumSizeGB
+                        > MinimumSizeGB
+                      minimum: 1
+                      type: integer
+                    minimumSizeGB:
+                      description: MinimumSizeGB of Ram should be greater than 0 Ex.
+                        MinimumSizeGB > 0
+                      minimum: 1
+                      type: integer
+                  type: object
+              type: object
+          required:
+          - hardwareCharacteristics
           type: object
         status:
           description: HardwareClassificationStatus defines the observed state of
