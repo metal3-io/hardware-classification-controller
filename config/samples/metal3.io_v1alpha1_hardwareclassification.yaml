@@ -10,8 +10,8 @@ spec:
       cpu:
          minimumCount: 48
          maximumCount: 72
-         minimumSpeed: 2600
-         maximumSpeed: 3600
+         minimumSpeedMHz: 2600
+         maximumSpeedMHz: 3600
       disk:
          minimumCount: 1
          maximumCount: 7
