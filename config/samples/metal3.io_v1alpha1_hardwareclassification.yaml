@@ -4,22 +4,22 @@ metadata:
   name: hardwareclassification-sample
   namespace: metal3
   labels:
-    hardwareclassification-sample: matches
+      hardwareclassification-sample: matches
 spec:
-  hardwareCharacteristics:
-      cpu:
+  expectedValidationConfiguration:
+      CPU:
          minimumCount: 48
          maximumCount: 72
-         minimumSpeedMHz: 2600
-         maximumSpeedMHz: 3600
-      disk:
+         minimumSpeed: "2600"
+         maximumSpeed: "3600"
+      Disk:
          minimumCount: 1
-         maximumCount: 7
+         maximumCount: 8
          minimumIndividualSizeGB: 200
          maximumIndividualSizeGB: 3000
-      ram:
+      RAM:
          minimumSizeGB: 6
          maximumSizeGB: 180
-      nic:
+      NIC:
          minimumCount: 1
          maximumCount: 7

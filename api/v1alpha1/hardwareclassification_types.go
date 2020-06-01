@@ -27,106 +27,81 @@ type HardwareClassificationSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// HardwareCharacteristics defines expected hardware configurations for Cpu, Disk, Nic and Ram.
-	HardwareCharacteristics HardwareCharacteristics `json:"hardwareCharacteristics,omitemty"`
+	// ExpectedHardwareConfiguration defines expected hardware configurations for CPU, RAM, Disk, NIC.
+	ExpectedHardwareConfiguration ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
 }
 
 // ExpectedHardwareConfiguration details to match with the host
-type HardwareCharacteristics struct {
+type ExpectedHardwareConfiguration struct {
 	// +optional
-	Cpu *Cpu `json:"cpu,omitempty"`
+	CPU *CPU `json:"CPU,omitempty"`
 	// +optional
-	Disk *Disk `json:"disk,omitempty"`
+	Disk *Disk `json:"Disk,omitempty"`
 	// +optional
-	Nic *Nic `json:"nic,omitempty"`
+	NIC *NIC `json:"NIC,omitempty"`
 	// +optional
-	Ram *Ram `json:"ram,omitempty"`
+	RAM *RAM `json:"RAM,omitempty"`
 }
 
-// Cpu contains cpu details extracted from the hardware profile
-type Cpu struct {
+// CPU contains CPU details extracted from the hardware profile
+type CPU struct {
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// MinimumCount of cpu should be greater than 0
-	// Ex. MinimumCount > 0
-	MinimumCount int `json:"minimumCount,omitempty"`
+	MinimumCount int `json:"minimumCount" description:"minimum cpu count, greater than 0"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// MaximumCount of cpu should be greater than 0 and greater than MinimumCount
-	// Ex. MaximumCount > 0 && MaximumCount > MinimumCount
-	MaximumCount int `json:"maximumCount,omitempty"`
+	MaximumCount int `json:"maximumCount" description:"maximum cpu count, greater than 0"`
 	// +optional
-	// +kubebuilder:validation:Minimum=1000
-	// MinimumSpeed of cpu should be greater than 0
-	// Ex. MinimumSpeed > 0
-	// Ex. MinimumSpeed: 2600
-	// User wants CPU speed 2.6 (in GHz), then s/he should specify as 2600 MHz
-	MinimumSpeedMHz int32 `json:"minimumSpeedMHz,omitempty"`
+	// +kubebuilder:validation:Pattern=`^(0\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$`
+	MinimumSpeed string `json:"minimumSpeed" description:"minimum speed of cpu, greater than 0"`
 	// +optional
-	// +kubebuilder:validation:Minimum=1000
-	// Maximum speed of cpu should be greater than 0 and greater than MinimumSpeed
-	// Ex. MaximumSpeed > 0 && MaximumSpeed > MinimumSpeed
-	// Ex. MaximumSpeed: 3200
-	// User wants CPU speed 3.2 (in GHz), then he should specify as 3200 MHz
-	MaximumSpeedMHz int32 `json:"maximumSpeedMHz,omitempty"`
+	// +kubebuilder:validation:Pattern=`^(0\.\d*[1-9]\d*|[1-9]\d*(\.\d+)?)$`
+	MaximumSpeed string `json:"maximumSpeed" description:"maximum speed of cpu, greater than 0"`
 }
 
 // Disk contains disk details extracted from the hardware profile
 type Disk struct {
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// MinimumCount of disk should be greater than 0
-	// MinimumCount > 0
-	MinimumCount int `json:"minimumCount,omitempty"`
+	MinimumCount int `json:"minimumCount" description:"minimum count of disk, greater than 0"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// MinimumIndividualSizeGB should be greater than 0
-	// Ex. MinimumIndividualSizeGB > 0
-	MinimumIndividualSizeGB int64 `json:"minimumIndividualSizeGB,omitempty"`
+	MinimumIndividualSizeGB int64 `json:"minimumIndividualSizeGB" description:"minimum individual size of disk, greater than 0"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// MaximumCount of disk should be greater than 0 and greter than MinimumCount
-	// Ex. MaximumCount > 0 && MaximumCount > MinimumCount
-	MaximumCount int `json:"maximumCount,omitempty"`
+	MaximumCount int `json:"maximumCount" description:"maximum count of disk, greater than 0"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// Maximum individual size should be greater than 0 and greater than MinimumIndividualSizeGB
-	// Ex. MaximumIndividualSizeGB > 0 && MaximumIndividualSizeGB > MinimumIndividualSizeGB
-	MaximumIndividualSizeGB int64 `json:"maximumIndividualSizeGB,omitempty"`
+	MaximumIndividualSizeGB int64 `json:"maximumIndividualSizeGB" description:"maximum individual size of disk, greater than 0"`
 }
 
-// Nic contains nic details extracted from the hardware profile
-type Nic struct {
+// NIC contains nic details extracted from the hardware profile
+type NIC struct {
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// Minimum count should be greater than 0
-	// Ex. MinumumCount > 0
-	MinimumCount int `json:"minimumCount,omitempty"`
+	MinimumCount int `json:"minimumCount" description:"minimum count of nics, greater than 0"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// Maximum count should be greater than 0 and grear than MinimumCount
-	// Ex. MaximumCount > 0 && MaximumCount > MinimumCount
-	MaximumCount int `json:"maximumCount,omitempty"`
+	MaximumCount int `json:"maximumCount" description:"maximum count of nics, greater than 0"`
 }
 
-// Ram contains ram details extracted from the hardware profile
-type Ram struct {
+// RAM contains ram details extracted from the hardware profile
+type RAM struct {
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// MinimumSizeGB of Ram should be greater than 0
-	// Ex. MinimumSizeGB > 0
-	MinimumSizeGB int `json:"minimumSizeGB,omitempty"`
+	MinimumSizeGB int `json:"minimumSizeGB" description:"minimun size of ram, greater than 0"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// MaximumSizeGB should be greater than 0 or greater than MinimumSizeGB
-	// Ex. MaximumSizeGB > 0 && MaximumSizeGB > MinimumSizeGB
-	MaximumSizeGB int `json:"maximumSizeGB,omitempty"`
+	MaximumSizeGB int `json:"maximumSizeGB" description:"maximum size of ram, greater than 0"`
 }
 
 // HardwareClassificationStatus defines the observed state of HardwareClassification
 type HardwareClassificationStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// The last error message reported by the hardwareclassification system
+	ErrorMessage string `json:"errorMessage"`
 }
 
 // +kubebuilder:object:root=true
