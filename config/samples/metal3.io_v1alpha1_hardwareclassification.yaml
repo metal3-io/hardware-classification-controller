@@ -18,8 +18,8 @@ spec:
          minimumIndividualSizeGB: 200
          maximumIndividualSizeGB: 3000
       RAM:
-         minimumSizeGB: 6
-         maximumSizeGB: 180
+         minimumSizeGB: 4
+         maximumSizeGB: 16
       NIC:
-         minimumCount: 1
-         maximumCount: 7
+         minimumCount: 2
+         maximumCount: 8

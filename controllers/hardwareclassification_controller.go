@@ -18,6 +18,7 @@ package controllers
 import (
 	"context"
 	hwcc "hardware-classification-controller/api/v1alpha1"
+	utils "hardware-classification-controller/hcmanager"
 
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -62,6 +63,35 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
 	hcReconciler.Log.Info("Extracted hardware configurations successfully", "Profile", extractedProfile)
+
+	// Get the new hardware classification manager
+	hcManager := utils.NewHardwareClassificationManager(hcReconciler.Client, hcReconciler.Log)
+
+	ErrValidation := hcManager.ValidateExtractedHardwareProfile(extractedProfile)
+	if ErrValidation != nil {
+		hcReconciler.Log.Error(ErrValidation, ErrValidation.Error())
+		hcReconciler.handleErrorConditions(req, hardwareClassification, hwcc.ProfileMisConfigured, ErrValidation.Error(), hwcc.ProfileMatchStatusEmpty)
+		return ctrl.Result{}, nil
+	}
+
+	//Fetch baremetal host list for the given namespace
+	hostList, _, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
+	if err != nil {
+		errMessage := "Unable to fetch BMH list from BMO"
+		hcReconciler.handleErrorConditions(req, hardwareClassification, hwcc.FetchBMHListFailure, errMessage, hwcc.ProfileMatchStatusEmpty)
+		return ctrl.Result{}, nil
+	}
+
+	if len(hostList) == 0 {
+		errMessage := "No BareMetalHost found in ready state"
+		hcReconciler.Log.Info("No BareMetalHost found in ready state")
+		hcReconciler.handleErrorConditions(req, hardwareClassification, hwcc.NoBMHHost, errMessage, hwcc.ProfileMatchStatusEmpty)
+		return ctrl.Result{}, nil
+	}
+
+	//Extract the hardware details from the baremetal host list
+	validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(extractedProfile, hostList)
+	hcReconciler.Log.Info("Validated Hardware Details From Baremetal Hosts", "Validated Host List", validatedHardwareDetails)
 
 	return ctrl.Result{}, nil
 }

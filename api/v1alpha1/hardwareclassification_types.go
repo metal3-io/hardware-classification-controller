@@ -95,18 +95,67 @@ type RAM struct {
 	MaximumSizeGB int `json:"maximumSizeGB" description:"maximum size of ram, greater than 0"`
 }
 
+// ProfileMatchStatus represents the state of the HardwareClassification
+type ProfileMatchStatus string
+
+const (
+	// ProfileMatchStatusEmpty is the default status value
+	ProfileMatchStatusEmpty ProfileMatchStatus = ""
+
+	// ProfileMatchStatusMatched is the status value when the profile
+	// matches to one of the BareMtalHost.
+	ProfileMatchStatusMatched ProfileMatchStatus = "matched"
+
+	// ProfileMatchStatusUnMatched is the status value when the profile
+	// not matches to one of the BareMtalHost.
+	ProfileMatchStatusUnMatched ProfileMatchStatus = "unmatched"
+)
+
+// ErrorType indicates the class of problem that has caused the HCC resource
+// to enter an error state.
+type ErrorType string
+
+const (
+	// LabelUpdateFailure is an error condition occurring when the
+	// controller is unalble to update label of BareMetalHost.
+	LabelUpdateFailure ErrorType = "label update error"
+
+	// LabelDeleteFailure is an error condition occurring when the
+	// controller is unalble to delete label of BareMetalHost.
+	LabelDeleteFailure ErrorType = "label delete error"
+
+	// FetchBMHListFailure is an error condition occurring when the
+	// controller is unable to fetch BMH from BMO
+	FetchBMHListFailure ErrorType = "fetch BMH from BMO error"
+
+	// ProfileMisConfigured is an error condition occurring when the
+	// extracted profile is empty.
+	ProfileMisConfigured ErrorType = "Empty Profile Error"
+
+	// NoBMHHost is an error condition occurring when the
+	// baremetal host is empty.
+	NoBMHHost ErrorType = "No baremetal host found"
+)
+
 // HardwareClassificationStatus defines the observed state of HardwareClassification
 type HardwareClassificationStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// ErrorType indicates the type of failure encountered
+	ErrorType ErrorType `json:"errorType,omitempty"`
+
+	// ProfileMatchStatus identifies whether a applied profile is matches or not
+	ProfileMatchStatus ProfileMatchStatus `json:"profileMatchStatus"`
 
 	// The last error message reported by the hardwareclassification system
 	ErrorMessage string `json:"errorMessage"`
 }
 
 // +kubebuilder:object:root=true
-// +kubebuilder:resource:shortName=hwc;hc
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="ProfileMatchStatus",type="string",JSONPath=".status.profileMatchStatus",description="Profile Match Status"
+// +kubebuilder:printcolumn:name="Error",type="string",JSONPath=".status.errorMessage",description="Most recent error"
 
 // HardwareClassification is the Schema for the hardwareclassifications API
 type HardwareClassification struct {
@@ -115,6 +164,45 @@ type HardwareClassification struct {
 
 	Spec   HardwareClassificationSpec   `json:"spec,omitempty"`
 	Status HardwareClassificationStatus `json:"status,omitempty"`
+}
+
+// SetProfileMatchStatus updates the ProfileMatchStatus field and returns
+// true when a change is made or false when no change is made.
+func (hcc *HardwareClassification) SetProfileMatchStatus(status ProfileMatchStatus) bool {
+	if hcc.Status.ProfileMatchStatus != status {
+		hcc.Status.ProfileMatchStatus = status
+		return true
+	}
+	return false
+}
+
+// SetErrorMessage updates the ErrorMessage in the HardwareClassification Status struct
+// when necessary and returns true when a change is made or false when
+// no change is made.
+func (hcc *HardwareClassification) SetErrorMessage(errType ErrorType, message string) (dirty bool) {
+	if hcc.Status.ErrorType != errType {
+		hcc.Status.ErrorType = errType
+		dirty = true
+	}
+	if hcc.Status.ErrorMessage != message {
+		hcc.Status.ErrorMessage = message
+		dirty = true
+	}
+	return dirty
+}
+
+// ClearError removes any existing error message.
+func (hcc *HardwareClassification) ClearError() (dirty bool) {
+	var emptyErrType ErrorType = ""
+	if hcc.Status.ErrorType != emptyErrType {
+		hcc.Status.ErrorType = emptyErrType
+		dirty = true
+	}
+	if hcc.Status.ErrorMessage != "" {
+		hcc.Status.ErrorMessage = ""
+		dirty = true
+	}
+	return dirty
 }
 
 // +kubebuilder:object:root=true

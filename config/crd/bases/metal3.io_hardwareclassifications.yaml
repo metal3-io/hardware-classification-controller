@@ -8,14 +8,20 @@ metadata:
   creationTimestamp: null
   name: hardwareclassifications.metal3.io
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.profileMatchStatus
+    description: Profile Match Status
+    name: ProfileMatchStatus
+    type: string
+  - JSONPath: .status.errorMessage
+    description: Most recent error
+    name: Error
+    type: string
   group: metal3.io
   names:
     kind: HardwareClassification
     listKind: HardwareClassificationList
     plural: hardwareclassifications
-    shortNames:
-    - hwc
-    - hc
     singular: hardwareclassification
   scope: Namespaced
   subresources:
@@ -114,8 +120,16 @@ spec:
               description: The last error message reported by the hardwareclassification
                 system
               type: string
+            errorType:
+              description: ErrorType indicates the type of failure encountered
+              type: string
+            profileMatchStatus:
+              description: ProfileMatchStatus identifies whether a applied profile
+                is matches or not
+              type: string
           required:
           - errorMessage
+          - profileMatchStatus
           type: object
       type: object
   version: v1alpha1
