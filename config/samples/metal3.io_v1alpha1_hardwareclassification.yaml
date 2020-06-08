@@ -6,7 +6,7 @@ metadata:
   labels:
       hardwareclassification-sample: matches
 spec:
-  expectedValidationConfiguration:
+  hardwareCharacteristics:
       CPU:
          minimumCount: 48
          maximumCount: 72
@@ -23,3 +23,4 @@ spec:
       NIC:
          minimumCount: 1
          maximumCount: 7
+

@@ -27,12 +27,12 @@ type HardwareClassificationSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// ExpectedHardwareConfiguration defines expected hardware configurations for CPU, RAM, Disk, NIC.
-	ExpectedHardwareConfiguration ExpectedHardwareConfiguration `json:"expectedValidationConfiguration"`
+	// HardwareCharacteristics defines expected hardware configurations for CPU, RAM, Disk, NIC.
+	HardwareCharacteristics HardwareCharacteristics `json:"hardwareCharacteristics"`
 }
 
 // ExpectedHardwareConfiguration details to match with the host
-type ExpectedHardwareConfiguration struct {
+type HardwareCharacteristics struct {
 	// +optional
 	CPU *CPU `json:"CPU,omitempty"`
 	// +optional

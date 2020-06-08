@@ -43,6 +43,11 @@ type HardwareClassificationReconciler struct {
 // Reconcile reconcile function
 // +kubebuilder:rbac:groups=metal3.io,resources=hardwareclassifications,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=metal3.io,resources=hardwareclassifications/status,verbs=get;update;patch
+
+// Add RBAC rules to access baremetalhost resources
+// +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts,verbs=get;list;update
+// +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts/status,verbs=get
+
 func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 
@@ -60,7 +65,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	}
 
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
-	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
+	extractedProfile := hardwareClassification.Spec.HardwareCharacteristics
 	hcReconciler.Log.Info("Extracted hardware configurations successfully", "Profile", extractedProfile)
 
 	return ctrl.Result{}, nil

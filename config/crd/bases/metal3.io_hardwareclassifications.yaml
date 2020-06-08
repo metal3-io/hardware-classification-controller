@@ -40,9 +40,9 @@ spec:
         spec:
           description: HardwareClassificationSpec defines the desired state of HardwareClassification
           properties:
-            expectedValidationConfiguration:
-              description: ExpectedHardwareConfiguration defines expected hardware
-                configurations for CPU, RAM, Disk, NIC.
+            hardwareCharacteristics:
+              description: HardwareCharacteristics defines expected hardware configurations
+                for CPU, RAM, Disk, NIC.
               properties:
                 CPU:
                   description: CPU contains CPU details extracted from the hardware
@@ -104,7 +104,7 @@ spec:
                   type: object
               type: object
           required:
-          - expectedValidationConfiguration
+          - hardwareCharacteristics
           type: object
         status:
           description: HardwareClassificationStatus defines the observed state of
