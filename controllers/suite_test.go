@@ -17,6 +17,7 @@ package controllers
 
 import (
 	"path/filepath"
+	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -45,11 +46,14 @@ func TestAPIs(t *testing.T) {
 
 	RunSpecsWithDefaultAndCustomReporters(t,
 		"Controller Suite",
-		[]Reporter{envtest.NewlineReporter{}})
+		[]Reporter{printer.NewlineReporter{}})
 }
 
 var _ = BeforeSuite(func(done Done) {
-	logf.SetLogger(zap.LoggerTo(GinkgoWriter, true))
+	logf.SetLogger(zap.New(func(options *zap.Options) {
+		options.DestWritter = GinkgoWriter
+		options.Development = true
+	}))
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{

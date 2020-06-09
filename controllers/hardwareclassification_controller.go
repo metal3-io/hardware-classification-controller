@@ -22,6 +22,8 @@ import (
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	kerrors "k8s.io/apimachinery/pkg/util/errors"
+	"sigs.k8s.io/cluster-api/util/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
@@ -48,7 +50,7 @@ type HardwareClassificationReconciler struct {
 // +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts,verbs=get;list;update
 // +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts/status,verbs=get
 
-func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (_ ctrl.Result, reterr error) {
 	ctx := context.Background()
 
 	// Initialize the logger with namespace
@@ -67,6 +69,19 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.HardwareCharacteristics
 	hcReconciler.Log.Info("Extracted hardware configurations successfully", "Profile", extractedProfile)
+
+	// Initialize the patch helper.
+	patchHelper, err := patch.NewHelper(hardwareClassification, hcReconciler.Client)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	defer func() {
+		// Always attempt to Patch the hardwareClassification object and status after each reconciliation.
+		if err := patchHelper.Patch(ctx, hardwareClassification); err != nil {
+			reterr = kerrors.NewAggregate([]error{reterr, err})
+		}
+	}()
 
 	return ctrl.Result{}, nil
 }

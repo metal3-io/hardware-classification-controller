@@ -4,7 +4,7 @@ metadata:
   name: hardwareclassification-sample
   namespace: metal3
   labels:
-      hardwareclassification-sample: matches
+    hardwareclassification-sample: matches
 spec:
   hardwareCharacteristics:
       cpu:
@@ -23,5 +23,6 @@ spec:
       nic:
          minimumCount: 1
          maximumCount: 7 
+
 
 
