@@ -26,8 +26,6 @@ import (
 	"sigs.k8s.io/cluster-api/util/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 const (
@@ -90,9 +88,5 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 func (hcReconciler *HardwareClassificationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&hwcc.HardwareClassification{}).
-		Watches(
-			&source.Kind{Type: &hwcc.HardwareClassification{}},
-			handler.Funcs{},
-		).
 		Complete(hcReconciler)
 }
