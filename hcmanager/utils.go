@@ -75,32 +75,32 @@ func ConvertBytesToGb(inBytes int64) int64 {
 }
 
 //ValidateExtractedHardwareProfile it will validate the extracted hardware profile and log the warnings
-func (mgr HardwareClassificationManager) ValidateExtractedHardwareProfile(extractedProfile hwcc.ExpectedHardwareConfiguration) error {
+func (mgr HardwareClassificationManager) ValidateExtractedHardwareProfile(extractedProfile hwcc.HardwareCharacteristics) error {
 
-	if (extractedProfile.CPU == nil) &&
-		(extractedProfile.RAM == nil) &&
+	if (extractedProfile.Cpu == nil) &&
+		(extractedProfile.Ram == nil) &&
 		(extractedProfile.Disk == nil) &&
-		(extractedProfile.NIC == nil) {
+		(extractedProfile.Nic == nil) {
 		return errors.New("Expected Profile details can not be empty")
 	}
 
-	if extractedProfile.CPU == nil {
+	if extractedProfile.Cpu == nil {
 		mgr.Log.Info("WARNING CPU details are empty")
 	} else {
-		if (extractedProfile.CPU.MaximumCount > 0) ||
-			(extractedProfile.CPU.MinimumCount > 0) ||
-			(extractedProfile.CPU.MaximumSpeed != "") ||
-			(extractedProfile.CPU.MinimumSpeed != "") {
+		if (extractedProfile.Cpu.MaximumCount > 0) ||
+			(extractedProfile.Cpu.MinimumCount > 0) ||
+			(extractedProfile.Cpu.MaximumSpeedMHz > 0) ||
+			(extractedProfile.Cpu.MinimumSpeedMHz > 0) {
 		} else {
 			return errors.New("Extracted CPU details can not be empty")
 		}
 	}
 
-	if extractedProfile.RAM == nil {
+	if extractedProfile.Ram == nil {
 		mgr.Log.Info("WARNING RAM details are empty")
 	} else {
-		if (extractedProfile.RAM.MaximumSizeGB > 0) ||
-			(extractedProfile.RAM.MinimumSizeGB > 0) {
+		if (extractedProfile.Ram.MaximumSizeGB > 0) ||
+			(extractedProfile.Ram.MinimumSizeGB > 0) {
 		} else {
 			return errors.New("Extracted RAM details can not be empty")
 		}
@@ -120,12 +120,12 @@ func (mgr HardwareClassificationManager) ValidateExtractedHardwareProfile(extrac
 
 	}
 
-	if extractedProfile.NIC == nil || (extractedProfile.NIC == &hwcc.NIC{}) {
+	if extractedProfile.Nic == nil || (extractedProfile.Nic == &hwcc.Nic{}) {
 		mgr.Log.Info("WARNING NIC details is empty")
 	} else {
 
-		if (extractedProfile.NIC.MaximumCount > 0) ||
-			(extractedProfile.NIC.MinimumCount > 0) {
+		if (extractedProfile.Nic.MaximumCount > 0) ||
+			(extractedProfile.Nic.MinimumCount > 0) {
 		} else {
 			return errors.New("Extracted DISK details can not be empty")
 

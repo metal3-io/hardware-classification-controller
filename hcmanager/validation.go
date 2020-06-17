@@ -7,16 +7,16 @@ import (
 )
 
 // ExtractAndValidateHardwareDetails this function will return map containing introspection details for a host.
-func (mgr HardwareClassificationManager) ExtractAndValidateHardwareDetails(extractedProfile hwcc.ExpectedHardwareConfiguration,
+func (mgr HardwareClassificationManager) ExtractAndValidateHardwareDetails(extractedProfile hwcc.HardwareCharacteristics,
 	bmhList []bmh.BareMetalHost) map[string]map[string]interface{} {
 
 	validatedHostMap := make(map[string]map[string]interface{})
 
-	if extractedProfile != (hwcc.ExpectedHardwareConfiguration{}) {
+	if extractedProfile != (hwcc.HardwareCharacteristics{}) {
 		for _, host := range bmhList {
 			hardwareDetails := make(map[string]interface{})
 
-			if extractedProfile.CPU != nil {
+			if extractedProfile.Cpu != nil {
 				// Get the CPU details from the baremetal host and validate it into new structure
 				validCPU := CPU{
 					Count:      host.Status.HardwareDetails.CPU.Count,
@@ -40,7 +40,7 @@ func (mgr HardwareClassificationManager) ExtractAndValidateHardwareDetails(extra
 				hardwareDetails[DISKLable] = validStorage
 			}
 
-			if extractedProfile.NIC != nil {
+			if extractedProfile.Nic != nil {
 				// Get the NIC details from the baremetal host and validate it into new structure
 				var validNICS NIC
 				for _, NIC := range host.Status.HardwareDetails.NIC {
@@ -54,7 +54,7 @@ func (mgr HardwareClassificationManager) ExtractAndValidateHardwareDetails(extra
 				hardwareDetails[NICLable] = validNICS
 			}
 
-			if extractedProfile.RAM != nil {
+			if extractedProfile.Ram != nil {
 				// Get the RAM details from the baremetal host and validate it into new structure
 				validRAM := RAM{
 					RAMGb: host.Status.HardwareDetails.RAMMebibytes / 1024,

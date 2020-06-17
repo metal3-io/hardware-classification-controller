@@ -18,8 +18,8 @@ type HardwareClassificationManager struct {
 // HardwareClassificationInterface important function used in reconciler
 type HardwareClassificationInterface interface {
 	FetchBmhHostList(namespace string) ([]bmh.BareMetalHost, bmh.BareMetalHostList, error)
-	ExtractAndValidateHardwareDetails(hwcc.ExpectedHardwareConfiguration, []bmh.BareMetalHost) map[string]map[string]interface{}
-	ValidateExtractedHardwareProfile(hwcc.ExpectedHardwareConfiguration) error
+	ExtractAndValidateHardwareDetails(hwcc.HardwareCharacteristics, []bmh.BareMetalHost) map[string]map[string]interface{}
+	ValidateExtractedHardwareProfile(hwcc.HardwareCharacteristics) error
 }
 
 //NewHardwareClassificationManager return new hardware classification manager

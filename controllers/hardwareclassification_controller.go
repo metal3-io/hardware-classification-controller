@@ -23,10 +23,10 @@ import (
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	kerrors "k8s.io/apimachinery/pkg/util/errors"
+	"sigs.k8s.io/cluster-api/util/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 const (
@@ -44,7 +44,12 @@ type HardwareClassificationReconciler struct {
 // Reconcile reconcile function
 // +kubebuilder:rbac:groups=metal3.io,resources=hardwareclassifications,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=metal3.io,resources=hardwareclassifications/status,verbs=get;update;patch
-func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+
+// Add RBAC rules to access baremetalhost resources
+// +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts,verbs=get;list;update
+// +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts/status,verbs=get
+
+func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (_ ctrl.Result, reterr error) {
 	ctx := context.Background()
 
 	// Initialize the logger with namespace
@@ -61,8 +66,21 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	}
 
 	// Get ExpectedHardwareConfiguraton from hardwareClassification
-	extractedProfile := hardwareClassification.Spec.ExpectedHardwareConfiguration
+	extractedProfile := hardwareClassification.Spec.HardwareCharacteristics
 	hcReconciler.Log.Info("Extracted hardware configurations successfully", "Profile", extractedProfile)
+
+	// Initialize the patch helper.
+	patchHelper, err := patch.NewHelper(hardwareClassification, hcReconciler.Client)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
+	defer func() {
+		// Always attempt to Patch the hardwareClassification object and status after each reconciliation.
+		if err := patchHelper.Patch(ctx, hardwareClassification); err != nil {
+			reterr = kerrors.NewAggregate([]error{reterr, err})
+		}
+	}()
 
 	// Get the new hardware classification manager
 	hcManager := utils.NewHardwareClassificationManager(hcReconciler.Client, hcReconciler.Log)
@@ -100,9 +118,5 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 func (hcReconciler *HardwareClassificationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&hwcc.HardwareClassification{}).
-		Watches(
-			&source.Kind{Type: &hwcc.HardwareClassification{}},
-			handler.Funcs{},
-		).
 		Complete(hcReconciler)
 }
