@@ -22,7 +22,6 @@ import (
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
-	kerrors "k8s.io/apimachinery/pkg/util/errors"
 	"sigs.k8s.io/cluster-api/util/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -48,7 +47,7 @@ type HardwareClassificationReconciler struct {
 // +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts,verbs=get;list;update
 // +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts/status,verbs=get
 
-func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (_ ctrl.Result, reterr error) {
+func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 
 	// Initialize the logger with namespace
@@ -77,7 +76,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	defer func() {
 		// Always attempt to Patch the hardwareClassification object and status after each reconciliation.
 		if err := patchHelper.Patch(ctx, hardwareClassification); err != nil {
-			reterr = kerrors.NewAggregate([]error{reterr, err})
+			hcReconciler.Log.Error(err, "Failed to Patch hardwareClassification object and status")
 		}
 	}()
 
