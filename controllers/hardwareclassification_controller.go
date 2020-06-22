@@ -111,6 +111,10 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(extractedProfile, hostList)
 	hcReconciler.Log.Info("Validated Hardware Details From Baremetal Hosts", "Validated Host List", validatedHardwareDetails)
 
+			hcReconciler.Log.Error(err, "Failed to Patch hardwareClassification object and status")
+		}
+	}()
+
 	return ctrl.Result{}, nil
 }
 

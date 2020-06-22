@@ -28,7 +28,7 @@ type HardwareClassificationSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// HardwareCharacteristics defines expected hardware configurations for Cpu, Disk, Nic and Ram.
-	HardwareCharacteristics HardwareCharacteristics `json:"hardwareCharacteristics,omitemty"`
+	HardwareCharacteristics HardwareCharacteristics `json:"hardwareCharacteristics,omitempty"`
 }
 
 // HardwareCharacteristics details to match with the host
