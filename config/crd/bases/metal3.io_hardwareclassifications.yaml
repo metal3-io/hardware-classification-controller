@@ -81,7 +81,7 @@ spec:
                   properties:
                     maximumCount:
                       description: MaximumCount of disk should be greater than 0 and
-                        greter than MinimumCount Ex. MaximumCount > 0 && MaximumCount
+                        greater than MinimumCount Ex. MaximumCount > 0 && MaximumCount
                         > MinimumCount
                       minimum: 1
                       type: integer
@@ -109,7 +109,7 @@ spec:
                     profile
                   properties:
                     maximumCount:
-                      description: Maximum count should be greater than 0 and grear
+                      description: Maximum count should be greater than 0 and greater
                         than MinimumCount Ex. MaximumCount > 0 && MaximumCount > MinimumCount
                       minimum: 1
                       type: integer
@@ -136,12 +136,17 @@ spec:
                       type: integer
                   type: object
               type: object
-          required:
-          - hardwareCharacteristics
           type: object
         status:
           description: HardwareClassificationStatus defines the observed state of
             HardwareClassification
+          properties:
+            errorMessage:
+              description: The last error message reported by the hardwareclassification
+                system
+              type: string
+          required:
+          - errorMessage
           type: object
       type: object
   version: v1alpha1

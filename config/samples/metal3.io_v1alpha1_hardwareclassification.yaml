@@ -14,7 +14,7 @@ spec:
          maximumSpeedMHz: 3600
       disk:
          minimumCount: 1
-         maximumCount: 7
+         maximumCount: 8
          minimumIndividualSizeGB: 200
          maximumIndividualSizeGB: 3000
       ram:
@@ -22,4 +22,7 @@ spec:
          maximumSizeGB: 180
       nic:
          minimumCount: 1
-         maximumCount: 7
+         maximumCount: 7 
+
+
+

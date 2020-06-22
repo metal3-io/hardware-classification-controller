@@ -28,10 +28,10 @@ type HardwareClassificationSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// HardwareCharacteristics defines expected hardware configurations for Cpu, Disk, Nic and Ram.
-	HardwareCharacteristics HardwareCharacteristics `json:"hardwareCharacteristics,omitemty"`
+	HardwareCharacteristics HardwareCharacteristics `json:"hardwareCharacteristics,omitempty"`
 }
 
-// ExpectedHardwareConfiguration details to match with the host
+// HardwareCharacteristics details to match with the host
 type HardwareCharacteristics struct {
 	// +optional
 	Cpu *Cpu `json:"cpu,omitempty"`
@@ -85,7 +85,7 @@ type Disk struct {
 	MinimumIndividualSizeGB int64 `json:"minimumIndividualSizeGB,omitempty"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// MaximumCount of disk should be greater than 0 and greter than MinimumCount
+	// MaximumCount of disk should be greater than 0 and greater than MinimumCount
 	// Ex. MaximumCount > 0 && MaximumCount > MinimumCount
 	MaximumCount int `json:"maximumCount,omitempty"`
 	// +optional
@@ -104,7 +104,7 @@ type Nic struct {
 	MinimumCount int `json:"minimumCount,omitempty"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
-	// Maximum count should be greater than 0 and grear than MinimumCount
+	// Maximum count should be greater than 0 and greater than MinimumCount
 	// Ex. MaximumCount > 0 && MaximumCount > MinimumCount
 	MaximumCount int `json:"maximumCount,omitempty"`
 }
@@ -127,6 +127,9 @@ type Ram struct {
 type HardwareClassificationStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// The last error message reported by the hardwareclassification system
+	ErrorMessage string `json:"errorMessage"`
 }
 
 // +kubebuilder:object:root=true
