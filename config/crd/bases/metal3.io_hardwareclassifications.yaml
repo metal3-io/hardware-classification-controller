@@ -145,8 +145,6 @@ spec:
                       type: integer
                   type: object
               type: object
-          required:
-          - hardwareCharacteristics
           type: object
         status:
           description: HardwareClassificationStatus defines the observed state of

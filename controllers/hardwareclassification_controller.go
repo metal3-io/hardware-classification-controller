@@ -23,7 +23,6 @@ import (
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
-	kerrors "k8s.io/apimachinery/pkg/util/errors"
 	"sigs.k8s.io/cluster-api/util/patch"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -78,7 +77,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	defer func() {
 		// Always attempt to Patch the hardwareClassification object and status after each reconciliation.
 		if err := patchHelper.Patch(ctx, hardwareClassification); err != nil {
-			reterr = kerrors.NewAggregate([]error{reterr, err})
+			hcReconciler.Log.Error(err, "Failed to Patch hardwareClassification object and status")
 		}
 	}()
 
@@ -110,11 +109,6 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	//Extract the hardware details from the baremetal host list
 	validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(extractedProfile, hostList)
 	hcReconciler.Log.Info("Validated Hardware Details From Baremetal Hosts", "Validated Host List", validatedHardwareDetails)
-
-			hcReconciler.Log.Error(err, "Failed to Patch hardwareClassification object and status")
-		}
-	}()
-
 	return ctrl.Result{}, nil
 }
 
