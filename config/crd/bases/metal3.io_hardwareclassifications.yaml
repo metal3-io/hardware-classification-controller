@@ -161,9 +161,6 @@ spec:
               description: ProfileMatchStatus identifies whether a applied profile
                 is matches or not
               type: string
-          required:
-          - errorMessage
-          - profileMatchStatus
           type: object
       type: object
   version: v1alpha1

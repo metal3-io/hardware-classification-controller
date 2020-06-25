@@ -160,9 +160,13 @@ const (
 	// extracted profile is empty.
 	ProfileMisConfigured ErrorType = "Empty Profile Error"
 
-	// NoBMHHost is an error condition occurring when the
-	// baremetal host is empty.
-	NoBMHHost ErrorType = "No baremetal host found"
+	// Empty is an empty error
+	Empty ErrorType = ""
+)
+
+const (
+	//NoBaremetalHost no bmo host found message
+	NoBaremetalHost string = "No BareMetalHost found in ready state"
 )
 
 // HardwareClassificationStatus defines the observed state of HardwareClassification
@@ -174,10 +178,10 @@ type HardwareClassificationStatus struct {
 	ErrorType ErrorType `json:"errorType,omitempty"`
 
 	// ProfileMatchStatus identifies whether a applied profile is matches or not
-	ProfileMatchStatus ProfileMatchStatus `json:"profileMatchStatus"`
+	ProfileMatchStatus ProfileMatchStatus `json:"profileMatchStatus,omitempty"`
 
 	// The last error message reported by the hardwareclassification system
-	ErrorMessage string `json:"errorMessage"`
+	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -193,45 +197,6 @@ type HardwareClassification struct {
 
 	Spec   HardwareClassificationSpec   `json:"spec,omitempty"`
 	Status HardwareClassificationStatus `json:"status,omitempty"`
-}
-
-// SetProfileMatchStatus updates the ProfileMatchStatus field and returns
-// true when a change is made or false when no change is made.
-func (hcc *HardwareClassification) SetProfileMatchStatus(status ProfileMatchStatus) bool {
-	if hcc.Status.ProfileMatchStatus != status {
-		hcc.Status.ProfileMatchStatus = status
-		return true
-	}
-	return false
-}
-
-// SetErrorMessage updates the ErrorMessage in the HardwareClassification Status struct
-// when necessary and returns true when a change is made or false when
-// no change is made.
-func (hcc *HardwareClassification) SetErrorMessage(errType ErrorType, message string) (dirty bool) {
-	if hcc.Status.ErrorType != errType {
-		hcc.Status.ErrorType = errType
-		dirty = true
-	}
-	if hcc.Status.ErrorMessage != message {
-		hcc.Status.ErrorMessage = message
-		dirty = true
-	}
-	return dirty
-}
-
-// ClearError removes any existing error message.
-func (hcc *HardwareClassification) ClearError() (dirty bool) {
-	var emptyErrType ErrorType = ""
-	if hcc.Status.ErrorType != emptyErrType {
-		hcc.Status.ErrorType = emptyErrType
-		dirty = true
-	}
-	if hcc.Status.ErrorMessage != "" {
-		hcc.Status.ErrorMessage = ""
-		dirty = true
-	}
-	return dirty
 }
 
 // +kubebuilder:object:root=true

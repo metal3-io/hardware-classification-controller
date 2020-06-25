@@ -1,3 +1,18 @@
+/*
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package hcmanager
 
 import (
@@ -22,17 +37,17 @@ const (
 	//DefaultLabel if label is missing from the Extracted Hardware Profile
 	DefaultLabel = "matches"
 
-	//CPULable label for extraction of hardware details
-	CPULable = "CPU"
+	//CPULabel label for extraction of hardware details
+	CPULabel = "CPU"
 
-	//NICLable label for extraction of hardware details
-	NICLable = "NIC"
+	//NICLabel label for extraction of hardware details
+	NICLabel = "NIC"
 
-	//DISKLable label for extraction of hardware details
-	DISKLable = "DISK"
+	//DISKLabel label for extraction of hardware details
+	DISKLabel = "DISK"
 
-	//RAMLable label for extraction of hardware details
-	RAMLable = "RAM"
+	//RAMLabel label for extraction of hardware details
+	RAMLabel = "RAM"
 )
 
 //FetchBmhHostList this function will fetch and return baremetal hosts in ready state
@@ -69,9 +84,18 @@ func CheckValidIP(NICIp string) bool {
 }
 
 //ConvertBytesToGb it converts the Byte into GB
-func ConvertBytesToGb(inBytes int64) int64 {
+func ConvertBytesToGb(inBytes bmh.Capacity) bmh.Capacity {
 	inGb := (inBytes / 1024 / 1024 / 1024)
 	return inGb
+}
+
+//SetStatus set error status for the hardware classification profile
+func SetStatus(hwc *hwcc.HardwareClassification,
+	status hwcc.ProfileMatchStatus,
+	errorType hwcc.ErrorType, errorMessage string) {
+	hwc.Status.ProfileMatchStatus = status
+	hwc.Status.ErrorType = errorType
+	hwc.Status.ErrorMessage = errorMessage
 }
 
 //ValidateExtractedHardwareProfile it will validate the extracted hardware profile and log the warnings

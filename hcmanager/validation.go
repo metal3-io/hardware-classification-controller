@@ -1,3 +1,18 @@
+/*
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package hcmanager
 
 import (
@@ -18,48 +33,31 @@ func (mgr HardwareClassificationManager) ExtractAndValidateHardwareDetails(extra
 
 			if extractedProfile.Cpu != nil {
 				// Get the CPU details from the baremetal host and validate it into new structure
-				validCPU := CPU{
-					Count:      host.Status.HardwareDetails.CPU.Count,
-					ClockSpeed: float64(host.Status.HardwareDetails.CPU.ClockMegahertz) / 1000,
+				validCPU := bmh.CPU{
+					Count:          host.Status.HardwareDetails.CPU.Count,
+					ClockMegahertz: bmh.ClockSpeed(host.Status.HardwareDetails.CPU.ClockMegahertz) / 1000,
 				}
-				hardwareDetails[CPULable] = validCPU
+				hardwareDetails[CPULabel] = validCPU
 			}
 
 			if extractedProfile.Disk != nil {
 				// Get the Storage details from the baremetal host and validate it into new structure
-				var disks []Disk
+				var disks []bmh.Storage
 
 				for _, disk := range host.Status.HardwareDetails.Storage {
-					disks = append(disks, Disk{Name: disk.Name, SizeGb: ConvertBytesToGb(int64(disk.SizeBytes))})
+					disks = append(disks, bmh.Storage{Name: disk.Name, SizeBytes: ConvertBytesToGb(disk.SizeBytes)})
 				}
-
-				validStorage := Storage{
-					Count: len(disks),
-					Disk:  disks,
-				}
-				hardwareDetails[DISKLable] = validStorage
+				hardwareDetails[DISKLabel] = disks
 			}
 
 			if extractedProfile.Nic != nil {
 				// Get the NIC details from the baremetal host and validate it into new structure
-				var validNICS NIC
-				for _, NIC := range host.Status.HardwareDetails.NIC {
-					if NIC.PXE && CheckValidIP(NIC.IP) {
-						validNICS.Name = NIC.Name
-						validNICS.PXE = NIC.PXE
-					}
-				}
-
-				validNICS.Count = len(host.Status.HardwareDetails.NIC)
-				hardwareDetails[NICLable] = validNICS
+				hardwareDetails[NICLabel] = len(host.Status.HardwareDetails.NIC)
 			}
 
 			if extractedProfile.Ram != nil {
 				// Get the RAM details from the baremetal host and validate it into new structure
-				validRAM := RAM{
-					RAMGb: host.Status.HardwareDetails.RAMMebibytes / 1024,
-				}
-				hardwareDetails[RAMLable] = validRAM
+				hardwareDetails[RAMLabel] = int64(host.Status.HardwareDetails.RAMMebibytes / 1024)
 			}
 
 			if len(hardwareDetails) != 0 {
