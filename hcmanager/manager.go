@@ -35,6 +35,7 @@ type HardwareClassificationInterface interface {
 	FetchBmhHostList(namespace string) ([]bmh.BareMetalHost, bmh.BareMetalHostList, error)
 	ExtractAndValidateHardwareDetails(hwcc.HardwareCharacteristics, []bmh.BareMetalHost) map[string]map[string]interface{}
 	ValidateExtractedHardwareProfile(hwcc.HardwareCharacteristics) error
+	MinMaxComparison(ProfileName string, validatedHost map[string]map[string]interface{}, expectedHardwareprofile hwcc.HardwareCharacteristics) []string
 }
 
 //NewHardwareClassificationManager return new hardware classification manager

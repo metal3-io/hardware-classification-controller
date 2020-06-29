@@ -35,7 +35,7 @@ func (mgr HardwareClassificationManager) ExtractAndValidateHardwareDetails(extra
 				// Get the CPU details from the baremetal host and validate it into new structure
 				validCPU := bmh.CPU{
 					Count:          host.Status.HardwareDetails.CPU.Count,
-					ClockMegahertz: bmh.ClockSpeed(host.Status.HardwareDetails.CPU.ClockMegahertz) / 1000,
+					ClockMegahertz: bmh.ClockSpeed(host.Status.HardwareDetails.CPU.ClockMegahertz),
 				}
 				hardwareDetails[CPULabel] = validCPU
 			}

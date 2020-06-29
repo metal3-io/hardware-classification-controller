@@ -115,12 +115,12 @@ type Ram struct {
 	// +kubebuilder:validation:Minimum=1
 	// MinimumSizeGB of Ram should be greater than 0
 	// Ex. MinimumSizeGB > 0
-	MinimumSizeGB int `json:"minimumSizeGB,omitempty"`
+	MinimumSizeGB int64 `json:"minimumSizeGB,omitempty"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
 	// MaximumSizeGB should be greater than 0 or greater than MinimumSizeGB
 	// Ex. MaximumSizeGB > 0 && MaximumSizeGB > MinimumSizeGB
-	MaximumSizeGB int `json:"maximumSizeGB,omitempty"`
+	MaximumSizeGB int64 `json:"maximumSizeGB,omitempty"`
 }
 
 // ProfileMatchStatus represents the state of the HardwareClassification
