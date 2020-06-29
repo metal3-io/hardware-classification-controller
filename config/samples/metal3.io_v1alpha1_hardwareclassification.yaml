@@ -22,7 +22,4 @@ spec:
          maximumSizeGB: 180
       nic:
          minimumCount: 1
-         maximumCount: 7 
-
-
-
+         maximumCount: 7

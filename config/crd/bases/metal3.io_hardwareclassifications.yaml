@@ -8,6 +8,15 @@ metadata:
   creationTimestamp: null
   name: hardwareclassifications.metal3.io
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.profileMatchStatus
+    description: Profile Match Status
+    name: ProfileMatchStatus
+    type: string
+  - JSONPath: .status.errorMessage
+    description: Most recent error
+    name: Error
+    type: string
   group: metal3.io
   names:
     kind: HardwareClassification
@@ -114,7 +123,7 @@ spec:
                       minimum: 1
                       type: integer
                     minimumCount:
-                      description: Minimum count should be greater than 0 Ex. MinumumCount
+                      description: Minimum count should be greater than 0 Ex. MinimumCount
                         > 0
                       minimum: 1
                       type: integer
@@ -145,8 +154,13 @@ spec:
               description: The last error message reported by the hardwareclassification
                 system
               type: string
-          required:
-          - errorMessage
+            errorType:
+              description: ErrorType indicates the type of failure encountered
+              type: string
+            profileMatchStatus:
+              description: ProfileMatchStatus identifies whether a applied profile
+                is matches or not
+              type: string
           type: object
       type: object
   version: v1alpha1

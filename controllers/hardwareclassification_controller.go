@@ -18,6 +18,7 @@ package controllers
 import (
 	"context"
 	hwcc "hardware-classification-controller/api/v1alpha1"
+	"hardware-classification-controller/hcmanager"
 
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -42,16 +43,14 @@ type HardwareClassificationReconciler struct {
 // Reconcile reconcile function
 // +kubebuilder:rbac:groups=metal3.io,resources=hardwareclassifications,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=metal3.io,resources=hardwareclassifications/status,verbs=get;update;patch
-
 // Add RBAC rules to access baremetalhost resources
 // +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts,verbs=get;list;update
 // +kubebuilder:rbac:groups=metal3.io,resources=baremetalhosts/status,verbs=get
-
-func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (_ ctrl.Result, reterr error) {
 	ctx := context.Background()
 
 	// Initialize the logger with namespace
-	hcReconciler.Log = hcReconciler.Log.WithName(HWControllerName).WithValues("metal3-harwdwareclassification", req.NamespacedName)
+	hcReconciler.Log = hcReconciler.Log.WithName(HWControllerName).WithValues("metal3-hardwareclassification", req.NamespacedName)
 
 	// Get HardwareClassificationController to get values for Namespace and ExpectedHardwareConfiguration
 	hardwareClassification := &hwcc.HardwareClassification{}
@@ -62,10 +61,6 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 		}
 		return ctrl.Result{}, err
 	}
-
-	// Get ExpectedHardwareConfiguraton from hardwareClassification
-	extractedProfile := hardwareClassification.Spec.HardwareCharacteristics
-	hcReconciler.Log.Info("Extracted hardware configurations successfully", "Profile", extractedProfile)
 
 	// Initialize the patch helper.
 	patchHelper, err := patch.NewHelper(hardwareClassification, hcReconciler.Client)
@@ -80,6 +75,37 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 		}
 	}()
 
+	// Get ExpectedHardwareConfiguration from hardwareClassification
+	extractedProfile := hardwareClassification.Spec.HardwareCharacteristics
+	hcReconciler.Log.Info("Extracted hardware configurations successfully", "Profile", extractedProfile)
+
+	// Get the new hardware classification manager
+	hcManager := hcmanager.NewHardwareClassificationManager(hcReconciler.Client, hcReconciler.Log)
+
+	ErrValidation := hcManager.ValidateExtractedHardwareProfile(extractedProfile)
+	if ErrValidation != nil {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.ProfileMisConfigured, ErrValidation.Error())
+		hcReconciler.Log.Error(ErrValidation, ErrValidation.Error())
+		return ctrl.Result{}, nil
+	}
+
+	//Fetch baremetal host list for the given namespace
+	hostList, _, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
+	if err != nil {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.FetchBMHListFailure, err.Error())
+		hcReconciler.Log.Error(err, err.Error())
+		return ctrl.Result{}, nil
+	}
+
+	if len(hostList) == 0 {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.Empty, hwcc.NoBaremetalHost)
+		hcReconciler.Log.Info(hwcc.NoBaremetalHost)
+		return ctrl.Result{}, nil
+	}
+
+	//Extract the hardware details from the baremetal host list
+	validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(extractedProfile, hostList)
+	hcReconciler.Log.Info("Validated Hardware Details From Baremetal Hosts", "Validated Host List", validatedHardwareDetails)
 	return ctrl.Result{}, nil
 }
 
