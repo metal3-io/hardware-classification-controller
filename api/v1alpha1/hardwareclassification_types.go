@@ -100,7 +100,7 @@ type Nic struct {
 	// +optional
 	// +kubebuilder:validation:Minimum=1
 	// Minimum count should be greater than 0
-	// Ex. MinumumCount > 0
+	// Ex. MinimumCount > 0
 	MinimumCount int `json:"minimumCount,omitempty"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
@@ -131,11 +131,11 @@ const (
 	ProfileMatchStatusEmpty ProfileMatchStatus = ""
 
 	// ProfileMatchStatusMatched is the status value when the profile
-	// matches to one of the BareMtalHost.
+	// matches to one of the BareMetalHost.
 	ProfileMatchStatusMatched ProfileMatchStatus = "matched"
 
 	// ProfileMatchStatusUnMatched is the status value when the profile
-	// not matches to one of the BareMtalHost.
+	// does not match to one of the BareMetalHost.
 	ProfileMatchStatusUnMatched ProfileMatchStatus = "unmatched"
 )
 
@@ -145,16 +145,16 @@ type ErrorType string
 
 const (
 	// LabelUpdateFailure is an error condition occurring when the
-	// controller is unalble to update label of BareMetalHost.
+	// controller is unable to update label of BareMetalHost.
 	LabelUpdateFailure ErrorType = "label update error"
 
 	// LabelDeleteFailure is an error condition occurring when the
-	// controller is unalble to delete label of BareMetalHost.
+	// controller is unable to delete label of BareMetalHost.
 	LabelDeleteFailure ErrorType = "label delete error"
 
 	// FetchBMHListFailure is an error condition occurring when the
 	// controller is unable to fetch BMH from BMO
-	FetchBMHListFailure ErrorType = "fetch BMH from BMO error"
+	FetchBMHListFailure ErrorType = "fetch BMH error"
 
 	// ProfileMisConfigured is an error condition occurring when the
 	// extracted profile is empty.

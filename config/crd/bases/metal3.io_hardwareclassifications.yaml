@@ -123,7 +123,7 @@ spec:
                       minimum: 1
                       type: integer
                     minimumCount:
-                      description: Minimum count should be greater than 0 Ex. MinumumCount
+                      description: Minimum count should be greater than 0 Ex. MinimumCount
                         > 0
                       minimum: 1
                       type: integer
