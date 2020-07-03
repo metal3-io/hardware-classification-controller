@@ -136,13 +136,11 @@ spec:
                       description: MaximumSizeGB should be greater than 0 or greater
                         than MinimumSizeGB Ex. MaximumSizeGB > 0 && MaximumSizeGB
                         > MinimumSizeGB
-                      format: int64
                       minimum: 1
                       type: integer
                     minimumSizeGB:
                       description: MinimumSizeGB of Ram should be greater than 0 Ex.
                         MinimumSizeGB > 0
-                      format: int64
                       minimum: 1
                       type: integer
                   type: object
