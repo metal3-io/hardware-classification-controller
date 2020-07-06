@@ -23,40 +23,40 @@ import (
 
 // ExtractAndValidateHardwareDetails this function will return map containing introspection details for a host.
 func (mgr HardwareClassificationManager) ExtractAndValidateHardwareDetails(extractedProfile hwcc.HardwareCharacteristics,
-	bmhList []bmh.BareMetalHost) map[string]map[string]interface{} {
-	validatedHostMap := make(map[string]map[string]interface{})
+	bmhList []bmh.BareMetalHost) []bmh.HardwareDetails {
+
+	var validHosts []bmh.HardwareDetails
 	if extractedProfile != (hwcc.HardwareCharacteristics{}) {
 		for _, host := range bmhList {
-			hardwareDetails := make(map[string]interface{})
-			// Get the CPU details from the baremetal host and validate it into new structure
+			var hardwareDetails bmh.HardwareDetails
+			// Get the CPU details from the baremetal host and validate it
 			if extractedProfile.Cpu != nil {
-				validCPU := bmh.CPU{
+				hardwareDetails.CPU = bmh.CPU{
 					Count:          host.Status.HardwareDetails.CPU.Count,
 					ClockMegahertz: bmh.ClockSpeed(host.Status.HardwareDetails.CPU.ClockMegahertz),
 				}
-				hardwareDetails[CPULabel] = validCPU
 			}
-			// Get the Storage details from the baremetal host and validate it into new structure
+			// Get the Storage details from the baremetal host and validate it
 			if extractedProfile.Disk != nil {
 				var disks []bmh.Storage
 				for _, disk := range host.Status.HardwareDetails.Storage {
 					disks = append(disks, bmh.Storage{Name: disk.Name, SizeBytes: ConvertBytesToGb(disk.SizeBytes)})
 				}
-				hardwareDetails[DISKLabel] = disks
+				hardwareDetails.Storage = disks
 			}
-			// Get the NIC details from the baremetal host and validate it into new structure
+			// Get the NIC details from the baremetal host and validate it
 			if extractedProfile.Nic != nil {
-				hardwareDetails[NICLabel] = len(host.Status.HardwareDetails.NIC)
+				hardwareDetails.NIC = host.Status.HardwareDetails.NIC
 			}
-			// Get the RAM details from the baremetal host and validate it into new structure
+			// Get the RAM details from the baremetal host and validate it
 			if extractedProfile.Ram != nil {
-				hardwareDetails[RAMLabel] = int64(host.Status.HardwareDetails.RAMMebibytes / 1024)
+				hardwareDetails.RAMMebibytes = host.Status.HardwareDetails.RAMMebibytes / 1024
 			}
+
 			//Check if hardware details are not empty to add it in validhost
-			if len(hardwareDetails) != 0 {
-				validatedHostMap[host.ObjectMeta.Name] = hardwareDetails
-			}
+			hardwareDetails.Hostname = host.ObjectMeta.Name
+			validHosts = append(validHosts, hardwareDetails)
 		}
 	}
-	return validatedHostMap
+	return validHosts
 }

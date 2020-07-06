@@ -92,44 +92,44 @@ func (mgr HardwareClassificationManager) ValidateExtractedHardwareProfile(extrac
 		(extractedProfile.Nic == nil) {
 		return errors.New("Expected Profile details can not be empty")
 	}
+
 	if extractedProfile.Cpu == nil {
 		mgr.Log.Info("WARNING CPU details are empty")
 	} else {
-		if (extractedProfile.Cpu.MaximumCount > 0) ||
-			(extractedProfile.Cpu.MinimumCount > 0) ||
-			(extractedProfile.Cpu.MaximumSpeedMHz > 0) ||
-			(extractedProfile.Cpu.MinimumSpeedMHz > 0) {
-		} else {
+		if extractedProfile.Cpu.MaximumCount == 0 &&
+			extractedProfile.Cpu.MinimumCount == 0 &&
+			extractedProfile.Cpu.MaximumSpeedMHz == 0 &&
+			extractedProfile.Cpu.MinimumSpeedMHz == 0 {
 			return errors.New("Extracted CPU details can not be empty")
 		}
 	}
+
 	if extractedProfile.Ram == nil {
 		mgr.Log.Info("WARNING RAM details are empty")
 	} else {
-		if (extractedProfile.Ram.MaximumSizeGB > 0) ||
-			(extractedProfile.Ram.MinimumSizeGB > 0) {
-		} else {
+		if extractedProfile.Ram.MaximumSizeGB == 0 &&
+			extractedProfile.Ram.MinimumSizeGB == 0 {
 			return errors.New("Extracted RAM details can not be empty")
 		}
 	}
+
 	if extractedProfile.Disk == nil {
 		mgr.Log.Info("WARNING DISK details are empty")
 	} else {
-		if (extractedProfile.Disk.MaximumCount > 0) ||
-			(extractedProfile.Disk.MinimumCount > 0) ||
-			(extractedProfile.Disk.MaximumIndividualSizeGB > 0) ||
-			(extractedProfile.Disk.MinimumIndividualSizeGB > 0) {
-		} else {
+		if extractedProfile.Disk.MaximumCount == 0 &&
+			extractedProfile.Disk.MinimumCount == 0 &&
+			extractedProfile.Disk.MaximumIndividualSizeGB == 0 &&
+			extractedProfile.Disk.MinimumIndividualSizeGB == 0 {
 			return errors.New("Extracted DISK details can not be empty")
 		}
 	}
-	if extractedProfile.Nic == nil || (extractedProfile.Nic == &hwcc.Nic{}) {
+
+	if extractedProfile.Nic == nil {
 		mgr.Log.Info("WARNING NIC details is empty")
 	} else {
-		if (extractedProfile.Nic.MaximumCount > 0) ||
-			(extractedProfile.Nic.MinimumCount > 0) {
-		} else {
-			return errors.New("Extracted DISK details can not be empty")
+		if extractedProfile.Nic.MaximumCount == 0 &&
+			extractedProfile.Nic.MinimumCount == 0 {
+			return errors.New("Extracted Nic details can not be empty")
 		}
 	}
 	return nil
