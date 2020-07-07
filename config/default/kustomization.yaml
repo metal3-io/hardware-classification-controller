@@ -6,7 +6,7 @@ namespace: hardware-classification
 # "wordpress" becomes "alices-wordpress".
 # Note that it should also match with the prefix (text before '-') of the namespace
 # field above.
-namePrefix: hardware-classification-controller-
+namePrefix: hardware-classification-
 
 # Labels to add to all resources and selectors.
 #commonLabels:
