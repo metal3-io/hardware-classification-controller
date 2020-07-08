@@ -49,9 +49,6 @@ type HardwareClassificationReconciler struct {
 func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (_ ctrl.Result, reterr error) {
 	ctx := context.Background()
 
-	// Initialize the logger with namespace
-	//	hcReconciler.Log = hcReconciler.Log.WithName(HWControllerName).WithValues("metal3-hardwareclassification", req.NamespacedName)
-
 	// Get HardwareClassificationController to get values for Namespace and ExpectedHardwareConfiguration
 	hardwareClassification := &hwcc.HardwareClassification{}
 
@@ -71,13 +68,13 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	defer func() {
 		// Always attempt to Patch the hardwareClassification object and status after each reconciliation.
 		if err := patchHelper.Patch(ctx, hardwareClassification); err != nil {
-			hcReconciler.Log.Error(err, "Failed to Patch hardwareClassification object and status")
+			hcReconciler.Log.Error(err, "Failed to Patch HardwareClassification")
 		}
 	}()
 
-	// Get ExpectedHardwareConfiguration from hardwareClassification
+	// Get Expected Hardware Configuration from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.HardwareCharacteristics
-	hcReconciler.Log.Info("Extracted hardware configurations successfully", "Profile", extractedProfile)
+	hcReconciler.Log.Info("Expected Hardware Configuration", "Profile", extractedProfile)
 
 	// Get the new hardware classification manager
 	hcManager := hcmanager.NewHardwareClassificationManager(hcReconciler.Client, hcReconciler.Log)
@@ -105,11 +102,11 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 
 	//Extract the hardware details from the baremetal host list
 	validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(extractedProfile, hostList)
-	hcReconciler.Log.Info("", "Validated Hardware Details From Baremetal Hosts", validatedHardwareDetails)
+	hcReconciler.Log.Info("Validated Hardware Details", "HardwareDetails", validatedHardwareDetails)
 
 	//Compare the host list with extracted profile and fetch the valid host names
 	validHost := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
-	hcReconciler.Log.Info("", "Validated Baremetal Hosts list against user profile ", validHost)
+	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHost", validHost)
 	return ctrl.Result{}, nil
 }
 

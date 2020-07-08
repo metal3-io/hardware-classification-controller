@@ -90,46 +90,46 @@ func (mgr HardwareClassificationManager) ValidateExtractedHardwareProfile(extrac
 		(extractedProfile.Ram == nil) &&
 		(extractedProfile.Disk == nil) &&
 		(extractedProfile.Nic == nil) {
-		return errors.New("Expected Profile details can not be empty")
+		return errors.New("Hardware profile details can not be empty")
 	}
 
 	if extractedProfile.Cpu == nil {
-		mgr.Log.Info("WARNING CPU details are empty")
+		mgr.Log.Info("CPU details are not present")
 	} else {
 		if extractedProfile.Cpu.MaximumCount == 0 &&
 			extractedProfile.Cpu.MinimumCount == 0 &&
 			extractedProfile.Cpu.MaximumSpeedMHz == 0 &&
 			extractedProfile.Cpu.MinimumSpeedMHz == 0 {
-			return errors.New("Extracted CPU details can not be empty")
+			return errors.New("Invalid CPU Details")
 		}
 	}
 
 	if extractedProfile.Ram == nil {
-		mgr.Log.Info("WARNING RAM details are empty")
+		mgr.Log.Info("RAM details are not present")
 	} else {
 		if extractedProfile.Ram.MaximumSizeGB == 0 &&
 			extractedProfile.Ram.MinimumSizeGB == 0 {
-			return errors.New("Extracted RAM details can not be empty")
+			return errors.New("Invalid RAM Details")
 		}
 	}
 
 	if extractedProfile.Disk == nil {
-		mgr.Log.Info("WARNING DISK details are empty")
+		mgr.Log.Info("DISK details are not present")
 	} else {
 		if extractedProfile.Disk.MaximumCount == 0 &&
 			extractedProfile.Disk.MinimumCount == 0 &&
 			extractedProfile.Disk.MaximumIndividualSizeGB == 0 &&
 			extractedProfile.Disk.MinimumIndividualSizeGB == 0 {
-			return errors.New("Extracted DISK details can not be empty")
+			return errors.New("Invalid DISK Details")
 		}
 	}
 
 	if extractedProfile.Nic == nil {
-		mgr.Log.Info("WARNING NIC details is empty")
+		mgr.Log.Info("NIC details is not present")
 	} else {
 		if extractedProfile.Nic.MaximumCount == 0 &&
 			extractedProfile.Nic.MinimumCount == 0 {
-			return errors.New("Extracted Nic details can not be empty")
+			return errors.New("Invalid NIC details")
 		}
 	}
 	return nil

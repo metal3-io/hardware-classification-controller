@@ -160,7 +160,7 @@ const (
 
 const (
 	//NoBaremetalHost no bmo host found message
-	NoBaremetalHost string = "No BareMetalHost found in ready state"
+	NoBaremetalHost string = "No BareMetalHost Found"
 )
 
 // HardwareClassificationStatus defines the observed state of HardwareClassification

@@ -25,10 +25,10 @@ import (
 func (mgr HardwareClassificationManager) MinMaxFilter(ProfileName string, HostList []bmh.HardwareDetails, expectedHardwareprofile hwcc.HardwareCharacteristics) []string {
 	var validHost []string
 	for _, hardwareDetail := range HostList {
-		if !checkCPUCount(mgr, hardwareDetail.CPU, expectedHardwareprofile.Cpu) ||
-			!checkRAM(mgr, hardwareDetail.RAMMebibytes, expectedHardwareprofile.Ram) ||
-			!checkNICS(mgr, len(hardwareDetail.NIC), expectedHardwareprofile.Nic) ||
-			!checkDiskDetails(mgr, hardwareDetail.Storage, expectedHardwareprofile.Disk) {
+		if !checkCPUCount(mgr, hardwareDetail.CPU, expectedHardwareprofile.Cpu, hardwareDetail.Hostname) ||
+			!checkRAM(mgr, hardwareDetail.RAMMebibytes, expectedHardwareprofile.Ram, hardwareDetail.Hostname) ||
+			!checkNICS(mgr, len(hardwareDetail.NIC), expectedHardwareprofile.Nic, hardwareDetail.Hostname) ||
+			!checkDiskDetails(mgr, hardwareDetail.Storage, expectedHardwareprofile.Disk, hardwareDetail.Hostname) {
 			continue
 		}
 		validHost = append(validHost, hardwareDetail.Hostname)
@@ -37,39 +37,39 @@ func (mgr HardwareClassificationManager) MinMaxFilter(ProfileName string, HostLi
 }
 
 //checkCPUCount this function checks the CPU details for both min and max parameters
-func checkCPUCount(mgr HardwareClassificationManager, cpu bmh.CPU, expectedCPU *hwcc.Cpu) bool {
+func checkCPUCount(mgr HardwareClassificationManager, cpu bmh.CPU, expectedCPU *hwcc.Cpu, bmhName string) bool {
 	if expectedCPU == nil {
 		return true
 	}
 	if expectedCPU.MaximumCount > 0 {
 		expectedMaxCPUCount := expectedCPU.MaximumCount
-		mgr.Log.Info("", "Provided Maximum count for CPU", expectedMaxCPUCount, " and fetched count ", cpu.Count)
+		mgr.Log.Info("Maximum CPU Count", "Expected", expectedMaxCPUCount, "Actual", cpu.Count)
 		if expectedMaxCPUCount < cpu.Count {
-			mgr.Log.Info("CPU MAX COUNT did not match")
+			mgr.Log.Info("CPU Count Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
 	if expectedCPU.MinimumCount > 0 {
 		expectedMinCPUCount := expectedCPU.MinimumCount
-		mgr.Log.Info("", "Provided Minimum count for CPU", expectedMinCPUCount, " and fetched count ", cpu.Count)
+		mgr.Log.Info("Minimum CPU Count", "Expected", expectedMinCPUCount, "Actual", cpu.Count)
 		if expectedMinCPUCount > cpu.Count {
-			mgr.Log.Info("CPU MIN COUNT did not match")
+			mgr.Log.Info("CPU Count Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
 	if expectedCPU.MaximumSpeedMHz > 0 {
 		expectedMaxSpeedHz := bmh.ClockSpeed(expectedCPU.MaximumSpeedMHz)
-		mgr.Log.Info("", "Provided Maximum ClockSpeed for CPU", expectedMaxSpeedHz, " and fetched ClockSpeed ", cpu.ClockMegahertz)
+		mgr.Log.Info("Maximum CPU ClockSpeed", "Expected", expectedMaxSpeedHz, "Actual", cpu.ClockMegahertz)
 		if expectedMaxSpeedHz < cpu.ClockMegahertz {
-			mgr.Log.Info("CPU MAX ClockSpeed did not match")
+			mgr.Log.Info("CPU ClockSpeed Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
 	if expectedCPU.MinimumSpeedMHz > 0 {
 		expectedMinSpeedHz := bmh.ClockSpeed(expectedCPU.MinimumSpeedMHz)
-		mgr.Log.Info("", "Provided Minimum ClockSpeed for CPU", expectedMinSpeedHz, " and fetched ClockSpeed ", cpu.ClockMegahertz)
+		mgr.Log.Info("Minimum CPU ClockSpeed", "Expected", expectedMinSpeedHz, "Actual", cpu.ClockMegahertz)
 		if expectedMinSpeedHz > cpu.ClockMegahertz {
-			mgr.Log.Info("CPU MIN ClockSpeed did not match")
+			mgr.Log.Info("CPU ClockSpeed Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
@@ -77,23 +77,23 @@ func checkCPUCount(mgr HardwareClassificationManager, cpu bmh.CPU, expectedCPU *
 }
 
 //checkNICS this function checks the nics details for both min and max parameters
-func checkNICS(mgr HardwareClassificationManager, nics int, expectedNIC *hwcc.Nic) bool {
+func checkNICS(mgr HardwareClassificationManager, nics int, expectedNIC *hwcc.Nic, bmhName string) bool {
 	if expectedNIC == nil {
 		return true
 	}
 	if expectedNIC.MaximumCount > 0 {
 		expectedMaxNicCount := expectedNIC.MaximumCount
-		mgr.Log.Info("", "Provided Maximum count for NICS", expectedMaxNicCount, " and fetched count ", nics)
+		mgr.Log.Info("Maximum NIC Count", "Expected", expectedMaxNicCount, "Actual", nics)
 		if expectedMaxNicCount < nics {
-			mgr.Log.Info("NICS MAX count did not match")
+			mgr.Log.Info("NIC Count Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
 	if expectedNIC.MinimumCount > 0 {
 		expectedMinNicCount := expectedNIC.MinimumCount
-		mgr.Log.Info("", "Provided Minimum Count for NICS", expectedMinNicCount, " and fetched count ", nics)
+		mgr.Log.Info("Minimum NIC Count", "Expected", expectedMinNicCount, "Actual", nics)
 		if expectedMinNicCount > nics {
-			mgr.Log.Info("NICS MIN count did not match")
+			mgr.Log.Info("NIC Count Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
@@ -101,23 +101,23 @@ func checkNICS(mgr HardwareClassificationManager, nics int, expectedNIC *hwcc.Ni
 }
 
 //checkRAM this function checks the ram details for both min and max parameters
-func checkRAM(mgr HardwareClassificationManager, ram int, expectedRAM *hwcc.Ram) bool {
+func checkRAM(mgr HardwareClassificationManager, ram int, expectedRAM *hwcc.Ram, bmhName string) bool {
 	if expectedRAM == nil {
 		return true
 	}
 	if expectedRAM.MaximumSizeGB > 0 {
 		expectedMaxRAM := expectedRAM.MaximumSizeGB
-		mgr.Log.Info("", "Provided Maximum Size for RAM", expectedMaxRAM, " and fetched SIZE ", ram)
+		mgr.Log.Info("Maximum RAM Size", "Expected", expectedMaxRAM, "Actual", ram)
 		if expectedMaxRAM < ram {
-			mgr.Log.Info("RAM MAX SIZE did not match")
+			mgr.Log.Info("RAM Size Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
 	if expectedRAM.MinimumSizeGB > 0 {
 		expectedMinRAM := expectedRAM.MinimumSizeGB
-		mgr.Log.Info("", "Provided Minimum Size for RAM", expectedMinRAM, " and fetched SIZE ", ram)
+		mgr.Log.Info("Minimum RAM Size", "Expected", expectedMinRAM, "Actual", ram)
 		if expectedMinRAM > ram {
-			mgr.Log.Info("RAM MIN SIZE did not match")
+			mgr.Log.Info("RAM Size Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
@@ -125,40 +125,40 @@ func checkRAM(mgr HardwareClassificationManager, ram int, expectedRAM *hwcc.Ram)
 }
 
 //checkDiskDetails this function checks the Disk details for both min and max parameters
-func checkDiskDetails(mgr HardwareClassificationManager, disks []bmh.Storage, expectedDisk *hwcc.Disk) bool {
+func checkDiskDetails(mgr HardwareClassificationManager, disks []bmh.Storage, expectedDisk *hwcc.Disk, bmhName string) bool {
 	if expectedDisk == nil {
 		return true
 	}
 	if expectedDisk.MaximumCount > 0 {
 		expectedMaxDiskCount := expectedDisk.MaximumCount
-		mgr.Log.Info("", "Provided Maximum count for Disk", expectedMaxDiskCount, " and fetched count ", len(disks))
+		mgr.Log.Info("Maximum Disk Count", "Expected", expectedMaxDiskCount, "Actual", len(disks))
 		if expectedMaxDiskCount < len(disks) {
-			mgr.Log.Info("Disk MAX Count did not match")
+			mgr.Log.Info("Disk Count Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
 	if expectedDisk.MinimumCount > 0 {
 		expectedMinDiskCount := expectedDisk.MinimumCount
-		mgr.Log.Info("", "Provided Minimum count for Disk", expectedMinDiskCount, " and fetched count ", len(disks))
+		mgr.Log.Info("Minimum Disk Count", "Expected", expectedMinDiskCount, "Actual", len(disks))
 		if expectedMinDiskCount > len(disks) {
-			mgr.Log.Info("Disk MIN Count did not match")
+			mgr.Log.Info("Disk Count Mismatched", "BareMetalHost", bmhName)
 			return false
 		}
 	}
 	for _, disk := range disks {
 		if expectedDisk.MaximumIndividualSizeGB > 0 {
 			expectedMaxDiskSize := bmh.Capacity(expectedDisk.MaximumIndividualSizeGB)
-			mgr.Log.Info("", "Provided Maximum Size for Disk", expectedMaxDiskSize, " and fetched Size ", disk.SizeBytes)
+			mgr.Log.Info("Maximum Disk Size", "Expected", expectedMaxDiskSize, "Actual", disk.SizeBytes)
 			if expectedMaxDiskSize < disk.SizeBytes {
-				mgr.Log.Info("Disk MAX SIZE did not match")
+				mgr.Log.Info("Disk Size Mismatched", "BareMetalHost", bmhName)
 				return false
 			}
 		}
 		if expectedDisk.MinimumIndividualSizeGB > 0 {
 			expectedMinDiskSize := bmh.Capacity(expectedDisk.MinimumIndividualSizeGB)
-			mgr.Log.Info("", "Provided Minimum Size for Disk", expectedMinDiskSize, " and fetched Size ", disk.SizeBytes)
+			mgr.Log.Info("Minimum Disk Size", "Expected", expectedMinDiskSize, "Actual", disk.SizeBytes)
 			if expectedMinDiskSize > disk.SizeBytes {
-				mgr.Log.Info("Disk MIN SIZE did not match")
+				mgr.Log.Info("Disk Size Mismatched", "BareMetalHost", bmhName)
 				return false
 			}
 		}
