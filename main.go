@@ -49,9 +49,12 @@ func init() {
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
+	var watchNamespace string
 	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.")
+	flag.StringVar(&watchNamespace, "namespace", "",
+                "Namespace that the controller watches to reconcile HWCC objects. If unspecified, the controller watches for HWCC objects across all namespaces.")
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(func(o *zap.Options) {
@@ -62,7 +65,9 @@ func main() {
 		Scheme:             scheme,
 		MetricsBindAddress: metricsAddr,
 		LeaderElection:     enableLeaderElection,
+		LeaderElectionID:   "controller-leader-election-hwcc",
 		Port:               9443,
+		Namespace:          watchNamespace,
 	})
 
 	if err != nil {
