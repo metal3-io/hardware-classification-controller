@@ -105,8 +105,8 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	hcReconciler.Log.Info("Validated Hardware Details", "HardwareDetails", validatedHardwareDetails)
 
 	//Compare the host list with extracted profile and fetch the valid host names
-	validHost := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
-	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHost", validHost)
+	validHosts := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
+	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHosts", validHosts)
 	return ctrl.Result{}, nil
 }
 

@@ -23,7 +23,7 @@ import (
 
 // MinMaxFilter it will perform the minimum and maximum comparison based on the value provided by the user and check for the valid host
 func (mgr HardwareClassificationManager) MinMaxFilter(ProfileName string, HostList []bmh.HardwareDetails, expectedHardwareprofile hwcc.HardwareCharacteristics) []string {
-	var validHost []string
+	var validHosts []string
 	for _, hardwareDetail := range HostList {
 		if !checkCPUCount(mgr, hardwareDetail.CPU, expectedHardwareprofile.Cpu, hardwareDetail.Hostname) ||
 			!checkRAM(mgr, hardwareDetail.RAMMebibytes, expectedHardwareprofile.Ram, hardwareDetail.Hostname) ||
@@ -31,9 +31,9 @@ func (mgr HardwareClassificationManager) MinMaxFilter(ProfileName string, HostLi
 			!checkDiskDetails(mgr, hardwareDetail.Storage, expectedHardwareprofile.Disk, hardwareDetail.Hostname) {
 			continue
 		}
-		validHost = append(validHost, hardwareDetail.Hostname)
+		validHosts = append(validHosts, hardwareDetail.Hostname)
 	}
-	return validHost
+	return validHosts
 }
 
 //checkCPUCount this function checks the CPU details for both min and max parameters
