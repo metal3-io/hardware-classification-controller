@@ -18,8 +18,9 @@ package hcmanager
 import (
 	"context"
 	"errors"
-	hwcc "hardware-classification-controller/api/v1alpha1"
 	"net"
+
+	hwcc "hardware-classification-controller/api/v1alpha1"
 
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
