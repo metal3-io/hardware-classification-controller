@@ -161,6 +161,12 @@ const (
 const (
 	//NoBaremetalHost no bmo host found message
 	NoBaremetalHost string = "No BareMetalHost Found"
+	//NoValidHostFound no matching host found after comparison
+	NoValidHostFound string = "No BareMetalHost found matching to given profile"
+	//LabelUpdated if labels are updated successfully
+	LabelUpdated string = "BareMetalHost labels updated successfully"
+	//NOError no error occurred
+	NOError string = ""
 )
 
 // HardwareClassificationStatus defines the observed state of HardwareClassification

@@ -17,6 +17,8 @@ package controllers
 
 import (
 	"context"
+	"strings"
+
 	hwcc "hardware-classification-controller/api/v1alpha1"
 	"hardware-classification-controller/hcmanager"
 
@@ -90,7 +92,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	}
 
 	//Fetch baremetal host list for the given namespace
-	hostList, _, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
+	hostList, bmhList, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
 	if err != nil {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.FetchBMHListFailure, err.Error())
 		hcReconciler.Log.Error(err, err.Error())
@@ -110,6 +112,28 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	//Compare the host list with extracted profile and fetch the valid host names
 	validHosts := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHosts", validHosts)
+
+	if len(validHosts) == 0 {
+		hcReconciler.Log.Info(hwcc.NoValidHostFound)
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusUnMatched, hwcc.Empty, hwcc.NOError)
+		hcReconciler.Log.Info("Updated profile match status", "ProfileMatchStatus", hwcc.ProfileMatchStatusUnMatched)
+		deleteLabelError := hcManager.DeleteHWCCLabel(ctx, hardwareClassification.ObjectMeta, bmhList)
+		if len(deleteLabelError) > 0 {
+			hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.LabelUpdateFailure, strings.Join(deleteLabelError, ","))
+		}
+		return ctrl.Result{}, nil
+	}
+
+	//Update BMHost Labels
+	setLabelError := hcManager.SetLabel(ctx, hardwareClassification.ObjectMeta, validHosts, bmhList)
+	if len(setLabelError) > 0 {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.LabelUpdateFailure, strings.Join(setLabelError, ","))
+	} else {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusMatched, hwcc.Empty, hwcc.NOError)
+		hcReconciler.Log.Info(hwcc.LabelUpdated)
+		hcReconciler.Log.Info("Updated profile match status", "ProfileMatchStatus", hwcc.ProfileMatchStatusMatched)
+	}
+
 	return ctrl.Result{}, nil
 }
 

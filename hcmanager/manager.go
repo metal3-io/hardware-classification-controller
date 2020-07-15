@@ -16,10 +16,12 @@ limitations under the License.
 package hcmanager
 
 import (
-	hwcc "hardware-classification-controller/api/v1alpha1"
+	"context"
 
-	"github.com/go-logr/logr"
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
+	hwcc "hardware-classification-controller/api/v1alpha1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -36,6 +38,8 @@ type HardwareClassificationInterface interface {
 	ExtractAndValidateHardwareDetails(hwcc.HardwareCharacteristics, []bmh.BareMetalHost) []bmh.HardwareDetails
 	ValidateExtractedHardwareProfile(hwcc.HardwareCharacteristics) error
 	MinMaxFilter(ProfileName string, HostList []bmh.HardwareDetails, expectedHardwareprofile hwcc.HardwareCharacteristics) []string
+	SetLabel(ctx context.Context, hcMetaData v1.ObjectMeta, comparedHost []string, BMHList bmh.BareMetalHostList) []string
+	DeleteHWCCLabel(ctx context.Context, hcMetaData v1.ObjectMeta, hosts bmh.BareMetalHostList) []string
 }
 
 //NewHardwareClassificationManager return new hardware classification manager
