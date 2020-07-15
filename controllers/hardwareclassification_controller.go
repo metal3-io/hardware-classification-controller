@@ -71,13 +71,13 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	defer func() {
 		// Always attempt to Patch the hardwareClassification object and status after each reconciliation.
 		if err := patchHelper.Patch(ctx, hardwareClassification); err != nil {
-			hcReconciler.Log.Error(err, "Failed to Patch hardwareClassification object and status")
+			hcReconciler.Log.Error(err, "Failed to Patch HardwareClassification")
 		}
 	}()
 
-	// Get ExpectedHardwareConfiguration from hardwareClassification
+	// Get Expected Hardware Configuration from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.HardwareCharacteristics
-	hcReconciler.Log.Info("Extracted hardware configurations successfully", "Profile", extractedProfile)
+	hcReconciler.Log.Info("Expected Hardware Configuration", "Profile", extractedProfile)
 
 	// Get the new hardware classification manager
 	hcManager := hcmanager.NewHardwareClassificationManager(hcReconciler.Client, hcReconciler.Log)
@@ -105,7 +105,11 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 
 	//Extract the hardware details from the baremetal host list
 	validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(extractedProfile, hostList)
-	hcReconciler.Log.Info("Validated Hardware Details From Baremetal Hosts", "Validated Host List", validatedHardwareDetails)
+	hcReconciler.Log.Info("Validated Hardware Details", "HardwareDetails", validatedHardwareDetails)
+
+	//Compare the host list with extracted profile and fetch the valid host names
+	validHosts := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
+	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHosts", validHosts)
 	return ctrl.Result{}, nil
 }
 

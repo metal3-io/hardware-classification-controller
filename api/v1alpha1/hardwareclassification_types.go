@@ -129,11 +129,9 @@ type ProfileMatchStatus string
 const (
 	// ProfileMatchStatusEmpty is the default status value
 	ProfileMatchStatusEmpty ProfileMatchStatus = ""
-
 	// ProfileMatchStatusMatched is the status value when the profile
 	// matches to one of the BareMetalHost.
 	ProfileMatchStatusMatched ProfileMatchStatus = "matched"
-
 	// ProfileMatchStatusUnMatched is the status value when the profile
 	// does not match to one of the BareMetalHost.
 	ProfileMatchStatusUnMatched ProfileMatchStatus = "unmatched"
@@ -147,26 +145,22 @@ const (
 	// LabelUpdateFailure is an error condition occurring when the
 	// controller is unable to update label of BareMetalHost.
 	LabelUpdateFailure ErrorType = "label update error"
-
 	// LabelDeleteFailure is an error condition occurring when the
 	// controller is unable to delete label of BareMetalHost.
 	LabelDeleteFailure ErrorType = "label delete error"
-
 	// FetchBMHListFailure is an error condition occurring when the
 	// controller is unable to fetch BMH from BMO
 	FetchBMHListFailure ErrorType = "fetch BMH error"
-
 	// ProfileMisConfigured is an error condition occurring when the
 	// extracted profile is empty.
 	ProfileMisConfigured ErrorType = "Empty Profile Error"
-
 	// Empty is an empty error
 	Empty ErrorType = ""
 )
 
 const (
 	//NoBaremetalHost no bmo host found message
-	NoBaremetalHost string = "No BareMetalHost found in ready state"
+	NoBaremetalHost string = "No BareMetalHost Found"
 )
 
 // HardwareClassificationStatus defines the observed state of HardwareClassification
@@ -176,10 +170,8 @@ type HardwareClassificationStatus struct {
 
 	// ErrorType indicates the type of failure encountered
 	ErrorType ErrorType `json:"errorType,omitempty"`
-
 	// ProfileMatchStatus identifies whether a applied profile is matches or not
 	ProfileMatchStatus ProfileMatchStatus `json:"profileMatchStatus,omitempty"`
-
 	// The last error message reported by the hardwareclassification system
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
