@@ -3,7 +3,9 @@
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+    
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,72 +24,74 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-//DeleteHWCCLabel deletes the hwcc label from the baremetal host
-func (mgr HardwareClassificationManager) DeleteHWCCLabel(ctx context.Context, hcMetaData v1.ObjectMeta, hosts bmh.BareMetalHostList) []string {
-	var deleteLabelError []string
-	for _, host := range hosts.Items {
-		if err := mgr.DeleteLabels(ctx, hcMetaData, host); err != nil {
-			deleteLabelError = append(deleteLabelError, host.Name+" "+err.Error())
-		}
-	}
-	return deleteLabelError
-}
-
-// DeleteLabels delete existing label of the baremetal host
-func (mgr HardwareClassificationManager) DeleteLabels(ctx context.Context, hcMetaData v1.ObjectMeta, host bmh.BareMetalHost) error {
+// deleteLabel delete existing label of the baremetal host
+func (mgr HardwareClassificationManager) deleteLabel(ctx context.Context, hcMetaData v1.ObjectMeta, host bmh.BareMetalHost) error {
 	labelKey := LabelName + hcMetaData.Name
 	// Delete existing labels for the same profile.
 	existingLabels := host.GetLabels()
 	if existingLabels != nil {
-		for key := range existingLabels {
+		for key, value := range existingLabels {
 			if key == labelKey {
+				mgr.Log.Info("Delete Label", "BareMetalHost", host.Name, key, value)
 				delete(existingLabels, key)
 			}
 		}
+
+		// Updating labels
 		host.SetLabels(existingLabels)
-		err := mgr.client.Update(ctx, &host)
-		if err != nil {
-			return errors.New("Label Delete Failed" + host.Name)
+		if err := mgr.client.Update(ctx, &host); err != nil {
+			return errors.New(host.Name + " " + err.Error())
 		}
 	}
 	return nil
 }
 
-//SetLabel update labels of baremetal host
-func (mgr HardwareClassificationManager) SetLabel(ctx context.Context, hcMetaData v1.ObjectMeta, validHosts []string, BMHList bmh.BareMetalHostList) []string {
+// setLabel set label of baremetal host
+func (mgr HardwareClassificationManager) setLabel(ctx context.Context, hcMetaData v1.ObjectMeta, host bmh.BareMetalHost) error {
 	labelKey := LabelName + hcMetaData.Name
-	var setLabelError []string
+	labels := host.GetLabels()
+
+	if labels == nil {
+		labels = make(map[string]string)
+	}
+
+	// Update user provided labels else set default label
+	if hcMetaData.Labels != nil {
+		if val, ok := hcMetaData.Labels[labelKey]; ok {
+			labels[labelKey] = val
+		} else {
+			labels[labelKey] = DefaultLabel
+		}
+	} else {
+		labels[labelKey] = DefaultLabel
+	}
+
+	mgr.Log.Info("Set Label", "BareMetalHost", host.Name)
+	// set updated labels to host
+	host.SetLabels(labels)
+	if err := mgr.client.Update(ctx, &host); err != nil {
+		return errors.New(host.Name + " " + err.Error())
+	}
+	return nil
+}
+
+//UpdateLabels update labels of baremetal host
+func (mgr HardwareClassificationManager) UpdateLabels(ctx context.Context, hcMetaData v1.ObjectMeta, validHosts []string, BMHList bmh.BareMetalHostList) []string {
+
+	var updateLabelError []string
 
 	for _, host := range BMHList.Items {
 		if getHostName(host.Name, validHosts) {
-			labels := host.GetLabels()
-			if labels == nil {
-				labels = make(map[string]string)
-			}
-			if hcMetaData.Labels != nil {
-				for _, value := range hcMetaData.Labels {
-					if value == "" {
-						labels[labelKey] = DefaultLabel
-					} else {
-						labels[labelKey] = value
-					}
-				}
-			} else {
-				labels[labelKey] = DefaultLabel
-			}
-			mgr.Log.Info("Set Label", host.Name, labels)
-			// set updated labels to host
-			host.SetLabels(labels)
-			if err := mgr.client.Update(ctx, &host); err != nil {
-				setLabelError = append(setLabelError, host.Name+" "+err.Error())
+			if err := mgr.setLabel(ctx, hcMetaData, host); err != nil {
+				updateLabelError = append(updateLabelError, err.Error())
 			}
 		} else {
-			if err := mgr.DeleteLabels(ctx, hcMetaData, host); err != nil {
-				setLabelError = append(setLabelError, host.Name+" "+err.Error())
+			if err := mgr.deleteLabel(ctx, hcMetaData, host); err != nil {
+				updateLabelError = append(updateLabelError, err.Error())
 			}
 		}
 	}
-	return setLabelError
+	return updateLabelError
 }
 
 // getHostName checks if host name is present in validHosts

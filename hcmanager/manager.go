@@ -38,8 +38,7 @@ type HardwareClassificationInterface interface {
 	ExtractAndValidateHardwareDetails(hwcc.HardwareCharacteristics, []bmh.BareMetalHost) []bmh.HardwareDetails
 	ValidateExtractedHardwareProfile(hwcc.HardwareCharacteristics) error
 	MinMaxFilter(ProfileName string, HostList []bmh.HardwareDetails, expectedHardwareprofile hwcc.HardwareCharacteristics) []string
-	SetLabel(ctx context.Context, hcMetaData v1.ObjectMeta, comparedHost []string, BMHList bmh.BareMetalHostList) []string
-	DeleteHWCCLabel(ctx context.Context, hcMetaData v1.ObjectMeta, hosts bmh.BareMetalHostList) []string
+	UpdateLabels(ctx context.Context, hcMetaData v1.ObjectMeta, comparedHost []string, BMHList bmh.BareMetalHostList) []string
 }
 
 //NewHardwareClassificationManager return new hardware classification manager

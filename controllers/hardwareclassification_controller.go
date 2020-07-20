@@ -113,25 +113,20 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	validHosts := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
 	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHosts", validHosts)
 
-	if len(validHosts) == 0 {
-		hcReconciler.Log.Info(hwcc.NoValidHostFound)
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusUnMatched, hwcc.Empty, hwcc.NOError)
-		hcReconciler.Log.Info("Updated profile match status", "ProfileMatchStatus", hwcc.ProfileMatchStatusUnMatched)
-		deleteLabelError := hcManager.DeleteHWCCLabel(ctx, hardwareClassification.ObjectMeta, bmhList)
-		if len(deleteLabelError) > 0 {
-			hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.LabelUpdateFailure, strings.Join(deleteLabelError, ","))
-		}
-		return ctrl.Result{}, nil
-	}
+	updateLabelError := hcManager.UpdateLabels(ctx, hardwareClassification.ObjectMeta, validHosts, bmhList)
 
-	//Update BMHost Labels
-	setLabelError := hcManager.SetLabel(ctx, hardwareClassification.ObjectMeta, validHosts, bmhList)
-	if len(setLabelError) > 0 {
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.LabelUpdateFailure, strings.Join(setLabelError, ","))
+	if len(updateLabelError) > 0 {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty,
+			hwcc.LabelUpdateFailure, strings.Join(updateLabelError, ","))
+		hcReconciler.Log.Error(nil, hwcc.UpdateLabelError)
+	} else if len(validHosts) > 0 && len(updateLabelError) == 0 {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusMatched,
+			hwcc.Empty, hwcc.NOError)
+		hcReconciler.Log.Info("Updated profile status", "ProfileMatchStatus", hwcc.ProfileMatchStatusMatched)
 	} else {
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusMatched, hwcc.Empty, hwcc.NOError)
-		hcReconciler.Log.Info(hwcc.LabelUpdated)
-		hcReconciler.Log.Info("Updated profile match status", "ProfileMatchStatus", hwcc.ProfileMatchStatusMatched)
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusUnMatched,
+			hwcc.Empty, hwcc.NOError)
+		hcReconciler.Log.Info("Updated profile status", "ProfileMatchStatus", hwcc.ProfileMatchStatusUnMatched)
 	}
 
 	return ctrl.Result{}, nil

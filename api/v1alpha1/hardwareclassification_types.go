@@ -161,10 +161,8 @@ const (
 const (
 	//NoBaremetalHost no bmo host found message
 	NoBaremetalHost string = "No BareMetalHost Found"
-	//NoValidHostFound no matching host found after comparison
-	NoValidHostFound string = "No BareMetalHost found matching to given profile"
-	//LabelUpdated if labels are updated successfully
-	LabelUpdated string = "BareMetalHost labels updated successfully"
+	//UpdateLabelError if failed to update labels of baremetal host
+	UpdateLabelError string = "Failed to update labels of BareMetalHost"
 	//NOError no error occurred
 	NOError string = ""
 )
