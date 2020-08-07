@@ -1,5 +1,5 @@
 domain: sigs.k8s.io
-repo: hardware-classification-controller
+repo: github.com/metal3-io/hardware-classification-controller
 resources:
 - group: metal3.io
   kind: HardwareClassification

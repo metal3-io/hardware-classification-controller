@@ -17,13 +17,14 @@ package controllers
 
 import (
 	"path/filepath"
-	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 	"testing"
+
+	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	metal3iov1alpha1 "hardware-classification-controller/api/v1alpha1"
+	metal3iov1alpha1 "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"

@@ -1,6 +1,6 @@
-module hardware-classification-controller
+module github.com/metal3-io/hardware-classification-controller
 
-go 1.13
+go 1.14
 
 require (
 	github.com/coreos/etcd v3.3.15+incompatible // indirect
@@ -21,3 +21,4 @@ require (
 	sigs.k8s.io/controller-runtime v0.5.2
 	sigs.k8s.io/testing_frameworks v0.1.2 // indirect
 )
+

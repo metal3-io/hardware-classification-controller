@@ -16,7 +16,7 @@ limitations under the License.
 package hcmanager
 
 import (
-	hwcc "hardware-classification-controller/api/v1alpha1"
+	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 )
