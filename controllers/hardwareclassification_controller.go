@@ -19,8 +19,8 @@ import (
 	"context"
 	"strings"
 
-	hwcc "hardware-classification-controller/api/v1alpha1"
-	"hardware-classification-controller/hcmanager"
+	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
+	"github.com/metal3-io/hardware-classification-controller/hcmanager"
 
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"

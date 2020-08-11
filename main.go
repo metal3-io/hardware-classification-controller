@@ -19,11 +19,11 @@ import (
 	"flag"
 	"os"
 
-	metal3iov1alpha1 "hardware-classification-controller/api/v1alpha1"
+	metal3iov1alpha1 "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 
 	bmoapis "github.com/metal3-io/baremetal-operator/pkg/apis"
 
-	"hardware-classification-controller/controllers"
+	"github.com/metal3-io/hardware-classification-controller/controllers"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -54,7 +54,7 @@ func main() {
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.")
 	flag.StringVar(&watchNamespace, "namespace", "",
-                "Namespace that the controller watches to reconcile HWCC objects. If unspecified, the controller watches for HWCC objects across all namespaces.")
+		"Namespace that the controller watches to reconcile HWCC objects. If unspecified, the controller watches for HWCC objects across all namespaces.")
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(func(o *zap.Options) {
