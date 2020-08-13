@@ -43,7 +43,7 @@ func checkCPUCount(mgr HardwareClassificationManager, cpu bmh.CPU, expectedCPU *
 	}
 	if expectedCPU.MaximumCount > 0 {
 		expectedMaxCPUCount := expectedCPU.MaximumCount
-		mgr.Log.Info("Maximum CPU Count", "Expected", expectedMaxCPUCount, "Actual", cpu.Count)
+		mgr.Log.Info("Maximum CPU Count", "BareMetalHost", bmhName, "Expected", expectedMaxCPUCount, "Actual", cpu.Count)
 		if expectedMaxCPUCount < cpu.Count {
 			mgr.Log.Info("CPU Count Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -51,7 +51,7 @@ func checkCPUCount(mgr HardwareClassificationManager, cpu bmh.CPU, expectedCPU *
 	}
 	if expectedCPU.MinimumCount > 0 {
 		expectedMinCPUCount := expectedCPU.MinimumCount
-		mgr.Log.Info("Minimum CPU Count", "Expected", expectedMinCPUCount, "Actual", cpu.Count)
+		mgr.Log.Info("Minimum CPU Count", "BareMetalHost", bmhName, "Expected", expectedMinCPUCount, "Actual", cpu.Count)
 		if expectedMinCPUCount > cpu.Count {
 			mgr.Log.Info("CPU Count Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -59,7 +59,7 @@ func checkCPUCount(mgr HardwareClassificationManager, cpu bmh.CPU, expectedCPU *
 	}
 	if expectedCPU.MaximumSpeedMHz > 0 {
 		expectedMaxSpeedHz := bmh.ClockSpeed(expectedCPU.MaximumSpeedMHz)
-		mgr.Log.Info("Maximum CPU ClockSpeed", "Expected", expectedMaxSpeedHz, "Actual", cpu.ClockMegahertz)
+		mgr.Log.Info("Maximum CPU ClockSpeed", "BareMetalHost", bmhName, "Expected", expectedMaxSpeedHz, "Actual", cpu.ClockMegahertz)
 		if expectedMaxSpeedHz < cpu.ClockMegahertz {
 			mgr.Log.Info("CPU ClockSpeed Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -67,7 +67,7 @@ func checkCPUCount(mgr HardwareClassificationManager, cpu bmh.CPU, expectedCPU *
 	}
 	if expectedCPU.MinimumSpeedMHz > 0 {
 		expectedMinSpeedHz := bmh.ClockSpeed(expectedCPU.MinimumSpeedMHz)
-		mgr.Log.Info("Minimum CPU ClockSpeed", "Expected", expectedMinSpeedHz, "Actual", cpu.ClockMegahertz)
+		mgr.Log.Info("Minimum CPU ClockSpeed", "BareMetalHost", bmhName, "Expected", expectedMinSpeedHz, "Actual", cpu.ClockMegahertz)
 		if expectedMinSpeedHz > cpu.ClockMegahertz {
 			mgr.Log.Info("CPU ClockSpeed Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -83,7 +83,7 @@ func checkNICS(mgr HardwareClassificationManager, nics int, expectedNIC *hwcc.Ni
 	}
 	if expectedNIC.MaximumCount > 0 {
 		expectedMaxNicCount := expectedNIC.MaximumCount
-		mgr.Log.Info("Maximum NIC Count", "Expected", expectedMaxNicCount, "Actual", nics)
+		mgr.Log.Info("Maximum NIC Count", "BareMetalHost", bmhName, "Expected", expectedMaxNicCount, "Actual", nics)
 		if expectedMaxNicCount < nics {
 			mgr.Log.Info("NIC Count Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -91,7 +91,7 @@ func checkNICS(mgr HardwareClassificationManager, nics int, expectedNIC *hwcc.Ni
 	}
 	if expectedNIC.MinimumCount > 0 {
 		expectedMinNicCount := expectedNIC.MinimumCount
-		mgr.Log.Info("Minimum NIC Count", "Expected", expectedMinNicCount, "Actual", nics)
+		mgr.Log.Info("Minimum NIC Count", "BareMetalHost", bmhName, "Expected", expectedMinNicCount, "Actual", nics)
 		if expectedMinNicCount > nics {
 			mgr.Log.Info("NIC Count Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -107,7 +107,7 @@ func checkRAM(mgr HardwareClassificationManager, ram int, expectedRAM *hwcc.Ram,
 	}
 	if expectedRAM.MaximumSizeGB > 0 {
 		expectedMaxRAM := expectedRAM.MaximumSizeGB
-		mgr.Log.Info("Maximum RAM Size", "Expected", expectedMaxRAM, "Actual", ram)
+		mgr.Log.Info("Maximum RAM Size", "BareMetalHost", bmhName, "Expected", expectedMaxRAM, "Actual", ram)
 		if expectedMaxRAM < ram {
 			mgr.Log.Info("RAM Size Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -115,7 +115,7 @@ func checkRAM(mgr HardwareClassificationManager, ram int, expectedRAM *hwcc.Ram,
 	}
 	if expectedRAM.MinimumSizeGB > 0 {
 		expectedMinRAM := expectedRAM.MinimumSizeGB
-		mgr.Log.Info("Minimum RAM Size", "Expected", expectedMinRAM, "Actual", ram)
+		mgr.Log.Info("Minimum RAM Size", "BareMetalHost", bmhName, "Expected", expectedMinRAM, "Actual", ram)
 		if expectedMinRAM > ram {
 			mgr.Log.Info("RAM Size Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -131,7 +131,7 @@ func checkDiskDetails(mgr HardwareClassificationManager, disks []bmh.Storage, ex
 	}
 	if expectedDisk.MaximumCount > 0 {
 		expectedMaxDiskCount := expectedDisk.MaximumCount
-		mgr.Log.Info("Maximum Disk Count", "Expected", expectedMaxDiskCount, "Actual", len(disks))
+		mgr.Log.Info("Maximum Disk Count", "BareMetalHost", bmhName, "Expected", expectedMaxDiskCount, "Actual", len(disks))
 		if expectedMaxDiskCount < len(disks) {
 			mgr.Log.Info("Disk Count Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -139,7 +139,7 @@ func checkDiskDetails(mgr HardwareClassificationManager, disks []bmh.Storage, ex
 	}
 	if expectedDisk.MinimumCount > 0 {
 		expectedMinDiskCount := expectedDisk.MinimumCount
-		mgr.Log.Info("Minimum Disk Count", "Expected", expectedMinDiskCount, "Actual", len(disks))
+		mgr.Log.Info("Minimum Disk Count", "BareMetalHost", bmhName, "Expected", expectedMinDiskCount, "Actual", len(disks))
 		if expectedMinDiskCount > len(disks) {
 			mgr.Log.Info("Disk Count Mismatched", "BareMetalHost", bmhName)
 			return false
@@ -148,7 +148,7 @@ func checkDiskDetails(mgr HardwareClassificationManager, disks []bmh.Storage, ex
 	for _, disk := range disks {
 		if expectedDisk.MaximumIndividualSizeGB > 0 {
 			expectedMaxDiskSize := bmh.Capacity(expectedDisk.MaximumIndividualSizeGB)
-			mgr.Log.Info("Maximum Disk Size", "Expected", expectedMaxDiskSize, "Actual", disk.SizeBytes)
+			mgr.Log.Info("Maximum Disk Size", "BareMetalHost", bmhName, "Expected", expectedMaxDiskSize, "Actual", disk.SizeBytes)
 			if expectedMaxDiskSize < disk.SizeBytes {
 				mgr.Log.Info("Disk Size Mismatched", "BareMetalHost", bmhName)
 				return false
@@ -156,7 +156,7 @@ func checkDiskDetails(mgr HardwareClassificationManager, disks []bmh.Storage, ex
 		}
 		if expectedDisk.MinimumIndividualSizeGB > 0 {
 			expectedMinDiskSize := bmh.Capacity(expectedDisk.MinimumIndividualSizeGB)
-			mgr.Log.Info("Minimum Disk Size", "Expected", expectedMinDiskSize, "Actual", disk.SizeBytes)
+			mgr.Log.Info("Minimum Disk Size", "BareMetalHost", bmhName, "Expected", expectedMinDiskSize, "Actual", disk.SizeBytes)
 			if expectedMinDiskSize > disk.SizeBytes {
 				mgr.Log.Info("Disk Size Mismatched", "BareMetalHost", bmhName)
 				return false

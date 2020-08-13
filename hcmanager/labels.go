@@ -57,7 +57,7 @@ func (mgr HardwareClassificationManager) setLabel(ctx context.Context, hcMetaDat
 
 	// Update user provided labels else set default label
 	if hcMetaData.Labels != nil {
-		if val, ok := hcMetaData.Labels[labelKey]; ok {
+		if val, ok := hcMetaData.Labels[hcMetaData.Name]; ok {
 			labels[labelKey] = val
 		} else {
 			labels[labelKey] = DefaultLabel
