@@ -28,19 +28,21 @@ import (
 func (mgr HardwareClassificationManager) deleteLabel(ctx context.Context, hcMetaData v1.ObjectMeta, host bmh.BareMetalHost) error {
 	labelKey := LabelName + hcMetaData.Name
 	// Delete existing labels for the same profile.
-	existingLabels := host.GetLabels()
-	if existingLabels != nil {
-		for key, value := range existingLabels {
-			if key == labelKey {
-				mgr.Log.Info("Delete Label", "BareMetalHost", host.Name, key, value)
-				delete(existingLabels, key)
+	if host.Status.Provisioning.State == "ready" {
+		existingLabels := host.GetLabels()
+		if existingLabels != nil {
+			for key, value := range existingLabels {
+				if key == labelKey {
+					mgr.Log.Info("Delete Label", "BareMetalHost", host.Name, key, value)
+					delete(existingLabels, key)
+				}
 			}
-		}
 
-		// Updating labels
-		host.SetLabels(existingLabels)
-		if err := mgr.client.Update(ctx, &host); err != nil {
-			return errors.New(host.Name + " " + err.Error())
+			// Updating labels
+			host.SetLabels(existingLabels)
+			if err := mgr.client.Update(ctx, &host); err != nil {
+				return errors.New(host.Name + " " + err.Error())
+			}
 		}
 	}
 	return nil
