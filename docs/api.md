@@ -5,11 +5,15 @@
 **Metal³** introduces the concept of **HardwareClassificationController** resource, which defines expected hardware configurations to classify BareMetalHosts. The HardwareClassificationController embeds two well differentiated sections, the hardware classification controller specification and its current status.
 
 
-###  HardwareClassificationController metadata
+### HardwareClassificationController metadata
 
 * name -- name of profile
 * namespace -- namespace from which BareMetalHosts to be fetched
-* labels -- label to be set on matching BareMetalHosts
+* labels -- Label is a key-value pair where key should be 'profile-name' and value can be anything. If not provided by user in yaml **default** label is `hardwareclassification.metal3.io/<profile-name> : matches`. This label is set on BaremetalHosts matching to expected hardware configurations provided by user in YAML.
+
+      To check labels assigned on BaremetalHosts:
+
+      $ kubectl get bmh -n <namespace> --show-labels
 
 ### HardwareClassificationController spec
 
