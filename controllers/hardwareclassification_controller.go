@@ -17,8 +17,10 @@ package controllers
 
 import (
 	"context"
-	hwcc "hardware-classification-controller/api/v1alpha1"
-	"hardware-classification-controller/hcmanager"
+	"strings"
+
+	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
+	"github.com/metal3-io/hardware-classification-controller/hcmanager"
 
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -50,7 +52,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	ctx := context.Background()
 
 	// Initialize the logger with namespace
-	hcReconciler.Log = hcReconciler.Log.WithName(HWControllerName).WithValues("metal3-hardwareclassification", req.NamespacedName)
+	hwcLog := hcReconciler.Log.WithName(HWControllerName).WithValues("metal3-hardwareclassification", req.NamespacedName)
 
 	// Get HardwareClassificationController to get values for Namespace and ExpectedHardwareConfiguration
 	hardwareClassification := &hwcc.HardwareClassification{}
@@ -71,45 +73,62 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	defer func() {
 		// Always attempt to Patch the hardwareClassification object and status after each reconciliation.
 		if err := patchHelper.Patch(ctx, hardwareClassification); err != nil {
-			hcReconciler.Log.Error(err, "Failed to Patch HardwareClassification")
+			hwcLog.Error(err, "Failed to Patch HardwareClassification")
 		}
 	}()
 
 	// Get Expected Hardware Configuration from hardwareClassification
 	extractedProfile := hardwareClassification.Spec.HardwareCharacteristics
-	hcReconciler.Log.Info("Expected Hardware Configuration", "Profile", extractedProfile)
+	hwcLog.Info("Expected Hardware Configuration", "Profile", extractedProfile)
 
 	// Get the new hardware classification manager
-	hcManager := hcmanager.NewHardwareClassificationManager(hcReconciler.Client, hcReconciler.Log)
+	hcManager := hcmanager.NewHardwareClassificationManager(hcReconciler.Client, hwcLog)
 
 	ErrValidation := hcManager.ValidateExtractedHardwareProfile(extractedProfile)
 	if ErrValidation != nil {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.ProfileMisConfigured, ErrValidation.Error())
-		hcReconciler.Log.Error(ErrValidation, ErrValidation.Error())
+		hwcLog.Error(ErrValidation, ErrValidation.Error())
 		return ctrl.Result{}, nil
 	}
 
 	//Fetch baremetal host list for the given namespace
-	hostList, _, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
+	hostList, bmhList, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
 	if err != nil {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.FetchBMHListFailure, err.Error())
-		hcReconciler.Log.Error(err, err.Error())
+		hwcLog.Error(err, err.Error())
 		return ctrl.Result{}, nil
 	}
 
 	if len(hostList) == 0 {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.Empty, hwcc.NoBaremetalHost)
-		hcReconciler.Log.Info(hwcc.NoBaremetalHost)
+		hwcLog.Info(hwcc.NoBaremetalHost)
 		return ctrl.Result{}, nil
 	}
 
 	//Extract the hardware details from the baremetal host list
 	validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(extractedProfile, hostList)
-	hcReconciler.Log.Info("Validated Hardware Details", "HardwareDetails", validatedHardwareDetails)
+	hwcLog.Info("Validated Hardware Details", "HardwareDetails", validatedHardwareDetails)
 
 	//Compare the host list with extracted profile and fetch the valid host names
 	validHosts := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
-	hcReconciler.Log.Info("Filtered Bare metal hosts", "ValidHosts", validHosts)
+	hwcLog.Info("Filtered Bare metal hosts", "ValidHosts", validHosts)
+
+	updateLabelError := hcManager.UpdateLabels(ctx, hardwareClassification.ObjectMeta, validHosts, bmhList)
+
+	if len(updateLabelError) > 0 {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty,
+			hwcc.LabelUpdateFailure, strings.Join(updateLabelError, ","))
+		hwcLog.Error(nil, hwcc.UpdateLabelError)
+	} else if len(validHosts) > 0 && len(updateLabelError) == 0 {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusMatched,
+			hwcc.Empty, hwcc.NOError)
+		hwcLog.Info("Updated profile status", "ProfileMatchStatus", hwcc.ProfileMatchStatusMatched)
+	} else {
+		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusUnMatched,
+			hwcc.Empty, hwcc.NOError)
+		hwcLog.Info("Updated profile status", "ProfileMatchStatus", hwcc.ProfileMatchStatusUnMatched)
+	}
+
 	return ctrl.Result{}, nil
 }
 
