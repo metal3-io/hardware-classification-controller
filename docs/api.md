@@ -13,10 +13,10 @@ and its current status.
 * name -- name of profile
 * namespace -- namespace from which BareMetalHosts to be fetched
 * labels -- Label is a key-value pair where key should be 'profile-name' and
-value can be anything. If not provided by user in yaml **default** label is
-`hardwareclassification.metal3.io/<profile-name> : matches`. This label is
-set on BaremetalHosts matching to expected hardware configurations provided
-by user in YAML.
+  value can be anything. If not provided by user in yaml **default** label is
+  `hardwareclassification.metal3.io/<profile-name> : matches`. This label is
+  set on BaremetalHosts matching to expected hardware configurations provided
+  by user in YAML.
 
       To check labels assigned on BaremetalHosts:
 
@@ -30,7 +30,7 @@ hardware configuration details.
 #### Spec fields
 
 * *hardwareCharacteristics* -- HardwareCharacteristics defines expected
-hardware configurations for CPU, DISK, NIC and RAM.
+  hardware configurations for CPU, DISK, NIC and RAM.
   * *cpu* -- Expected CPU configurations:
     * minimumCount -- minimum cpu count
     * maximumCount -- maximum cpu count
@@ -51,30 +51,30 @@ hardware configurations for CPU, DISK, NIC and RAM.
 ### HardwareClassificationController status
 
 The *HardwareClassificationController's* *status* which represents the observed
-state of HardwareClassification. 
+state of HardwareClassification.
 
 #### Status fields
 
 * *errorType* -- errorType indicates the type of failure encountered
   * LabelUpdateFailure -- LabelUpdateFailure is an error condition occurring
-  when the controller is unable to update label of BareMetalHost.
+    when the controller is unable to update label of BareMetalHost.
   * LabelDeleteFailure -- LabelDeleteFailure is an error condition occurring
-  when the controller is unable to delete label of BareMetalHost.
+    when the controller is unable to delete label of BareMetalHost.
   * FetchBMHListFailure -- FetchBMHListFailure is an error condition occurring
-  when the controller is unable to fetch BareMetalHost from BMO.
+    when the controller is unable to fetch BareMetalHost from BMO.
   * ProfileMisConfigured -- ProfileMisConfigured is an error condition
-  occurring when the extracted profile is misconfigured.
+    occurring when the extracted profile is misconfigured.
 
 * *profileMatchStatus* -- profileMatchStatus indicates whether expected
-hardwareCharacteristics matches to any of BareMetalHost or not.
+  hardwareCharacteristics matches to any of BareMetalHost or not.
   * ProfileMatchStatusEmpty -- default is empty
   * ProfileMatchStatusMatched -- profileMatchStatusMatched is the status value
-  when the profile matches to one of the BareMetalHost.
+    when the profile matches to one of the BareMetalHost.
   * ProfileMatchStatusUnMatched -- profileMatchStatusUnMatched is the status
-  value when the profile does not matches to any of the BareMetalHost.
+    value when the profile does not matches to any of the BareMetalHost.
 
 * *errorMessage* -- Details of the last error reported by the
-hardwareclassification system.
+  hardwareclassification system.
 
 ### HardwareClassificationController Example
 
