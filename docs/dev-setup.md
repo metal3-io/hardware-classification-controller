@@ -22,7 +22,7 @@ Please follow metal3 dev guide for setting up above prerequisites -
    ```
 
 2. Deploy Hardware Classification Controller to the cluster with image
-specified.
+   specified.
 
     ```bash
    make deploy IMG=quay.io/metal3-io/hardware-classification-controller:latest
@@ -50,7 +50,7 @@ specified.
    ```
 
 3. Run controller (this will run in the foreground, so switch to a new
-terminal if you want controller running).
+   terminal if you want controller running).
 
     ```bash
    make run
