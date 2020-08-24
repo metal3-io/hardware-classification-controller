@@ -126,3 +126,4 @@ or delete using resource name:
     ```yaml
         $ make uninstall
     ```
+
