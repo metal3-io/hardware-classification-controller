@@ -57,7 +57,7 @@ If no field provided under `hardwareCharacteristics`, user willl get error.
 
 e.g.
 
-```ruby
+```yaml
     disk:
        minimumCount: 1
 ```
@@ -71,7 +71,7 @@ and get status for classified hosts.
 
 Apply profile using `kubectl apply` command.
 
-```ruby
+```yaml
     $ kubectl apply -f <path-to-hwcc.yaml>
 ```
 
@@ -79,13 +79,13 @@ Apply profile using `kubectl apply` command.
 
 Check labels on baremetal hosts
 
-```ruby
+```yaml
     $ kubectl get bmh -n <namespace> --show-labels
 ```
 
 Check status of profile by checking hardware-classification status.
 
-```ruby
+```yaml
     $ kubectl get hardware-classification -n <namespace>
 ```
 
@@ -98,13 +98,13 @@ Note : Instead of hardware-classification shortform hwc or hc can be used.
 To delete profile which is applied, user have two option.
     Delete using profile name:
 
-```ruby
+```yaml
     $ kubectl delete -f <path-to-hwcc.yaml>
 ```
 
 or delete using resource name:
 
-```ruby
+```yaml
     $ kubectl delete hwc <profile-name> -n <namespace>
 ```
 
@@ -114,7 +114,7 @@ or delete using resource name:
 
     To delete whole setup, delete deployment and namespace of hwcc.
 
-    ```ruby
+    ```yaml
         $ kubectl delete deployement <deployment-name> -n <namespace>
 
         $ kubectl delete namespace <namespace>
@@ -123,6 +123,6 @@ or delete using resource name:
 1. Delete local setup.
     To delete local setup
 
-    ```ruby
+    ```yaml
         $ make uninstall
     ```
