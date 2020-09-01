@@ -118,7 +118,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	if len(updateLabelError) > 0 {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty,
 			hwcc.LabelUpdateFailure, strings.Join(updateLabelError, ","))
-		hwcLog.Error(nil, hwcc.UpdateLabelError, "Label Error", strings.Join(updateLabelError, ","))
+		hwcLog.Error(nil, hwcc.UpdateLabelError, "Update Label Error", strings.Join(updateLabelError, ","))
 	} else if len(validHosts) > 0 && len(updateLabelError) == 0 {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusMatched,
 			hwcc.Empty, hwcc.NOError)

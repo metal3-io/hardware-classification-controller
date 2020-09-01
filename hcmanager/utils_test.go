@@ -19,6 +19,7 @@ import (
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 
 	bmoapis "github.com/metal3-io/baremetal-operator/pkg/apis"
@@ -29,80 +30,44 @@ import (
 
 var _ = Describe("HCManager", func() {
 
-	hostTest := getHosts()
+	DescribeTable("Test fetch BaremetalHost list",
+		func(namespace string) {
+			hostTest := getHosts()
+			c := fakeclient.NewFakeClientWithScheme(setupSchemeMm(), hostTest...)
+			hcManager := NewHardwareClassificationManager(c, klogr.New())
+			result, _, err := hcManager.FetchBmhHostList(namespace)
+			if err != nil {
+				Expect(len(result)).To(BeZero())
+			}
+			if len(result) > 0 {
+				Expect(len(result)).Should(Equal(2))
+			}
+		},
+		Entry("Should fetch BaremetalHosts in ready state and under metal3 namespace", getNamespace()),
+		Entry("Should return error while fetching BaremetalHosts", "sample"),
+	)
 
-	c := fakeclient.NewFakeClientWithScheme(setupSchemeMm(), hostTest...)
-	hcManager := NewHardwareClassificationManager(c, klogr.New())
+	DescribeTable("Test user profiles",
+		func(hwcc hwcc.HardwareCharacteristics) {
+			hostTest := getHosts()
+			c := fakeclient.NewFakeClientWithScheme(setupSchemeMm(), hostTest...)
+			hcManager := NewHardwareClassificationManager(c, klogr.New())
+			err := hcManager.ValidateExtractedHardwareProfile(hwcc)
+			if err != nil {
+				Expect(err).To(HaveOccurred())
+			} else {
+				Expect(err).Should(BeNil())
+			}
 
-	It("Should fetch BaremetalHosts in ready state and under metal3 namespace", func() {
-		result, _, err := hcManager.FetchBmhHostList(getNamespace())
-		if err != nil {
-			Expect(len(result)).To(BeZero())
-		} else {
-			Expect(len(result)).Should(Equal(2))
-		}
-
-	})
-
-	It("Should return error while fetching BaremetalHosts", func() {
-		_, _, err := hcManager.FetchBmhHostList("sample")
-		if err != nil {
-			Expect(err).To(HaveOccurred())
-		}
-
-	})
-
-	It("Should return error for empty hardware profile", func() {
-		err := hcManager.ValidateExtractedHardwareProfile(getEmptyProfile())
-		if err != nil {
-			Expect(err).To(HaveOccurred())
-		}
-	})
-
-	It("Should validate extracted hardware profile", func() {
-		result := hcManager.ValidateExtractedHardwareProfile(getExtractedHardwareProfile())
-		if result == nil {
-			Expect(result).Should(BeNil())
-		}
-	})
-
-	It("Should return error for invalid CPU details in hardware profile", func() {
-		err := hcManager.ValidateExtractedHardwareProfile(getInvalidCPUProfile())
-		if err != nil {
-			Expect(err).To(HaveOccurred())
-		}
-	})
-
-	It("Should return error for invalid DISK details in hardware profile", func() {
-		err := hcManager.ValidateExtractedHardwareProfile(getInvalidDiskProfile())
-		if err != nil {
-			Expect(err).To(HaveOccurred())
-		}
-	})
-
-	It("Should return error for invalid NIC details in hardware profile", func() {
-		hardwareClassification := &hwcc.HardwareClassification{}
-		err := hcManager.ValidateExtractedHardwareProfile(getInvalidNicProfile())
-		SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.ProfileMisConfigured, err.Error())
-		if err != nil {
-			Expect(hardwareClassification.Status.ErrorType).Should(Equal(hwcc.ProfileMisConfigured))
-			Expect(err).To(HaveOccurred())
-		}
-	})
-
-	It("Should return error for invalid RAM details in hardware profile", func() {
-		err := hcManager.ValidateExtractedHardwareProfile(getInvalidRAMProfile())
-		if err != nil {
-			Expect(err).To(HaveOccurred())
-		}
-	})
-
-	It("Should return error for missing NIC details in hardware profile", func() {
-		err := hcManager.ValidateExtractedHardwareProfile(getMissingNicDetails())
-		if err != nil {
-			Expect(err).To(HaveOccurred())
-		}
-	})
+		},
+		Entry("Test Valid Profile", getExtractedHardwareProfile()),
+		Entry("Test Empty profile", getEmptyProfile()),
+		Entry("Test Invalid CPU details", getInvalidCPUProfile()),
+		Entry("Test Invalid DISK details", getInvalidDiskProfile()),
+		Entry("Test Invalid RAM details", getInvalidRAMProfile()),
+		Entry("Test Invalid NIC details", getInvalidNicProfile()),
+		Entry("Test Missing NIC details", getMissingNicDetails()),
+	)
 })
 
 //setupSchemeMm Add the bmoapi to our scheme
