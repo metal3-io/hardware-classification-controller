@@ -23,6 +23,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	bmoapis "github.com/metal3-io/baremetal-operator/pkg/apis"
+	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/klog/klogr"
 	fakeclient "sigs.k8s.io/controller-runtime/pkg/client/fake"
@@ -31,46 +32,50 @@ import (
 var _ = Describe("HCManager", func() {
 
 	type testCaseFetchBMH struct {
-		namespace     string
-		hosts         []runtime.Object
-		expectedError bool
+		namespace      string
+		expectedError  bool
+		expectedResult []bmh.BareMetalHost
 	}
 
 	DescribeTable("Test fetch BaremetalHost list",
 		func(tc testCaseFetchBMH) {
-			c := fakeclient.NewFakeClientWithScheme(setupSchemeMm(), tc.hosts...)
+			c := fakeclient.NewFakeClientWithScheme(setupSchemeMm(), getHosts()...)
 			hcManager := NewHardwareClassificationManager(c, klogr.New())
 			result, _, err := hcManager.FetchBmhHostList(tc.namespace)
-			if tc.expectedError {
+			if len(tc.expectedResult) == 0 {
 				Expect(len(result)).To(BeZero())
 			} else {
 				Expect(err).NotTo(HaveOccurred())
-				Expect(len(result)).NotTo(BeZero())
+				Expect(len(result)).Should(Equal(len(tc.expectedResult)))
+				for i, host := range result {
+					Expect(host.ObjectMeta.Name).To(Equal(tc.expectedResult[i].ObjectMeta.Name))
+					Expect(host.Status.Provisioning).To(Equal(tc.expectedResult[i].Status.Provisioning))
+					Expect(host.Status.HardwareDetails).To(Equal(tc.expectedResult[i].Status.HardwareDetails))
+				}
 			}
 		},
 		Entry("Should fetch BaremetalHosts in ready state and under metal3 namespace",
 			testCaseFetchBMH{
-				namespace:     getNamespace(),
-				hosts:         getHosts(),
-				expectedError: false},
+				namespace:      getNamespace(),
+				expectedError:  false,
+				expectedResult: getExpectedResult()},
 		),
-		Entry("Should return error while fetching BaremetalHosts",
+		Entry("Should return empty result while fetching BaremetalHosts",
 			testCaseFetchBMH{
-				namespace:     "sample",
-				hosts:         getHosts(),
-				expectedError: true},
+				namespace:      "sample",
+				expectedError:  false,
+				expectedResult: []bmh.BareMetalHost{}},
 		),
 	)
 
 	type testCaseValidation struct {
-		hosts         []runtime.Object
 		hwcProfile    hwcc.HardwareCharacteristics
 		expectedError bool
 	}
 
 	DescribeTable("Test user profiles",
 		func(tc testCaseValidation) {
-			c := fakeclient.NewFakeClientWithScheme(setupSchemeMm(), tc.hosts...)
+			c := fakeclient.NewFakeClientWithScheme(setupSchemeMm(), getHosts()...)
 			hcManager := NewHardwareClassificationManager(c, klogr.New())
 			err := hcManager.ValidateExtractedHardwareProfile(tc.hwcProfile)
 			if tc.expectedError {
@@ -81,43 +86,36 @@ var _ = Describe("HCManager", func() {
 		},
 		Entry("Test Valid Profile",
 			testCaseValidation{
-				hosts:         getHosts(),
 				hwcProfile:    getExtractedHardwareProfile(),
 				expectedError: false},
 		),
 		Entry("Test Empty Profile",
 			testCaseValidation{
-				hosts:         getHosts(),
 				hwcProfile:    getEmptyProfile(),
 				expectedError: true},
 		),
 		Entry("Test Invalid CPU Details",
 			testCaseValidation{
-				hosts:         getHosts(),
 				hwcProfile:    getInvalidCPUProfile(),
 				expectedError: true},
 		),
 		Entry("Test Invalid DISK Details",
 			testCaseValidation{
-				hosts:         getHosts(),
 				hwcProfile:    getInvalidDiskProfile(),
 				expectedError: true},
 		),
 		Entry("Test Invalid RAM Details",
 			testCaseValidation{
-				hosts:         getHosts(),
 				hwcProfile:    getInvalidRAMProfile(),
 				expectedError: true},
 		),
 		Entry("Test Invalid NIC Details",
 			testCaseValidation{
-				hosts:         getHosts(),
 				hwcProfile:    getInvalidNicProfile(),
 				expectedError: true},
 		),
 		Entry("Test Missing NIC Details",
 			testCaseValidation{
-				hosts:         getHosts(),
 				hwcProfile:    getMissingNicDetails(),
 				expectedError: false},
 		),

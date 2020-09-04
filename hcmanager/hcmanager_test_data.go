@@ -24,6 +24,38 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func getHost() bmh.BareMetalHost {
+	host := bmh.BareMetalHost{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "host-0",
+			Namespace: "metal3",
+		},
+		Status: bmh.BareMetalHostStatus{
+			Provisioning: bmh.ProvisionStatus{
+				State: bmh.StateReady,
+			}, HardwareDetails: &bmh.HardwareDetails{
+				CPU:      bmh.CPU{Arch: "x86_64", Model: "Intel(R) Xeon(R) Gold 6226 CPU @ 2.70GHz", Count: 40, ClockMegahertz: 3400},
+				Firmware: bmh.Firmware{BIOS: bmh.BIOS{Date: "", Vendor: "", Version: ""}},
+				Hostname: "localhost.localdomain",
+				NIC: []bmh.NIC{{IP: "", MAC: "xx:xx:xx:xx:xx:xx", Model: "0xXXXX 0xXXXX", Name: "eth11", PXE: false, SpeedGbps: 0, VLANID: 0},
+					{IP: "192.xxx.xxx.xx", MAC: "xx:xx:xx:xx:xx:xx", Model: "0xXXXX 0xXXXX", Name: "eth6", PXE: true, SpeedGbps: 0, VLANID: 0}},
+				RAMMebibytes: 196608,
+				Storage: []bmh.Storage{{Name: "/dev/sda", SizeBytes: 599550590976},
+					{Name: "/dev/sdb", SizeBytes: 599550590976},
+					{Name: "/dev/sdc", SizeBytes: 599550590976},
+					{Name: "/dev/sdd", SizeBytes: 599550590976},
+					{Name: "/dev/sde", SizeBytes: 599550590976},
+					{Name: "/dev/sdf", SizeBytes: 599550590976},
+					{Name: "/dev/sdg", SizeBytes: 599550590976},
+					{Name: "/dev/sdh", SizeBytes: 599550590976},
+					{Name: "/dev/sdi", SizeBytes: 599550590976}},
+				SystemVendor: bmh.HardwareSystemVendor{Manufacturer: "Dell Inc.", ProductName: "PowerEdge R740xd (SKU=NotProvided;ModelName=PowerEdge R740xd)"},
+			},
+		},
+	}
+	return host
+}
+
 func getNamespace() string {
 	return "metal3"
 }
@@ -161,37 +193,15 @@ func getExtractedHardwareProfileRuntime() []runtime.Object {
 	return []runtime.Object{&expectedHardwareConfiguration}
 }
 
+func getExpectedResult() []bmh.BareMetalHost {
+	host := getHost()
+	host3 := host
+	host3.ObjectMeta.Name = "host-3"
+	return []bmh.BareMetalHost{host, host3}
+}
+
 func getHosts() []runtime.Object {
-
-	host := bmh.BareMetalHost{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "host-0",
-			Namespace: "metal3",
-		},
-		Status: bmh.BareMetalHostStatus{
-			Provisioning: bmh.ProvisionStatus{
-				State: bmh.StateReady,
-			}, HardwareDetails: &bmh.HardwareDetails{
-				CPU:      bmh.CPU{Arch: "x86_64", Model: "Intel(R) Xeon(R) Gold 6226 CPU @ 2.70GHz", Count: 40, ClockMegahertz: 3400},
-				Firmware: bmh.Firmware{BIOS: bmh.BIOS{Date: "", Vendor: "", Version: ""}},
-				Hostname: "localhost.localdomain",
-				NIC: []bmh.NIC{{IP: "", MAC: "xx:xx:xx:xx:xx:xx", Model: "0xXXXX 0xXXXX", Name: "eth11", PXE: false, SpeedGbps: 0, VLANID: 0},
-					{IP: "192.xxx.xxx.xx", MAC: "xx:xx:xx:xx:xx:xx", Model: "0xXXXX 0xXXXX", Name: "eth6", PXE: true, SpeedGbps: 0, VLANID: 0}},
-				RAMMebibytes: 196608,
-				Storage: []bmh.Storage{{Name: "/dev/sda", SizeBytes: 599550590976},
-					{Name: "/dev/sdb", SizeBytes: 599550590976},
-					{Name: "/dev/sdc", SizeBytes: 599550590976},
-					{Name: "/dev/sdd", SizeBytes: 599550590976},
-					{Name: "/dev/sde", SizeBytes: 599550590976},
-					{Name: "/dev/sdf", SizeBytes: 599550590976},
-					{Name: "/dev/sdg", SizeBytes: 599550590976},
-					{Name: "/dev/sdh", SizeBytes: 599550590976},
-					{Name: "/dev/sdi", SizeBytes: 599550590976}},
-				SystemVendor: bmh.HardwareSystemVendor{Manufacturer: "Dell Inc.", ProductName: "PowerEdge R740xd (SKU=NotProvided;ModelName=PowerEdge R740xd)"},
-			},
-		},
-	}
-
+	host := getHost()
 	host1 := host
 	host1.ObjectMeta.Name = "host-1"
 	host1.Status.Provisioning = bmh.ProvisionStatus{
