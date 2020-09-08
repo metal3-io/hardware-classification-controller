@@ -16,6 +16,8 @@ limitations under the License.
 package hcmanager
 
 import (
+	"reflect"
+
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 
 	. "github.com/onsi/ginkgo"
@@ -42,16 +44,15 @@ var _ = Describe("HCManager", func() {
 			c := fakeclient.NewFakeClientWithScheme(setupSchemeMm(), getHosts()...)
 			hcManager := NewHardwareClassificationManager(c, klogr.New())
 			result, _, err := hcManager.FetchBmhHostList(tc.namespace)
-			if len(tc.expectedResult) == 0 {
+			if tc.expectedError {
+				Expect(err).To(HaveOccurred())
+			} else if len(tc.expectedResult) == 0 {
 				Expect(len(result)).To(BeZero())
 			} else {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(len(result)).Should(Equal(len(tc.expectedResult)))
-				for i, host := range result {
-					Expect(host.ObjectMeta.Name).To(Equal(tc.expectedResult[i].ObjectMeta.Name))
-					Expect(host.Status.Provisioning).To(Equal(tc.expectedResult[i].Status.Provisioning))
-					Expect(host.Status.HardwareDetails).To(Equal(tc.expectedResult[i].Status.HardwareDetails))
-				}
+				Expect(result).Should(Equal(tc.expectedResult))
+				Expect(reflect.DeepEqual(result, tc.expectedResult)).To(BeTrue())
 			}
 		},
 		Entry("Should fetch BaremetalHosts in ready state and under metal3 namespace",
