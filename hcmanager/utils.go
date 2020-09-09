@@ -18,7 +18,6 @@ package hcmanager
 import (
 	"context"
 	"errors"
-	"net"
 
 	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
@@ -62,11 +61,6 @@ func (mgr HardwareClassificationManager) FetchBmhHostList(Namespace string) ([]b
 		}
 	}
 	return validHostList, bmhHostList, nil
-}
-
-//CheckValidIP uses net package to check if the IP is valid or not
-func CheckValidIP(NICIp string) bool {
-	return net.ParseIP(NICIp) != nil
 }
 
 //ConvertBytesToGb it converts the Byte into GB
