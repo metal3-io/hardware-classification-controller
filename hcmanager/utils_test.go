@@ -16,8 +16,6 @@ limitations under the License.
 package hcmanager
 
 import (
-	"reflect"
-
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 
 	. "github.com/onsi/ginkgo"
@@ -50,9 +48,7 @@ var _ = Describe("HCManager", func() {
 				Expect(len(result)).To(BeZero())
 			} else {
 				Expect(err).NotTo(HaveOccurred())
-				Expect(len(result)).Should(Equal(len(tc.expectedResult)))
 				Expect(result).Should(Equal(tc.expectedResult))
-				Expect(reflect.DeepEqual(result, tc.expectedResult)).To(BeTrue())
 			}
 		},
 		Entry("Should fetch BaremetalHosts in ready state and under metal3 namespace",
