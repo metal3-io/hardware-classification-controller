@@ -68,7 +68,7 @@ func (mgr HardwareClassificationManager) setLabel(ctx context.Context, hcMetaDat
 		labels[labelKey] = DefaultLabel
 	}
 
-	mgr.Log.Info("Set Label", "BareMetalHost", host.Name)
+	mgr.Log.Info("Set Label", "BareMetalHost", host.Name, labelKey, labels[labelKey])
 	// set updated labels to host
 	host.SetLabels(labels)
 	if err := mgr.client.Update(ctx, &host); err != nil {
