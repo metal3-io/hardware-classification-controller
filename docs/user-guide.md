@@ -13,13 +13,13 @@ This feature helps user to avoid runtime failures.
 1. HWCC setup
 
     Follow setup documentation guide for setup.
-[Setup documentation](docs/dev-setup.md)
+[Setup Documentation](dev-setup.md)
 
 ## HardwareClassificationController Example
 
 The following is a sample CRD of a `HardwareClassificationController` resource
-([YAML PATH](config/samples/metal3.io_v1alpha1_hardwareclassification.yaml)),
-it includes its metadata and specification section.
+([YAML PATH](../config/samples/metal3.io_v1alpha1_hardwareclassification.yaml)),
+it includes metadata and specification section.
 User can create multiple profiles for different workloads as per the sample
 shown below. Alternatively user can simply modify values of the parameters
 shown in sample file as per application.
