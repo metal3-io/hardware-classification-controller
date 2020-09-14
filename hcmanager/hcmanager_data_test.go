@@ -60,12 +60,16 @@ func getNamespace() string {
 	return "metal3"
 }
 
+func getTestProfileName() string {
+	return "testProfileName"
+}
+
 func getExtractedHardwareProfile() hwcc.HardwareCharacteristics {
 
 	return hwcc.HardwareCharacteristics{
 		Cpu: &hwcc.Cpu{
-			MaximumCount:    32,
-			MinimumCount:    32,
+			MaximumCount:    50,
+			MinimumCount:    30,
 			MaximumSpeedMHz: 5000,
 			MinimumSpeedMHz: 3000,
 		},
@@ -77,7 +81,7 @@ func getExtractedHardwareProfile() hwcc.HardwareCharacteristics {
 		},
 		Nic: &hwcc.Nic{
 			MaximumCount: 4,
-			MinimumCount: 4,
+			MinimumCount: 1,
 		},
 		Ram: &hwcc.Ram{
 			MaximumSizeGB: 192,
@@ -198,6 +202,50 @@ func getExpectedResult() []bmh.BareMetalHost {
 	host3 := host
 	host3.ObjectMeta.Name = "host-3"
 	return []bmh.BareMetalHost{host, host3}
+}
+
+func getExpectedComparedHost() []string {
+	return []string{"host-0", "host-3"}
+}
+
+func hardwareDetails() bmh.HardwareDetails {
+	return bmh.HardwareDetails{
+		CPU:      bmh.CPU{Count: 40, ClockMegahertz: 3400},
+		Hostname: "host-0",
+		NIC: []bmh.NIC{{IP: "", MAC: "xx:xx:xx:xx:xx:xx",
+			Model: "0xXXXX 0xXXXX", Name: "eth11",
+			PXE: false, SpeedGbps: 0, VLANID: 0},
+			{IP: "192.xxx.xxx.xx", MAC: "xx:xx:xx:xx:xx:xx",
+				Model: "0xXXXX 0xXXXX", Name: "eth6",
+				PXE: true, SpeedGbps: 0, VLANID: 0}},
+		RAMMebibytes: 192,
+		Storage: []bmh.Storage{{Name: "/dev/sda", SizeBytes: 558},
+			{Name: "/dev/sdb", SizeBytes: 558},
+			{Name: "/dev/sdc", SizeBytes: 558},
+			{Name: "/dev/sdd", SizeBytes: 558},
+			{Name: "/dev/sde", SizeBytes: 558},
+			{Name: "/dev/sdf", SizeBytes: 558},
+			{Name: "/dev/sdg", SizeBytes: 558},
+			{Name: "/dev/sdh", SizeBytes: 558},
+			{Name: "/dev/sdi", SizeBytes: 558}},
+	}
+}
+
+func getExpectedHardwareDetails() []bmh.HardwareDetails {
+	HWDetails1 := hardwareDetails()
+	HWDetails2 := hardwareDetails()
+	HWDetails2.Hostname = "host-3"
+
+	return []bmh.HardwareDetails{HWDetails1, HWDetails2}
+}
+
+func getExpectedMissingNICHardwareDetails() []bmh.HardwareDetails {
+	host1 := hardwareDetails()
+	host1.NIC = nil
+	host2 := host1
+	host2.Hostname = "host-3"
+
+	return []bmh.HardwareDetails{host1, host2}
 }
 
 func getHosts() []runtime.Object {
