@@ -1,21 +1,20 @@
 # Hardware classification controller
 
-Controller for matching expected hardware characteristics to BareMetalHost's
-hardware details.
+Hardware Classification Controller (HWCC) goal is to identify right matched
+host for user provided hardware configurations.
 
-The HWCC (Hardware Classification Controller) implements Kubernetes API for
-labeling the matching hosts. Implemented `hardware-classification` CRD expects
-profile having hardware configurations for CPU, RAM, Disk and NIC.
-
-Comparision and validation is done on list of baremetalhosts in ready state
-provided by `BMO` against hardware configuration mentioned in
-metal3.io_v1alpha1_hardwareclassification.yaml.
+User provides workload profile which has set of hardware configuration
+parameters (CPU, RAM, DISK and NIC). HWCC fetches the hosts from BMO.
+It then filters the ready state hosts and compares those with the expected
+configurations provided by user in profile. The hosts matched to any of the
+configurations are then labelled accordingly.
 
 More capabilities are being added regularly. See open issues and pull
 requests for more information on work in progress.
 
 For more information about Metal³, the Hardware Classification, and other
-related components, see the [Metal³ docs](https://github.com/metal3-io/metal3-docs) and
+related components, see the
+[Metal³ docs](https://github.com/metal3-io/metal3-docs)and
 [Kubebuilder Book](https://book.kubebuilder.io/quick-start.html#create-a-project).
 
 ## Resources
