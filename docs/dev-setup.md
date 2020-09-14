@@ -56,5 +56,4 @@ Please follow metal3 dev guide for setting up above prerequisites -
    make run
    ```
 
-Note: Setup is completed here. To use HWCC follow HWCC
-[User guide](user-guide.md)
+Note: Setup is completed here. To use HWCC follow [User guide](user-guide.md)

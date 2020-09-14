@@ -19,7 +19,7 @@ This feature helps user to avoid runtime failures.
 
 The following is a sample CRD of a `HardwareClassificationController` resource
 ([YAML PATH](../config/samples/metal3.io_v1alpha1_hardwareclassification.yaml)),
-it includes its metadata and specification section.
+it includes metadata and specification section.
 User can create multiple profiles for different workloads as per the sample
 shown below. Alternatively user can simply modify values of the parameters
 shown in sample file as per application.
