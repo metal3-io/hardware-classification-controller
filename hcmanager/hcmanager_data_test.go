@@ -161,7 +161,12 @@ func getInvalidRAMProfile() hwcc.HardwareCharacteristics {
 }
 
 func getObjectMeta() metav1.ObjectMeta {
-	return metav1.ObjectMeta{Name: "hardwareclassification-test"}
+	return metav1.ObjectMeta{
+		Name: "hardwareclassification-test",
+		Labels: map[string]string{
+			"hardwareclassification-test": "matches",
+		},
+	}
 }
 
 func getExtractedHardwareProfileRuntime() []runtime.Object {
@@ -202,6 +207,37 @@ func getExpectedResult() []bmh.BareMetalHost {
 	host3 := host
 	host3.ObjectMeta.Name = "host-3"
 	return []bmh.BareMetalHost{host, host3}
+}
+
+func getExpectedBMHList() bmh.BareMetalHostList {
+	bmhHostList := bmh.BareMetalHostList{}
+	var validHostList []bmh.BareMetalHost
+	host := getHost()
+	host1 := host
+	host1.ObjectMeta.Name = "host-1"
+	host1.Status.Provisioning = bmh.ProvisionStatus{
+		State: bmh.StateInspecting,
+	}
+
+	host2 := host
+	host2.ObjectMeta.Name = "host-2"
+	host1.Status.Provisioning = bmh.ProvisionStatus{
+		State: bmh.StateInspecting,
+	}
+
+	host3 := host
+	host3.ObjectMeta.Name = "host-3"
+	host3.ObjectMeta.Labels = map[string]string{
+		"hardwareclassification.metal3.io/hardwareclassification-test": "matches",
+	}
+
+	validHostList = append(validHostList, host)
+	validHostList = append(validHostList, host1)
+	validHostList = append(validHostList, host2)
+	validHostList = append(validHostList, host3)
+
+	bmhHostList.Items = validHostList
+	return bmhHostList
 }
 
 func getExpectedComparedHost() []string {
