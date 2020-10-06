@@ -18,7 +18,7 @@ package hcmanager
 import (
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
+	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 )
 
 // ExtractAndValidateHardwareDetails this function will return map containing introspection details for a host.

@@ -22,8 +22,7 @@ import (
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 
-	bmoapis "github.com/metal3-io/baremetal-operator/pkg/apis"
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
+	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/klog/klogr"
 	fakeclient "sigs.k8s.io/controller-runtime/pkg/client/fake"
@@ -122,7 +121,7 @@ var _ = Describe("HCManager", func() {
 //setupSchemeMm Add the bmoapi to our scheme
 func setupSchemeMm() *runtime.Scheme {
 	s := runtime.NewScheme()
-	if err := bmoapis.AddToScheme(s); err != nil {
+	if err := bmh.AddToScheme(s); err != nil {
 		panic(err)
 	}
 	if err := hwcc.AddToScheme(s); err != nil {
