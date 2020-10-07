@@ -22,7 +22,7 @@ import (
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
+	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/klogr"
 	fakeclient "sigs.k8s.io/controller-runtime/pkg/client/fake"

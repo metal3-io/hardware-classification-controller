@@ -19,7 +19,7 @@ import (
 	"context"
 	"errors"
 
-	bmh "github.com/metal3-io/baremetal-operator/pkg/apis/metal3/v1alpha1"
+	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )

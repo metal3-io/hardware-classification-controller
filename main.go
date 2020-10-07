@@ -21,7 +21,7 @@ import (
 
 	metal3iov1alpha1 "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 
-	bmoapis "github.com/metal3-io/baremetal-operator/pkg/apis"
+	bmoapis "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 
 	"github.com/metal3-io/hardware-classification-controller/controllers"
 
