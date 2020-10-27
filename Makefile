@@ -4,6 +4,9 @@ IMG ?= controller:latest
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 
+BIN_DIR := $(PWD)/tools/bin
+KUSTOMIZE := $(BIN_DIR)/kustomize
+
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
 GOBIN=$(shell go env GOPATH)/bin
@@ -26,17 +29,17 @@ run: generate fmt vet manifests
 	go run ./main.go
 
 # Install CRDs into a cluster
-install: manifests
-	kustomize build config/crd | kubectl apply -f -
+install: $(KUSTOMIZE) manifests
+	$(KUSTOMIZE) build config/crd | kubectl apply -f -
 
 # Uninstall CRDs from a cluster
-uninstall: manifests
-	kustomize build config/crd | kubectl delete -f -
+uninstall: $(KUSTOMIZE) manifests
+	$(KUSTOMIZE) build config/crd | kubectl delete -f -
 
 # Deploy controller in the configured Kubernetes cluster in ~/.kube/config
-deploy: manifests
-	cd config/manager && kustomize edit set image controller=${IMG}
-	kustomize build config | kubectl apply -f -
+deploy: $(KUSTOMIZE) manifests
+	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build config | kubectl apply -f -
 
 # Generate manifests e.g. CRD, RBAC etc.
 manifests: controller-gen
@@ -61,6 +64,9 @@ docker-build: test
 # Push the docker image
 docker-push:
 	docker push ${IMG}
+
+$(KUSTOMIZE):
+	./tools/install_kustomize.sh
 
 # find or download controller-gen
 # download controller-gen if necessary
