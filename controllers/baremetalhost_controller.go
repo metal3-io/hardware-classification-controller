@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	"github.com/go-logr/logr"
+	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -40,9 +41,20 @@ type BareMetalHostReconciler struct {
 
 func (r *BareMetalHostReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
-	logger := r.Log.WithValues("baremetalhost", req.NamespacedName)
+	logger := r.Log.WithValues("host", req.NamespacedName)
 
-	logger.Info("changed")
+	logger.Info("reconciling")
+
+	ruleList := hwcc.HardwareClassificationList{}
+	opts := &client.ListOptions{}
+	err := r.List(context.TODO(), &ruleList, opts)
+	if err != nil {
+		return ctrl.Result{}, errors.Wrap(err, "could not fetch classification rules")
+	}
+
+	for _, rule := range ruleList.Items {
+		logger.Info("applying", "rule", rule)
+	}
 
 	return ctrl.Result{}, nil
 }
