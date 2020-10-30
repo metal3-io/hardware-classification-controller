@@ -13,6 +13,9 @@ func ProfileMatchesHost(profile *hwcc.HardwareClassification, host *bmh.BareMeta
 	if !checkCPU(profile, host) {
 		return false
 	}
+	if !checkRAM(profile, host) {
+		return false
+	}
 	return true
 }
 
