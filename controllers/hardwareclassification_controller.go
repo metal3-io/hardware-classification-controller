@@ -47,7 +47,7 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	ctx := context.Background()
 
 	// Initialize the logger with namespace
-	hwcLog := hcReconciler.Log.WithName(HWControllerName).WithValues("metal3-hardwareclassification", req.NamespacedName)
+	hwcLog := hcReconciler.Log.WithValues("hardwareclassification", req.NamespacedName)
 
 	// Get HardwareClassificationController to get values for Namespace and ExpectedHardwareConfiguration
 	hardwareClassification := &hwcc.HardwareClassification{}
@@ -83,6 +83,12 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	if ErrValidation != nil {
 		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.ProfileMisConfigured, ErrValidation.Error())
 		hwcLog.Error(ErrValidation, ErrValidation.Error())
+		return ctrl.Result{}, nil
+	}
+
+	// stop processing the classification rules
+	v := true
+	if v {
 		return ctrl.Result{}, nil
 	}
 

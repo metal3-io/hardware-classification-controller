@@ -21,6 +21,7 @@ import (
 
 	"github.com/go-logr/logr"
 	"github.com/pkg/errors"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -30,6 +31,7 @@ import (
 
 	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
+	"github.com/metal3-io/hardware-classification-controller/classifier"
 )
 
 // BareMetalHostReconciler reconciles a BareMetalHost object
@@ -45,15 +47,42 @@ func (r *BareMetalHostReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 
 	logger.Info("reconciling")
 
-	ruleList := hwcc.HardwareClassificationList{}
-	opts := &client.ListOptions{}
-	err := r.List(context.TODO(), &ruleList, opts)
+	host := &bmh.BareMetalHost{}
+	err := r.Get(context.TODO(), req.NamespacedName, host)
 	if err != nil {
-		return ctrl.Result{}, errors.Wrap(err, "could not fetch classification rules")
+		if k8serrors.IsNotFound(err) {
+			// Request object not found, could have been deleted after
+			// reconcile request.  Owned objects are automatically
+			// garbage collected. For additional cleanup logic use
+			// finalizers.  Return and don't requeue
+			return ctrl.Result{}, nil
+		}
+		// Error reading the object - requeue the request.
+		return ctrl.Result{}, errors.Wrap(err, "could not load host data")
 	}
 
-	for _, rule := range ruleList.Items {
-		logger.Info("applying", "rule", rule)
+	if host.Status.HardwareDetails == nil {
+		logger.Info("no hardware details")
+		return ctrl.Result{}, nil
+	}
+
+	profileList := hwcc.HardwareClassificationList{}
+	opts := &client.ListOptions{
+		// We only want to apply profiles in the same namespace as the
+		// host.
+		Namespace: req.Namespace,
+	}
+	err = r.List(context.TODO(), &profileList, opts)
+	if err != nil {
+		return ctrl.Result{}, errors.Wrap(err, "could not fetch classification profiles")
+	}
+
+	for _, profile := range profileList.Items {
+		if !classifier.ProfileMatchesHost(&profile, host) {
+			logger.Info("profile does not match", "profile", profile.Name)
+			continue
+		}
+		logger.Info("profile matches", "profile", profile.Name)
 	}
 
 	return ctrl.Result{}, nil
@@ -83,7 +112,11 @@ func (m *hostMapper) Map(obj handler.MapObject) []ctrl.Request {
 			fmt.Sprintf("%s/%s", obj.Meta.GetNamespace(), obj.Meta.GetName()))
 
 	bmhHostList := bmh.BareMetalHostList{}
-	opts := &client.ListOptions{}
+	opts := &client.ListOptions{
+		// We only want to apply profiles to hosts in the same
+		// namespace.
+		Namespace: obj.Meta.GetNamespace(),
+	}
 	err := m.client.List(context.TODO(), &bmhHostList, opts)
 	if err != nil {
 		log.Error(err, "could not fetch host list")
