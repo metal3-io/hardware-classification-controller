@@ -19,6 +19,9 @@ func ProfileMatchesHost(profile *hwcc.HardwareClassification, host *bmh.BareMeta
 	if !checkNICs(profile, host) {
 		return false
 	}
+	if !checkDisks(profile, host) {
+		return false
+	}
 	return true
 }
 
