@@ -17,17 +17,21 @@ package controllers
 
 import (
 	"context"
-	"strings"
+	"fmt"
 
+	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
-	"github.com/metal3-io/hardware-classification-controller/hcmanager"
+	"github.com/metal3-io/hardware-classification-controller/utils"
+	"github.com/pkg/errors"
 
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
-	"sigs.k8s.io/cluster-api/util/patch"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 const (
@@ -59,83 +63,140 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 		return ctrl.Result{}, err
 	}
 
-	// Initialize the patch helper.
-	patchHelper, err := patch.NewHelper(hardwareClassification, hcReconciler.Client)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-
-	defer func() {
-		// Always attempt to Patch the hardwareClassification object and status after each reconciliation.
-		if err := patchHelper.Patch(ctx, hardwareClassification); err != nil {
-			hwcLog.Error(err, "Failed to Patch HardwareClassification")
+	// Add a finalizer to newly created objects.
+	if hardwareClassification.DeletionTimestamp.IsZero() && !hasFinalizer(hardwareClassification) {
+		hwcLog.Info(
+			"adding finalizer",
+			"existingFinalizers", hardwareClassification.Finalizers,
+			"newValue", hwcc.Finalizer,
+		)
+		hardwareClassification.Finalizers = append(hardwareClassification.Finalizers, hwcc.Finalizer)
+		err := hcReconciler.Update(context.TODO(), hardwareClassification)
+		if err != nil {
+			return ctrl.Result{}, errors.Wrap(err, "failed to add finalizer")
 		}
-	}()
-
-	// Get Expected Hardware Configuration from hardwareClassification
-	extractedProfile := hardwareClassification.Spec.HardwareCharacteristics
-	hwcLog.Info("Expected Hardware Configuration", "Profile", extractedProfile)
-
-	// Get the new hardware classification manager
-	hcManager := hcmanager.NewHardwareClassificationManager(hcReconciler.Client, hwcLog)
-
-	ErrValidation := hcManager.ValidateExtractedHardwareProfile(extractedProfile)
-	if ErrValidation != nil {
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.ProfileMisConfigured, ErrValidation.Error())
-		hwcLog.Error(ErrValidation, ErrValidation.Error())
 		return ctrl.Result{}, nil
 	}
 
-	// stop processing the classification rules
-	v := true
-	if v {
-		return ctrl.Result{}, nil
+	bmhHostList := bmh.BareMetalHostList{}
+	opts := &client.ListOptions{
+		// We only want to apply profiles to hosts in the same
+		// namespace.
+		Namespace: hardwareClassification.Namespace,
 	}
-
-	//Fetch baremetal host list for the given namespace
-	hostList, bmhList, err := hcManager.FetchBmhHostList(hardwareClassification.ObjectMeta.Namespace)
+	err := hcReconciler.List(context.TODO(), &bmhHostList, opts)
 	if err != nil {
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.FetchBMHListFailure, err.Error())
-		hwcLog.Error(err, err.Error())
+		return ctrl.Result{}, errors.Wrap(err, "could not fetch host list")
+	}
+
+	// Count hosts with our label. We use this value to decide whether
+	// we have matched and whether it is OK to delete this profile.
+	labelKey, _ := getLabelDetails(hardwareClassification)
+	matchCount := 0
+	for _, host := range bmhHostList.Items {
+		labels := host.GetLabels()
+		if labels == nil {
+			continue
+		}
+		if _, ok := labels[labelKey]; !ok {
+			continue
+		}
+		hwcLog.Info("found host with label",
+			"host", host.Name,
+			"label", labelKey,
+		)
+		matchCount++
+	}
+
+	// Wait to delete the hardwareClassification resource until no
+	// hosts are labeled as matching its rules.
+	if !hardwareClassification.DeletionTimestamp.IsZero() {
+
+		if matchCount > 0 {
+			hwcLog.Info("waiting to delete")
+			return ctrl.Result{Requeue: true}, nil
+		}
+
+		// No hosts are using our label, so we can allow the delete to
+		// proceed.
+		hardwareClassification.Finalizers = utils.FilterStringFromList(
+			hardwareClassification.Finalizers, hwcc.Finalizer)
+		err = hcReconciler.Update(context.TODO(), hardwareClassification)
+		if err != nil {
+			return ctrl.Result{}, errors.Wrap(err, "failed to remove finalizer")
+		}
+
+		hwcLog.Info("deleting")
 		return ctrl.Result{}, nil
 	}
 
-	if len(hostList) == 0 {
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty, hwcc.Empty, hwcc.NoBaremetalHost)
-		hwcLog.Info(hwcc.NoBaremetalHost)
-		return ctrl.Result{}, nil
+	// Update our status to report whether we have matched a host or not.
+	status := hwcc.ProfileMatchStatusMatched
+	if matchCount == 0 {
+		status = hwcc.ProfileMatchStatusUnMatched
 	}
-
-	//Extract the hardware details from the baremetal host list
-	validatedHardwareDetails := hcManager.ExtractAndValidateHardwareDetails(extractedProfile, hostList)
-	hwcLog.Info("Validated Hardware Details", "HardwareDetails", validatedHardwareDetails)
-
-	//Compare the host list with extracted profile and fetch the valid host names
-	validHosts := hcManager.MinMaxFilter(hardwareClassification.ObjectMeta.Name, validatedHardwareDetails, extractedProfile)
-	hwcLog.Info("Filtered Bare metal hosts", "ValidHosts", validHosts)
-
-	updateLabelError := hcManager.UpdateLabels(ctx, hardwareClassification.ObjectMeta, validHosts, bmhList)
-
-	if len(updateLabelError) > 0 {
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusEmpty,
-			hwcc.LabelUpdateFailure, strings.Join(updateLabelError, ","))
-		hwcLog.Error(nil, hwcc.UpdateLabelError, "Update Label Error", strings.Join(updateLabelError, ","))
-	} else if len(validHosts) > 0 && len(updateLabelError) == 0 {
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusMatched,
-			hwcc.Empty, hwcc.NOError)
-		hwcLog.Info("Updated profile status", "ProfileMatchStatus", hwcc.ProfileMatchStatusMatched)
-	} else {
-		hcmanager.SetStatus(hardwareClassification, hwcc.ProfileMatchStatusUnMatched,
-			hwcc.Empty, hwcc.NOError)
-		hwcLog.Info("Updated profile status", "ProfileMatchStatus", hwcc.ProfileMatchStatusUnMatched)
+	if hardwareClassification.Status.ProfileMatchStatus != status {
+		hwcLog.Info("updating match status", "newValue", status)
+		hardwareClassification.Status.ProfileMatchStatus = status
+		err = hcReconciler.Status().Update(context.TODO(), hardwareClassification)
+		if err != nil {
+			return ctrl.Result{}, errors.Wrap(err, "failed to update status")
+		}
+		return ctrl.Result{}, nil
 	}
 
 	return ctrl.Result{}, nil
 }
 
+func hasFinalizer(profile *hwcc.HardwareClassification) bool {
+	return utils.StringInList(profile.Finalizers, hwcc.Finalizer)
+}
+
 // SetupWithManager will add watches for this controller
 func (hcReconciler *HardwareClassificationReconciler) SetupWithManager(mgr ctrl.Manager) error {
+
+	mapper := classificationMapper{
+		client: mgr.GetClient(),
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&hwcc.HardwareClassification{}).
+		Named("hardware-classification").
+		Watches(&source.Kind{Type: &bmh.BareMetalHost{}},
+			&handler.EnqueueRequestsFromMapFunc{ToRequests: &mapper}).
 		Complete(hcReconciler)
+}
+
+type classificationMapper struct {
+	client client.Client
+}
+
+func (m *classificationMapper) Map(obj handler.MapObject) []ctrl.Request {
+	log := ctrl.Log.WithName("controllers").WithName("HardwareClassification").WithName("mapper").
+		WithValues("BareMetalHost",
+			fmt.Sprintf("%s/%s", obj.Meta.GetNamespace(), obj.Meta.GetName()))
+
+	hwcList := hwcc.HardwareClassificationList{}
+	opts := &client.ListOptions{
+		// We only want to apply profiles to classification rules in
+		// the same namespace.
+		Namespace: obj.Meta.GetNamespace(),
+	}
+	err := m.client.List(context.TODO(), &hwcList, opts)
+	if err != nil {
+		log.Error(err, "could not fetch hardware classification list")
+		return nil
+	}
+
+	requests := []ctrl.Request{}
+	for _, profile := range hwcList.Items {
+		log.Info("found hardwareclassification", "name", profile.Name)
+		requests = append(requests, ctrl.Request{
+			NamespacedName: types.NamespacedName{
+				Name:      profile.Name,
+				Namespace: profile.Namespace,
+			},
+		})
+	}
+	return requests
 }
