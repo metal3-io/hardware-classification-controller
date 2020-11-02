@@ -114,7 +114,10 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 
 		if matchCount > 0 {
 			hwcLog.Info("waiting to delete")
-			return ctrl.Result{Requeue: true}, nil
+			// We do not need to explicitly ask to be requeued here
+			// because we will be invoked again when the host(s) found
+			// with our label are modified.
+			return ctrl.Result{}, nil
 		}
 
 		// No hosts are using our label, so we can allow the delete to
