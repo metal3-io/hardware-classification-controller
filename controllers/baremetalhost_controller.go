@@ -34,6 +34,11 @@ import (
 	"github.com/metal3-io/hardware-classification-controller/classifier"
 )
 
+const (
+	defaultLabelName  = "hardwareclassification.metal3.io/"
+	defaultLabelValue = "matches"
+)
+
 // BareMetalHostReconciler reconciles a BareMetalHost object
 type BareMetalHostReconciler struct {
 	client.Client
@@ -77,15 +82,88 @@ func (r *BareMetalHostReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		return ctrl.Result{}, errors.Wrap(err, "could not fetch classification profiles")
 	}
 
+	changed := false
 	for _, profile := range profileList.Items {
-		if !classifier.ProfileMatchesHost(&profile, host) {
-			logger.Info("profile does not match", "profile", profile.Name)
-			continue
+		labelKey, labelValue := getLabelDetails(&profile)
+
+		switch {
+		case !profile.DeletionTimestamp.IsZero():
+			logger.Info("profile is being deleted", "profile", profile.Name)
+			changed = deleteLabel(host, labelKey) || changed
+			if changed {
+				logger.Info("removed label", "name", labelKey, "value", labelValue)
+			}
+		case !classifier.ProfileMatchesHost(&profile, host):
+			changed = deleteLabel(host, labelKey) || changed
+			if changed {
+				logger.Info("removed label", "name", labelKey, "value", labelValue)
+			}
+		default:
+			changed = setLabel(host, labelKey, labelValue) || changed
+			if changed {
+				logger.Info("set label", "name", labelKey, "value", labelValue)
+			}
 		}
-		logger.Info("profile matches", "profile", profile.Name)
+	}
+
+	if changed {
+		if err := r.Update(context.TODO(), host); err != nil {
+			return ctrl.Result{}, errors.Wrap(err,
+				fmt.Sprintf("failed to update host %s/%s", host.Namespace, host.Name))
+		}
 	}
 
 	return ctrl.Result{}, nil
+}
+
+func getLabelDetails(profile *hwcc.HardwareClassification) (key, value string) {
+	key = defaultLabelName + profile.Name
+	labels := profile.GetLabels()
+	if labels != nil {
+		if val, ok := labels[key]; ok {
+			value = val
+		}
+	}
+	if value == "" {
+		value = defaultLabelValue
+	}
+	return
+}
+
+func deleteLabel(host *bmh.BareMetalHost, labelKey string) bool {
+	labels := host.GetLabels()
+
+	if labels == nil {
+		return false
+	}
+
+	if _, ok := labels[labelKey]; !ok {
+		return false
+	}
+
+	delete(labels, labelKey)
+	host.SetLabels(labels)
+	return true
+}
+
+func setLabel(host *bmh.BareMetalHost, labelKey string, labelValue string) bool {
+	labels := host.GetLabels()
+
+	if labels == nil {
+		labels = make(map[string]string)
+	}
+
+	// If we already have a label with the same value no change is
+	// needed.
+	if val, ok := labels[labelKey]; ok {
+		if val == labelValue {
+			return false
+		}
+	}
+
+	labels[labelKey] = labelValue
+	host.SetLabels(labels)
+	return true
 }
 
 func (r *BareMetalHostReconciler) SetupWithManager(mgr ctrl.Manager) error {
