@@ -7,12 +7,18 @@ CRD_OPTIONS ?= "crd:trivialVersions=true,crdVersions=v1beta1"
 BIN_DIR := $(PWD)/tools/bin
 KUSTOMIZE := $(BIN_DIR)/kustomize
 CONTROLLER_GEN := $(BIN_DIR)/controller-gen
+COVER_PROFILE = cover.out
 
 all: manager
 
 # Run tests
-test: generate fmt vet manifests
-	go test ./... -coverprofile cover.out
+test: generate fmt vet manifests unit
+
+unit:
+	go test ./... -coverprofile $(COVER_PROFILE)
+
+unit-profile: unit
+	go tool cover -func=$(COVER_PROFILE)
 
 # Build manager binary
 manager: generate fmt vet
