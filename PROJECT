@@ -1,4 +1,3 @@
-domain: sigs.k8s.io
 repo: github.com/metal3-io/hardware-classification-controller
 resources:
 - group: metal3.io
