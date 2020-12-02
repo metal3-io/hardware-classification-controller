@@ -48,6 +48,31 @@ type HardwareCharacteristics struct {
 	Nic *Nic `json:"nic,omitempty"`
 	// +optional
 	Ram *Ram `json:"ram,omitempty"`
+	// +optional
+	Firmware *Firmware `json:"firmware,omitempty"`
+	// +optional
+	SystemVendor *SystemVendor `json:"systemVendor,omitempty"`
+}
+
+// Firmware contains firmware details extracted from the hardware profile
+type Firmware struct {
+	Bios Bios `json:"bios,omitempty"`
+}
+
+// Bios contains bios details extracted from the hardware profile
+type Bios struct {
+	// +optional
+	Vendor string `json:"vendor,omitempty"`
+	// +optional
+	Version string `json:"version,omitempty"`
+}
+
+// SystemVendor contains system vendor details extracted from the hardware profile
+type SystemVendor struct {
+	// +optional
+	Manufacturer string `json:"manufacturer,omitempty"`
+	// +optional
+	ProductName string `json:"productName,omitempty"`
 }
 
 // Cpu contains cpu details extracted from the hardware profile

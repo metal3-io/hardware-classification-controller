@@ -91,6 +91,18 @@ spec:
                       minimum: 1
                       type: integer
                   type: object
+                firmware:
+                  description: Firmware contains firmware details extracted from the hardware profile
+                  properties:
+                    bios:
+                      description: Bios contains bios details extracted from the hardware profile
+                      properties:
+                        vendor:
+                          type: string
+                        version:
+                          type: string
+                      type: object
+                  type: object
                 nic:
                   description: Nic contains nic details extracted from the hardware profile
                   properties:
@@ -114,6 +126,14 @@ spec:
                       description: MinimumSizeGB of Ram should be greater than 0 Ex. MinimumSizeGB > 0
                       minimum: 1
                       type: integer
+                  type: object
+                systemVendor:
+                  description: SystemVendor contains system vendor details extracted from the hardware profile
+                  properties:
+                    manufacturer:
+                      type: string
+                    productName:
+                      type: string
                   type: object
               type: object
           type: object

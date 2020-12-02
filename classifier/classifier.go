@@ -22,6 +22,12 @@ func ProfileMatchesHost(profile *hwcc.HardwareClassification, host *bmh.BareMeta
 	if !checkDisks(profile, host) {
 		return false
 	}
+	if !checkFirmware(profile, host) {
+		return false
+	}
+	if !checkSystemVendor(profile, host) {
+		return false
+	}
 	return true
 }
 
@@ -31,6 +37,15 @@ func checkRangeInt(min, max, count int) bool {
 	}
 	if max > 0 && count > max {
 		return false
+	}
+	return true
+}
+
+func checkStringEmpty(data ...string) bool {
+	for _, value := range data {
+		if value == "" {
+			return false
+		}
 	}
 	return true
 }
