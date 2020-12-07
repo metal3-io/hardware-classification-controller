@@ -94,14 +94,10 @@ spec:
                 firmware:
                   description: Firmware contains firmware details extracted from the hardware profile
                   properties:
-                    bios:
-                      description: Bios contains bios details extracted from the hardware profile
-                      properties:
-                        vendor:
-                          type: string
-                        version:
-                          type: string
-                      type: object
+                    vendor:
+                      type: string
+                    version:
+                      type: string
                   type: object
                 nic:
                   description: Nic contains nic details extracted from the hardware profile

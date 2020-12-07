@@ -24,9 +24,8 @@ spec:
          minimumCount: 1
          maximumCount: 7
       firmware:
-         bios:
-            vendor: "Dell Inc."
-            version: "1.5.6"
+         vendor: "Dell Inc."
+         version: "1.5.6"
       systemVendor:
          manufacturer: "Dell Inc."
          productName: "PowerEdge R640"

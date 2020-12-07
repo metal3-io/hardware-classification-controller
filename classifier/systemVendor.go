@@ -12,36 +12,40 @@ func checkSystemVendor(profile *hwcc.HardwareClassification, host *bmh.BareMetal
 		return true
 	}
 
-	ok := checkStringEmpty(
-		systemVendorDetails.Manufacturer,
-		systemVendorDetails.ProductName)
-	log.Info("SystemVendor",
-		"host", host.Name,
-		"profile", profile.Name,
-		"namespace", host.Namespace,
-		"Manufacturer", systemVendorDetails.Manufacturer,
-		"ProductName", systemVendorDetails.ProductName,
-		"actual Manufacturer", host.Status.HardwareDetails.SystemVendor.Manufacturer,
-		"actual ProductName", host.Status.HardwareDetails.SystemVendor.ProductName,
-		"ok", ok,
-	)
-	if !ok {
-		return false
-	}
-	if systemVendorDetails.Manufacturer != host.Status.HardwareDetails.SystemVendor.Manufacturer && systemVendorDetails.ProductName != host.Status.HardwareDetails.SystemVendor.ProductName {
-		ok = false
-		log.Info("SystemVendor",
+	if systemVendorDetails.Manufacturer != "" {
+		ok := true
+		if systemVendorDetails.Manufacturer != host.Status.HardwareDetails.SystemVendor.Manufacturer {
+			ok = false
+		}
+		log.Info("System Vendor",
 			"host", host.Name,
 			"profile", profile.Name,
 			"namespace", host.Namespace,
 			"Manufacturer", systemVendorDetails.Manufacturer,
-			"ProductName", systemVendorDetails.ProductName,
 			"actual Manufacturer", host.Status.HardwareDetails.SystemVendor.Manufacturer,
+			"ok", ok,
+		)
+		if !ok {
+			return false
+		}
+	}
+
+	if systemVendorDetails.ProductName != "" {
+		ok := true
+		if systemVendorDetails.ProductName != host.Status.HardwareDetails.SystemVendor.ProductName {
+			ok = false
+		}
+		log.Info("System Vendor",
+			"host", host.Name,
+			"profile", profile.Name,
+			"namespace", host.Namespace,
+			"ProductName", systemVendorDetails.Manufacturer,
 			"actual ProductName", host.Status.HardwareDetails.SystemVendor.ProductName,
 			"ok", ok,
 		)
-		return false
+		if !ok {
+			return false
+		}
 	}
-
 	return true
 }

@@ -12,36 +12,43 @@ func checkFirmware(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost
 		return true
 	}
 
-	ok := checkStringEmpty(
-		firmwareDetails.Bios.Vendor,
-		firmwareDetails.Bios.Version)
+	ok := checkString(firmwareDetails.Vendor, host.Status.HardwareDetails.Firmware.BIOS.Vendor)
+
 	log.Info("Firmware",
 		"host", host.Name,
 		"profile", profile.Name,
 		"namespace", host.Namespace,
-		"vendor", firmwareDetails.Bios.Vendor,
-		"version", firmwareDetails.Bios.Version,
-		"actual Vendor", host.Status.HardwareDetails.Firmware.BIOS.Vendor,
-		"actual Version", host.Status.HardwareDetails.Firmware.BIOS.Version,
+		"vendor", firmwareDetails.Vendor,
+		"actualVendor", host.Status.HardwareDetails.Firmware.BIOS.Vendor,
 		"ok", ok,
 	)
 	if !ok {
 		return false
 	}
-	if firmwareDetails.Bios.Vendor != host.Status.HardwareDetails.Firmware.BIOS.Vendor && firmwareDetails.Bios.Version != host.Status.HardwareDetails.Firmware.BIOS.Version {
-		ok = false
-		log.Info("Firmware",
-			"host", host.Name,
-			"profile", profile.Name,
-			"namespace", host.Namespace,
-			"vendor", firmwareDetails.Bios.Vendor,
-			"version", firmwareDetails.Bios.Version,
-			"actual Vendor", host.Status.HardwareDetails.Firmware.BIOS.Vendor,
-			"actual Version", host.Status.HardwareDetails.Firmware.BIOS.Version,
-			"ok", ok,
-		)
+
+	ok = checkString(firmwareDetails.Version, host.Status.HardwareDetails.Firmware.BIOS.Version)
+
+	log.Info("Firmware",
+		"host", host.Name,
+		"profile", profile.Name,
+		"namespace", host.Namespace,
+		"vendor", firmwareDetails.Vendor,
+		"actualVersion", host.Status.HardwareDetails.Firmware.BIOS.Version,
+		"ok", ok,
+	)
+	if !ok {
 		return false
 	}
 
+	return true
+}
+
+func checkString(expected, hostSpecific string) bool {
+	if expected != "" {
+		if expected != hostSpecific {
+			return false
+		}
+
+	}
 	return true
 }

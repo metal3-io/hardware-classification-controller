@@ -40,12 +40,3 @@ func checkRangeInt(min, max, count int) bool {
 	}
 	return true
 }
-
-func checkStringEmpty(data ...string) bool {
-	for _, value := range data {
-		if value == "" {
-			return false
-		}
-	}
-	return true
-}
