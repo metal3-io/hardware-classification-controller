@@ -56,6 +56,11 @@ type HardwareCharacteristics struct {
 
 // Firmware contains firmware details extracted from the hardware profile
 type Firmware struct {
+	BIOS BIOS `json:"bios,omitempty"`
+}
+
+// BIOS contains bios details extracted from the hardware profile
+type BIOS struct {
 	// +optional
 	Vendor string `json:"vendor,omitempty"`
 	// +optional

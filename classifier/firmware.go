@@ -12,13 +12,13 @@ func checkFirmware(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost
 		return true
 	}
 
-	ok := checkString(firmwareDetails.Vendor, host.Status.HardwareDetails.Firmware.BIOS.Vendor)
+	ok := checkString(firmwareDetails.BIOS.Vendor, host.Status.HardwareDetails.Firmware.BIOS.Vendor)
 
 	log.Info("Firmware",
 		"host", host.Name,
 		"profile", profile.Name,
 		"namespace", host.Namespace,
-		"vendor", firmwareDetails.Vendor,
+		"vendor", firmwareDetails.BIOS.Vendor,
 		"actualVendor", host.Status.HardwareDetails.Firmware.BIOS.Vendor,
 		"ok", ok,
 	)
@@ -26,13 +26,13 @@ func checkFirmware(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost
 		return false
 	}
 
-	ok = checkString(firmwareDetails.Version, host.Status.HardwareDetails.Firmware.BIOS.Version)
+	ok = checkString(firmwareDetails.BIOS.Version, host.Status.HardwareDetails.Firmware.BIOS.Version)
 
 	log.Info("Firmware",
 		"host", host.Name,
 		"profile", profile.Name,
 		"namespace", host.Namespace,
-		"vendor", firmwareDetails.Vendor,
+		"version", firmwareDetails.BIOS.Version,
 		"actualVersion", host.Status.HardwareDetails.Firmware.BIOS.Version,
 		"ok", ok,
 	)
