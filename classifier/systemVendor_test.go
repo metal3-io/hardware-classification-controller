@@ -14,7 +14,8 @@ func TestSystemVendorDetails(t *testing.T) {
 	assert.True(t, checkString("PowerEdge", "PowerEdge"))
 	assert.True(t, checkString("", "Dell Inc."))
 	assert.True(t, checkString("", "PowerEdge"))
-	assert.False(t, checkString("Power", "PowerEdge"))
+	assert.True(t, checkSubString("Power", "PowerEdge"))
+	assert.False(t, checkSubString("R640", "PowerEdge"))
 	assert.False(t, checkString("Dell", "Dell Inc."))
 
 }
@@ -114,7 +115,7 @@ func TestCheckSystemVendorProductName(t *testing.T) {
 			Rule: &hwcc.SystemVendor{
 				ProductName: "PowerEdge",
 			},
-			Actual:   "Power",
+			Actual:   "R640",
 			Expected: false,
 		},
 		{

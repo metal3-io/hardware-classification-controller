@@ -28,5 +28,5 @@ spec:
             vendor: "Dell Inc."
             version: "1.5.6"
       systemVendor:
-         manufacturer: "Dell Inc."
-         productName: "PowerEdge R640"
+         manufacturer: "QEMU"
+         productName: "Standard PC"
