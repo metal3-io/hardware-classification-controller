@@ -145,7 +145,7 @@ func TestCheckNICVendor(t *testing.T) {
 			Expected: true,
 		},
 		{
-			Scenario: "min, max & vendors",
+			Scenario: "mismatch vendors",
 			Rule: &hwcc.Nic{
 				MinimumCount: 1,
 				MaximumCount: 2,
@@ -155,7 +155,7 @@ func TestCheckNICVendor(t *testing.T) {
 			Expected: false,
 		},
 		{
-			Scenario: "min, max & vendors",
+			Scenario: "match vendors",
 			Rule: &hwcc.Nic{
 				MinimumCount: 1,
 				MaximumCount: 2,
