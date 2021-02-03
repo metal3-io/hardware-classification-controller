@@ -1,7 +1,6 @@
 package classifier
 
 import (
-	_ "fmt"
 	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 	"strings"
@@ -29,7 +28,7 @@ func checkNICs(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bo
 		"ok", ok,
 	)
 
-	if nicDetails.NicSelector == nil {
+	if len(nicDetails.NicSelector.Vendor) == 0 {
 		return ok
 	}
 

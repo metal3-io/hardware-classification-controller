@@ -111,7 +111,7 @@ type NicSelector struct {
 // Nic contains nic details extracted from the hardware profile
 type Nic struct {
 	// +optional
-	NicSelector *NicSelector `json:"nicSelector,omitempty"`
+	NicSelector NicSelector `json:"nicSelector,omitempty"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
 	// Minimum count should be greater than 0
