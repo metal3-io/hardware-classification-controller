@@ -187,3 +187,96 @@ func TestCheckDiskSize(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckDiskPattern(t *testing.T) {
+	testCases := []struct {
+		Scenario string
+		Rule     *hwcc.Disk
+		Actual   int
+		Expected bool
+	}{
+		{
+			Scenario: "nil",
+			Rule:     nil,
+			Actual:   2,
+			Expected: true,
+		},
+		{
+			Scenario: "mismatch pattern",
+			Rule: &hwcc.Disk{
+				MinimumCount: 0,
+				MaximumCount: 2,
+				DiskSelector: []hwcc.DiskSelector{
+					{
+						HCTL:       "N:0:0:0",
+						Rotational: true,
+					}, {
+						HCTL:       "0:0:0:0",
+						Rotational: true,
+					},
+				},
+			},
+			Actual:   2,
+			Expected: false,
+		}, {
+			Scenario: "match pattern",
+			Rule: &hwcc.Disk{
+				MinimumCount: 0,
+				MaximumCount: 4,
+				DiskSelector: []hwcc.DiskSelector{{
+					HCTL:       "0:0:N:0",
+					Rotational: true,
+				}, {
+					HCTL:       "0:0:0:0",
+					Rotational: true,
+				},
+				},
+			},
+			Actual:   1,
+			Expected: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.Scenario, func(t *testing.T) {
+			profile := hwcc.HardwareClassification{
+				Spec: hwcc.HardwareClassificationSpec{
+					HardwareCharacteristics: hwcc.HardwareCharacteristics{
+						Disk: tc.Rule,
+					},
+				},
+			}
+			host := bmh.BareMetalHost{
+				Status: bmh.BareMetalHostStatus{
+					HardwareDetails: &bmh.HardwareDetails{},
+				},
+			}
+			disks := []bmh.Storage{}
+			for i := 0; i < tc.Actual; i++ {
+				if tc.Scenario == "match pattern" {
+					disks = append(disks,
+						bmh.Storage{Name: fmt.Sprintf("dev%d", i),
+							Rotational:   true,
+							SizeBytes:    bmh.Capacity(53687091200),
+							Vendor:       "QEMU",
+							Model:        "QEMU HARDDISK",
+							SerialNumber: "drive-scsi0-0-0-0",
+							HCTL:         "0:0:1:0"},
+						bmh.Storage{Name: fmt.Sprintf("dev%d", i),
+							Rotational:   true,
+							SizeBytes:    bmh.Capacity(53687091200),
+							Vendor:       "QEMU",
+							Model:        "QEMU HARDDISK",
+							SerialNumber: "drive-scsi0-0-0-0",
+							HCTL:         "0:0:0:0"})
+				} else {
+					disks = append(disks, bmh.Storage{Name: fmt.Sprintf("dev%d", i), Rotational: true, SizeBytes: bmh.Capacity(53687091200), Vendor: "QEMU", Model: "QEMU HARDDISK", SerialNumber: "drive-scsi0-0-0-0", HCTL: "0:0:1:0"})
+				}
+			}
+			host.Status.HardwareDetails.Storage = disks
+			assert.Equal(t, tc.Expected, ProfileMatchesHost(&profile, &host),
+				fmt.Sprintf("rule=%v actual=%v", tc.Rule, tc.Actual))
+		})
+	}
+
+}
