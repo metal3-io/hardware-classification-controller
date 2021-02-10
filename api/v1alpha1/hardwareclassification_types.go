@@ -50,6 +50,14 @@ type HardwareCharacteristics struct {
 	Ram *Ram `json:"ram,omitempty"`
 }
 
+// DiskSelector contains disk details extracted from hardware profile
+type DiskSelector struct {
+	// +optional
+	HCTL string `json:"hctl,omitempty"`
+	// +optional
+	Rotational bool `json:"rotational,omitempty"`
+}
+
 // Cpu contains cpu details extracted from the hardware profile
 type Cpu struct {
 	// +optional
@@ -100,6 +108,8 @@ type Disk struct {
 	// Maximum individual size should be greater than 0 and greater than MinimumIndividualSizeGB
 	// Ex. MaximumIndividualSizeGB > 0 && MaximumIndividualSizeGB > MinimumIndividualSizeGB
 	MaximumIndividualSizeGB int64 `json:"maximumIndividualSizeGB,omitempty"`
+	// +optional
+	DiskSelector []DiskSelector `json:"diskSelector,omitempty"`
 }
 
 // Nic contains nic details extracted from the hardware profile
