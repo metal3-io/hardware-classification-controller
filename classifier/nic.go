@@ -28,6 +28,10 @@ func checkNICs(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bo
 		"ok", ok,
 	)
 
+	if !ok {
+		return ok
+	}
+
 	if len(nicDetails.NicSelector.Vendor) == 0 {
 		return ok
 	}
