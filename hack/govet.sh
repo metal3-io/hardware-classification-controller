@@ -15,6 +15,6 @@ else
     --volume "${PWD}:/go/src/github.com/metal3-io/hardware-classification-controller:ro,z" \
     --entrypoint sh \
     --workdir /go/src/github.com/metal3-io/hardware-classification-controller \
-    registry.hub.docker.com/library/golang:1.15.3 \
+    registry.hub.docker.com/library/golang:1.16 \
     /go/src/github.com/metal3-io/hardware-classification-controller/hack/govet.sh "${@}"
 fi;
