@@ -22,7 +22,7 @@ func checkDisks(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) b
 		"profile", profile.Name,
 		"namespace", host.Namespace,
 		"minCount", diskDetails.MinimumCount,
-		"maxCount", diskDetails.MinimumCount,
+		"maxCount", diskDetails.MaximumCount,
 		"actualCount", len(host.Status.HardwareDetails.Storage),
 		"ok", ok,
 	)
