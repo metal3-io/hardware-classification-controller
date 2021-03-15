@@ -93,3 +93,101 @@ func TestCheckNICCount(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckNICVendor(t *testing.T) {
+	testCases := []struct {
+		Scenario string
+		Rule     *hwcc.Nic
+		Actual   int
+		Expected bool
+	}{
+		{
+			Scenario: "nil",
+			Rule:     nil,
+			Actual:   2,
+			Expected: true,
+		},
+		{
+			Scenario: "under-min",
+			Rule: &hwcc.Nic{
+				MinimumCount: 4,
+				MaximumCount: 0,
+			},
+			Actual:   2,
+			Expected: false,
+		},
+		{
+			Scenario: "only min & vendor",
+			Rule: &hwcc.Nic{
+				MinimumCount: 1,
+				NicSelector:  hwcc.NicSelector{Vendor: []string{"0x1af4"}},
+			},
+			Actual:   2,
+			Expected: true,
+		},
+		{
+			Scenario: "only max & vendor",
+			Rule: &hwcc.Nic{
+				MaximumCount: 1,
+				NicSelector:  hwcc.NicSelector{Vendor: []string{"0x1af4"}},
+			},
+			Actual:   2,
+			Expected: true,
+		},
+		{
+			Scenario: "min, max & vendor",
+			Rule: &hwcc.Nic{
+				MinimumCount: 1,
+				MaximumCount: 2,
+				NicSelector:  hwcc.NicSelector{Vendor: []string{"0x1af4"}},
+			},
+			Actual:   2,
+			Expected: true,
+		},
+		{
+			Scenario: "mismatch vendors",
+			Rule: &hwcc.Nic{
+				MinimumCount: 1,
+				MaximumCount: 2,
+				NicSelector:  hwcc.NicSelector{Vendor: []string{"0x8086", "0x1af4"}},
+			},
+			Actual:   2,
+			Expected: false,
+		},
+		{
+			Scenario: "match vendors",
+			Rule: &hwcc.Nic{
+				MinimumCount: 1,
+				MaximumCount: 2,
+				NicSelector:  hwcc.NicSelector{Vendor: []string{"0x1af4", "0x1af4"}},
+			},
+			Actual:   2,
+			Expected: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.Scenario, func(t *testing.T) {
+			profile := hwcc.HardwareClassification{
+				Spec: hwcc.HardwareClassificationSpec{
+					HardwareCharacteristics: hwcc.HardwareCharacteristics{
+						Nic: tc.Rule,
+					},
+				},
+			}
+			host := bmh.BareMetalHost{
+				Status: bmh.BareMetalHostStatus{
+					HardwareDetails: &bmh.HardwareDetails{},
+				},
+			}
+			nics := []bmh.NIC{}
+			for i := 0; i < tc.Actual; i++ {
+				nics = append(nics, bmh.NIC{Name: fmt.Sprintf("eth%d", i), Model: "0x1af4 0x0001"})
+			}
+			host.Status.HardwareDetails.NIC = nics
+			assert.Equal(t, tc.Expected, ProfileMatchesHost(&profile, &host),
+				fmt.Sprintf("rule=%v actual=%v", tc.Rule, tc.Actual))
+		})
+	}
+
+}

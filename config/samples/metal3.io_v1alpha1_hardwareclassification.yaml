@@ -24,6 +24,10 @@ spec:
       nic:
          minimumCount: 1
          maximumCount: 7
+         nicSelector:
+              vendor:
+                  - "0x8086"
+                  - "0x1af5"
       systemVendor:
          manufacturer: "QEMU"
          productName: "Standard PC"
