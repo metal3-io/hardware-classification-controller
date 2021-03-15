@@ -79,6 +79,16 @@ spec:
                 disk:
                   description: Disk contains disk details extracted from the hardware profile
                   properties:
+                    diskSelector:
+                      items:
+                        description: DiskSelector contains disk details extracted from hardware profile
+                        properties:
+                          hctl:
+                            type: string
+                          rotational:
+                            type: boolean
+                        type: object
+                      type: array
                     maximumCount:
                       description: MaximumCount of disk should be greater than 0 and greater than MinimumCount Ex. MaximumCount > 0 && MaximumCount > MinimumCount
                       minimum: 1
