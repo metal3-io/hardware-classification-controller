@@ -115,6 +115,14 @@ spec:
                       minimum: 1
                       type: integer
                   type: object
+                systemVendor:
+                  description: SystemVendor contains system vendor details extracted from the hardware profile
+                  properties:
+                    manufacturer:
+                      type: string
+                    productName:
+                      type: string
+                  type: object
               type: object
           type: object
         status:

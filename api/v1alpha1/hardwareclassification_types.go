@@ -48,6 +48,16 @@ type HardwareCharacteristics struct {
 	Nic *Nic `json:"nic,omitempty"`
 	// +optional
 	Ram *Ram `json:"ram,omitempty"`
+	// +optional
+	SystemVendor *SystemVendor `json:"systemVendor,omitempty"`
+}
+
+// SystemVendor contains system vendor details extracted from the hardware profile
+type SystemVendor struct {
+	// +optional
+	Manufacturer string `json:"manufacturer,omitempty"`
+	// +optional
+	ProductName string `json:"productName,omitempty"`
 }
 
 // Cpu contains cpu details extracted from the hardware profile

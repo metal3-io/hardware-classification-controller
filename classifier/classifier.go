@@ -10,6 +10,9 @@ import (
 var log = ctrl.Log.WithName("classifier")
 
 func ProfileMatchesHost(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bool {
+	if !checkSystemVendor(profile, host) {
+		return false
+	}
 	if !checkCPU(profile, host) {
 		return false
 	}
