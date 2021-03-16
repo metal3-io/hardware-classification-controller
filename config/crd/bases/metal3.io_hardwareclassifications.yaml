@@ -91,6 +91,20 @@ spec:
                       minimum: 1
                       type: integer
                   type: object
+                firmware:
+                  description: Firmware contains firmware details extracted from the hardware profile
+                  properties:
+                    bios:
+                      description: BIOS contains bios details extracted from the hardware profile
+                      properties:
+                        majorVersion:
+                          type: string
+                        minorVersion:
+                          type: string
+                        vendor:
+                          type: string
+                      type: object
+                  type: object
                 nic:
                   description: Nic contains nic details extracted from the hardware profile
                   properties:

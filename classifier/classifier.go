@@ -13,6 +13,9 @@ func ProfileMatchesHost(profile *hwcc.HardwareClassification, host *bmh.BareMeta
 	if !checkSystemVendor(profile, host) {
 		return false
 	}
+	if !checkFirmware(profile, host) {
+		return false
+	}
 	if !checkCPU(profile, host) {
 		return false
 	}
