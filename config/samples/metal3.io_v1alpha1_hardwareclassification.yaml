@@ -8,6 +8,7 @@ metadata:
 spec:
   hardwareCharacteristics:
       cpu:
+         architecture : "x86_64"
          minimumCount: 48
          maximumCount: 72
          minimumSpeedMHz: 2600

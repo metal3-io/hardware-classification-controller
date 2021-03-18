@@ -46,6 +46,30 @@ func checkCPU(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) boo
 		return false
 	}
 
+	ok = checkArch(
+		cpuDetails.Architecture,
+		host.Status.HardwareDetails.CPU.Arch)
+	log.Info("CPU",
+		"host", host.Name,
+		"profile", profile.Name,
+		"namespace", host.Namespace,
+		"architecture", cpuDetails.Architecture,
+		"actualArchitecture", host.Status.HardwareDetails.CPU.Arch,
+		"ok", ok,
+	)
+	if !ok {
+		return false
+	}
+
+	return true
+}
+
+func checkArch(expectedArch, hostSpecificArch string) bool {
+	if expectedArch != "" {
+		if expectedArch != hostSpecificArch {
+			return false
+		}
+	}
 	return true
 }
 

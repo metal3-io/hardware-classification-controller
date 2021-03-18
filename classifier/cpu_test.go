@@ -180,3 +180,64 @@ func TestCheckCPUCount(t *testing.T) {
 		})
 	}
 }
+
+func TestCPUArchitecture(t *testing.T) {
+	testCases := []struct {
+		Scenario string
+		Rule     *hwcc.Cpu
+		Actual   string
+		Expected bool
+	}{
+		{
+			Scenario: "nil",
+			Rule:     nil,
+			Actual:   "x86_64",
+			Expected: true,
+		},
+		{
+			Scenario: "matched",
+			Rule: &hwcc.Cpu{
+				Architecture: "x86_64",
+			},
+			Actual:   "x86_64",
+			Expected: true,
+		},
+		{
+			Scenario: "unmatched",
+			Rule: &hwcc.Cpu{
+				Architecture: "x86_64",
+			},
+			Actual:   "x86",
+			Expected: false,
+		},
+		{
+			Scenario: "empty",
+			Rule: &hwcc.Cpu{
+				Architecture: "x86_64",
+			},
+			Actual:   "",
+			Expected: false,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.Scenario, func(t *testing.T) {
+			profile := hwcc.HardwareClassification{
+				Spec: hwcc.HardwareClassificationSpec{
+					HardwareCharacteristics: hwcc.HardwareCharacteristics{
+						Cpu: tc.Rule,
+					},
+				},
+			}
+			host := bmh.BareMetalHost{
+				Status: bmh.BareMetalHostStatus{
+					HardwareDetails: &bmh.HardwareDetails{
+						CPU: bmh.CPU{
+							Arch: tc.Actual,
+						},
+					},
+				},
+			}
+			assert.Equal(t, tc.Expected, ProfileMatchesHost(&profile, &host))
+		})
+	}
+}
