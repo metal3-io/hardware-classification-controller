@@ -41,12 +41,25 @@ hardware configuration details.
     * maximumCount -- maximum disk count
     * minimumIndividualSizeGB -- minimum individual disk size in GB
     * maximumIndividualSizeGB -- maximum individual disk size in GB
+    * diskSelector -- list of Disk type configuration
+      * HCTL -- Disk Pattern
+      * Rotational -- Rotational Value of Disk
   * *ram* -- Expected RAM configurations:
     * minimumSizeGB -- minimum ram size in GB
     * maximumSizeGB -- maximum ram size in GB
   * *nic* -- Expected NIC configurations:
     * minimumCount -- minimum nic count
     * maximumCount -- maximum nic count
+    * nicSelector -- list of nic vendors
+      * vendor -- vendor id of nic
+  * *firmware* -- Expected firmware configurations:
+    * bios -- bios configurations
+     * vendor -- vendor of firmware
+     * minorVersion -- minimum version
+     * majorVersion -- maximum version
+  * *systemVendor* -- Expected SystemVendor configurations:
+    * manufacturer -- manufacturer of system vendor
+    * productName -- product name of system vendor
 
 ### HardwareClassificationController status
 
@@ -101,10 +114,27 @@ spec:
          maximumCount: 8
          minimumIndividualSizeGB: 200
          maximumIndividualSizeGB: 3000
+         diskSelector:
+                - hctl: "0:N:N:0"
+                  rotational: true
+                - hctl: "0:N:0:0"
+                  rotational : false
       ram:
          minimumSizeGB: 6
          maximumSizeGB: 180
       nic:
          minimumCount: 1
          maximumCount: 7
+         nicSelector:
+                vendor:
+                   - "0x8086"
+                   - "0x1af5"
+      firmware:
+         bios:
+             vendor: "Dell Inc."
+             minorVersion: "1.5.6"
+             majorVersion: "2.5.6"
+      systemVendor:
+         manufacturer: "QEMU"
+         productName: "Standard PC"
 ```

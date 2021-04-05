@@ -44,16 +44,33 @@ spec:
          maximumCount: 8
          minimumIndividualSizeGB: 200
          maximumIndividualSizeGB: 3000
+         diskSelector:
+                - hctl: "0:N:N:0"
+                  rotational: true
+                - hctl: "0:N:0:0"
+                  rotational : false
       ram:
          minimumSizeGB: 6
          maximumSizeGB: 180
       nic:
          minimumCount: 1
          maximumCount: 7
+         nicSelector:
+                vendor:
+                   - "0x8086"
+                   - "0x1af5"
+      firmware:
+         bios:
+             vendor: "Dell Inc."
+             minorVersion: "1.5.6"
+             majorVersion: "2.5.6"
+      systemVendor:
+         manufacturer: "QEMU"
+         productName: "Standard PC"
 ```
 
 Note: Minimum 1 field under `hardwareCharacteristics` is mandatory.
-If no field provided under `hardwareCharacteristics`, user willl get error.
+If no field provided under `hardwareCharacteristics`, user will get error.
 
 e.g.
 
@@ -115,7 +132,7 @@ or delete using resource name:
     To delete whole setup, delete deployment and namespace of hwcc.
 
     ```yaml
-        $ kubectl delete deployement <deployment-name> -n <namespace>
+        $ kubectl delete deployment <deployment-name> -n <namespace>
 
         $ kubectl delete namespace <namespace>
     ```
@@ -126,4 +143,3 @@ or delete using resource name:
     ```yaml
         $ make uninstall
     ```
-
