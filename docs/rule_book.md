@@ -44,3 +44,4 @@ For `NIC` user have to provide vendor ID.
 
    1. Intel NIC Vendor ID is 0x8086.
    1. Mellanox NIC Vendor ID is 0x15b3.
+   1. Broadcom NIC Vendor ID is 0x14e4.
