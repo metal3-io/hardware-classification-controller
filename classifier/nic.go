@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// checkNICs function will classify bmh host if NIC requested in profile are satisfied
 func checkNICs(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bool {
 	nicDetails := profile.Spec.HardwareCharacteristics.Nic
 	var nicVendors []string
@@ -58,6 +59,8 @@ func checkNICs(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bo
 	return ok
 }
 
+//checkVendor check NICs on the basis of Vendor
+//If host satisfy requested NIC Vendors, return true else false
 func checkVendor(actualNicVendors, requireNicVendor []string) bool {
 	if len(requireNicVendor) > len(actualNicVendors) {
 		return false
