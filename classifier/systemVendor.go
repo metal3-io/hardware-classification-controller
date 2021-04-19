@@ -7,6 +7,7 @@ import (
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 )
 
+// checkFirmware it filters the bmh host as per the hardware details provided by user
 func checkSystemVendor(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bool {
 	systemVendorDetails := profile.Spec.HardwareCharacteristics.SystemVendor
 	if systemVendorDetails == nil {
@@ -43,6 +44,7 @@ func checkSystemVendor(profile *hwcc.HardwareClassification, host *bmh.BareMetal
 	return true
 }
 
+// checkString check if the expected details matches the host details
 func checkString(expected, hostSpecific string) bool {
 	if expected != "" {
 		if expected != hostSpecific {
@@ -53,6 +55,7 @@ func checkString(expected, hostSpecific string) bool {
 	return true
 }
 
+// checkSubString check if the expected details contains the host details
 func checkSubString(expected, hostSpecific string) bool {
 	if expected != "" {
 		if !strings.Contains(hostSpecific, expected) {
