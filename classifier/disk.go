@@ -9,6 +9,7 @@ import (
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 )
 
+// checkDisks it filters the bmh host as per the hardware details provided by user 
 func checkDisks(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bool {
 	diskDetails := profile.Spec.HardwareCharacteristics.Disk
 	if diskDetails == nil {
@@ -84,6 +85,7 @@ func checkDisks(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) b
 	return true
 }
 
+// checkRangeCapacity check the range of disk count
 func checkRangeCapacity(min, max, count bmh.Capacity) bool {
 	if min > 0 && count < min {
 		return false
@@ -94,6 +96,7 @@ func checkRangeCapacity(min, max, count bmh.Capacity) bool {
 	return true
 }
 
+// checkDisk it filter outs the disks from bmh disk array as per hardware details 
 func checkDisk(pattern []hwcc.DiskSelector, disks []bmh.Storage) ([]bmh.Storage, bool) {
 	var diskNew []bmh.Storage
 
@@ -122,6 +125,7 @@ func checkDisk(pattern []hwcc.DiskSelector, disks []bmh.Storage) ([]bmh.Storage,
 	return diskNew, true
 }
 
+// validatePattern finds out the disk with the pattern provided in hardware profile
 func validatePattern(HCTL string) string {
 
 	if HCTL == "0:0:0:0" {
@@ -139,6 +143,7 @@ func validatePattern(HCTL string) string {
 	}
 }
 
+// validateExpectedPattern returns default pattern
 func validateExpectedPattern(HCTL string) string {
 	if HCTL == "0:0:0:0" {
 		return "0:0:N:0"
