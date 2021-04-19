@@ -6,6 +6,7 @@ import (
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 )
 
+// checkCPU it filters the bmh host as per the hardware details provided by user
 func checkCPU(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bool {
 	cpuDetails := profile.Spec.HardwareCharacteristics.Cpu
 	if cpuDetails == nil {
@@ -64,6 +65,7 @@ func checkCPU(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) boo
 	return true
 }
 
+// checkArch checks the cpu arch type
 func checkArch(expectedArch, hostSpecificArch string) bool {
 	if expectedArch != "" {
 		if expectedArch != hostSpecificArch {
@@ -73,6 +75,7 @@ func checkArch(expectedArch, hostSpecificArch string) bool {
 	return true
 }
 
+//  checkRangeClockSpeed checks the cpu clockspeed range
 func checkRangeClockSpeed(min, max, count bmh.ClockSpeed) bool {
 	if min > 0 && count < min {
 		return false
