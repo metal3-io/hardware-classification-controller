@@ -9,7 +9,7 @@ import (
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
 )
 
-// checkDisks it filters the bmh host as per the hardware details provided by user 
+// checkDisks it filters the bmh host as per the hardware details provided by user
 func checkDisks(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bool {
 	diskDetails := profile.Spec.HardwareCharacteristics.Disk
 	if diskDetails == nil {
@@ -96,7 +96,7 @@ func checkRangeCapacity(min, max, count bmh.Capacity) bool {
 	return true
 }
 
-// checkDisk it filter outs the disks from bmh disk array as per hardware details 
+// checkDisk it filter outs the disks from bmh disk array as per hardware details
 func checkDisk(pattern []hwcc.DiskSelector, disks []bmh.Storage) ([]bmh.Storage, bool) {
 	var diskNew []bmh.Storage
 
@@ -109,12 +109,20 @@ func checkDisk(pattern []hwcc.DiskSelector, disks []bmh.Storage) ([]bmh.Storage,
 			if validatedExpectedPattern == validatedPattern && pattern.Rotational == disk.Rotational {
 				matched = true
 				diskNew = append(diskNew, disk)
+				log.Info("Disk Pattern",
+					"expectedPattern", pattern.HCTL,
+					"expectedRotational", pattern.Rotational,
+					"actualPattern", disk.HCTL,
+					"actualRotational", disk.Rotational,
+					"ok", true,
+				)
 			}
 		}
 
 		if !matched {
 			log.Info("Disk Pattern",
-				"pattern", pattern,
+				"expectedPattern", pattern.HCTL,
+				"expectedRotational", pattern.Rotational,
 				"ok", false,
 			)
 
@@ -132,14 +140,14 @@ func validatePattern(HCTL string) string {
 		return "0:0:N:0"
 
 	} else {
-		res1 := strings.Split(HCTL, ":")
-		for index, st := range res1 {
+		resp := strings.Split(HCTL, ":")
+		for index, st := range resp {
 			value, _ := strconv.Atoi(st)
 			if value > 0 {
-				res1[index] = "N"
+				resp[index] = "N"
 			}
 		}
-		return strings.Join(res1, ":")
+		return strings.Join(resp, ":")
 	}
 }
 
