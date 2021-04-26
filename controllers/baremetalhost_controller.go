@@ -120,7 +120,7 @@ func getLabelDetails(profile *hwcc.HardwareClassification) (key, value string) {
 	key = defaultLabelName + profile.Name
 	labels := profile.GetLabels()
 	if labels != nil {
-		if val, ok := labels[key]; ok {
+		if val, ok := labels[profile.Name]; ok {
 			value = val
 		}
 	}
