@@ -49,17 +49,6 @@ func checkFirmware(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost
 	return true
 }
 
-// checkString check if the expected details matches the host details
-func checkString(expected, hostSpecific string) bool {
-	if expected != "" {
-		if expected != hostSpecific {
-			return false
-		}
-
-	}
-	return true
-}
-
 // Check the version range
 func checkVersion(minorVersion, majorVersion, hostVersion string) bool {
 
