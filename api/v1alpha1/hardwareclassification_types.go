@@ -50,6 +50,8 @@ type HardwareCharacteristics struct {
 	Ram *Ram `json:"ram,omitempty"`
 	// +optional
 	SystemVendor *SystemVendor `json:"systemVendor,omitempty"`
+	// +optional
+	Firmware *Firmware `json:"firmware,omitempty"`
 }
 
 // SystemVendor contains system vendor details extracted from the hardware profile
@@ -58,6 +60,21 @@ type SystemVendor struct {
 	Manufacturer string `json:"manufacturer,omitempty"`
 	// +optional
 	ProductName string `json:"productName,omitempty"`
+}
+
+// Firmware contains firmware details extracted from the hardware profile
+type Firmware struct {
+	BIOS BIOS `json:"bios,omitempty"`
+}
+
+// BIOS contains bios details extracted from the hardware profile
+type BIOS struct {
+	// +optional
+	Vendor string `json:"vendor,omitempty"`
+	// +optional
+	MinorVersion string `json:"minorVersion,omitempty"`
+	// +optional
+	MajorVersion string `json:"majorVersion,omitempty"`
 }
 
 // Cpu contains cpu details extracted from the hardware profile
