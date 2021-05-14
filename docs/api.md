@@ -29,14 +29,14 @@ hardware configuration details.
 
 #### Spec fields
 
-* *hardwareCharacteristics* -- HardwareCharacteristics defines expected
+ **hardwareCharacteristics* -- HardwareCharacteristics defines expected
   hardware configurations for CPU, DISK, NIC and RAM.
-  * *cpu* -- Expected CPU configurations:
+  **cpu* -- Expected CPU configurations:
     * minimumCount -- minimum cpu count
     * maximumCount -- maximum cpu count
     * minimumSpeedMHz -- minimum speed in MHz
     * maximumSpeedMHz -- maximum speed in MHz
-  * *disk* -- Expected DISK configurations:
+  **disk* -- Expected DISK configurations:
     * minimumCount -- minimum disk count
     * maximumCount -- maximum disk count
     * minimumIndividualSizeGB -- minimum individual disk size in GB
@@ -44,20 +44,20 @@ hardware configuration details.
     * diskSelector -- list of Disk type configuration
       * HCTL -- Disk Pattern
       * Rotational -- Rotational Value of Disk
-  * *ram* -- Expected RAM configurations:
+  **ram* -- Expected RAM configurations:
     * minimumSizeGB -- minimum ram size in GB
     * maximumSizeGB -- maximum ram size in GB
-  * *nic* -- Expected NIC configurations:
+  **nic* -- Expected NIC configurations:
     * minimumCount -- minimum nic count
     * maximumCount -- maximum nic count
     * nicSelector -- list of nic vendors
       * vendor -- vendor id of nic
-  * *firmware* -- Expected firmware configurations:
+  **firmware* -- Expected firmware configurations:
     * bios -- bios configurations
-     * vendor -- vendor of firmware
-     * minorVersion -- minimum version
-     * majorVersion -- maximum version
-  * *systemVendor* -- Expected SystemVendor configurations:
+      * vendor -- vendor of firmware
+      * minorVersion -- minimum version
+      * majorVersion -- maximum version
+  **systemVendor* -- Expected SystemVendor configurations:
     * manufacturer -- manufacturer of system vendor
     * productName -- product name of system vendor
 
@@ -68,26 +68,26 @@ state of HardwareClassification.
 
 #### Status fields
 
-* *errorType* -- errorType indicates the type of failure encountered
-  * LabelUpdateFailure -- LabelUpdateFailure is an error condition occurring
-    when the controller is unable to update label of BareMetalHost.
-  * LabelDeleteFailure -- LabelDeleteFailure is an error condition occurring
-    when the controller is unable to delete label of BareMetalHost.
-  * FetchBMHListFailure -- FetchBMHListFailure is an error condition occurring
-    when the controller is unable to fetch BareMetalHost from BMO.
-  * ProfileMisConfigured -- ProfileMisConfigured is an error condition
-    occurring when the extracted profile is misconfigured.
+ **errorType* -- errorType indicates the type of failure encountered
+   * LabelUpdateFailure -- LabelUpdateFailure is an error condition occurring
+     when the controller is unable to update label of BareMetalHost.
+   * LabelDeleteFailure -- LabelDeleteFailure is an error condition occurring
+     when the controller is unable to delete label of BareMetalHost.
+   * FetchBMHListFailure -- FetchBMHListFailure is an error condition occurring
+     when the controller is unable to fetch BareMetalHost from BMO.
+   * ProfileMisConfigured -- ProfileMisConfigured is an error condition
+     occurring when the extracted profile is misconfigured.
 
-* *profileMatchStatus* -- profileMatchStatus indicates whether expected
+ **profileMatchStatus* -- profileMatchStatus indicates whether expected
   hardwareCharacteristics matches to any of BareMetalHost or not.
-  * ProfileMatchStatusEmpty -- default is empty
-  * ProfileMatchStatusMatched -- profileMatchStatusMatched is the status value
-    when the profile matches to one of the BareMetalHost.
-  * ProfileMatchStatusUnMatched -- profileMatchStatusUnMatched is the status
-    value when the profile does not matches to any of the BareMetalHost.
+   * ProfileMatchStatusEmpty -- default is empty
+   * ProfileMatchStatusMatched -- profileMatchStatusMatched is the status value
+     when the profile matches to one of the BareMetalHost.
+   * ProfileMatchStatusUnMatched -- profileMatchStatusUnMatched is the status
+     value when the profile does not matches to any of the BareMetalHost.
 
-* *errorMessage* -- Details of the last error reported by the
-  hardwareclassification system.
+ **errorMessage* -- Details of the last error reported by the
+   hardwareclassification system.
 
 ### HardwareClassificationController Example
 
