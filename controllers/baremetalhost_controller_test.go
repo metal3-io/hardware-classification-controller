@@ -35,7 +35,7 @@ func TestGetLabelDetails(t *testing.T) {
 					Name:      "profile-name",
 					Namespace: "profile-namespace",
 					Labels: map[string]string{
-						"hardwareclassification.metal3.io/profile-name": "alternate-value",
+						"profile-name": "alternate-value",
 					},
 				},
 			},
