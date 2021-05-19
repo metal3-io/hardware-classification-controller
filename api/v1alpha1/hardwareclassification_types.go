@@ -80,6 +80,9 @@ type BIOS struct {
 // Cpu contains cpu details extracted from the hardware profile
 type Cpu struct {
 	// +optional
+	// +kubebuilder:validation:Enum=x86;x86_64;IAS;AMD64
+	Architecture string `json:"architecture,omitempty"`
+	// +optional
 	// +kubebuilder:validation:Minimum=1
 	// MinimumCount of cpu should be greater than 0
 	// Ex. MinimumCount > 0

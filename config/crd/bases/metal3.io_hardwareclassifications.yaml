@@ -50,6 +50,13 @@ spec:
                 cpu:
                   description: Cpu contains cpu details extracted from the hardware profile
                   properties:
+                    architecture:
+                      enum:
+                      - x86
+                      - x86_64
+                      - IAS
+                      - AMD64
+                      type: string
                     maximumCount:
                       description: MaximumCount of cpu should be greater than 0 and greater than MinimumCount Ex. MaximumCount > 0 && MaximumCount > MinimumCount
                       minimum: 1
