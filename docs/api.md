@@ -29,24 +29,37 @@ hardware configuration details.
 
 #### Spec fields
 
-* *hardwareCharacteristics* -- HardwareCharacteristics defines expected
+ **hardwareCharacteristics* -- HardwareCharacteristics defines expected
   hardware configurations for CPU, DISK, NIC and RAM.
-  * *cpu* -- Expected CPU configurations:
+  **cpu* -- Expected CPU configurations:
     * minimumCount -- minimum cpu count
     * maximumCount -- maximum cpu count
     * minimumSpeedMHz -- minimum speed in MHz
     * maximumSpeedMHz -- maximum speed in MHz
-  * *disk* -- Expected DISK configurations:
+  **disk* -- Expected DISK configurations:
     * minimumCount -- minimum disk count
     * maximumCount -- maximum disk count
     * minimumIndividualSizeGB -- minimum individual disk size in GB
     * maximumIndividualSizeGB -- maximum individual disk size in GB
-  * *ram* -- Expected RAM configurations:
+    * diskSelector -- list of Disk type configuration
+      * HCTL -- Disk Pattern
+      * Rotational -- Rotational Value of Disk
+  **ram* -- Expected RAM configurations:
     * minimumSizeGB -- minimum ram size in GB
     * maximumSizeGB -- maximum ram size in GB
-  * *nic* -- Expected NIC configurations:
+  **nic* -- Expected NIC configurations:
     * minimumCount -- minimum nic count
     * maximumCount -- maximum nic count
+    * nicSelector -- list of nic vendors
+      * vendor -- vendor id of nic
+  **firmware* -- Expected firmware configurations:
+    * bios -- bios configurations
+      * vendor -- vendor of firmware
+      * minorVersion -- minimum version
+      * majorVersion -- maximum version
+  **systemVendor* -- Expected SystemVendor configurations:
+    * manufacturer -- manufacturer of system vendor
+    * productName -- product name of system vendor
 
 ### HardwareClassificationController status
 
@@ -55,26 +68,26 @@ state of HardwareClassification.
 
 #### Status fields
 
-* *errorType* -- errorType indicates the type of failure encountered
-  * LabelUpdateFailure -- LabelUpdateFailure is an error condition occurring
-    when the controller is unable to update label of BareMetalHost.
-  * LabelDeleteFailure -- LabelDeleteFailure is an error condition occurring
-    when the controller is unable to delete label of BareMetalHost.
-  * FetchBMHListFailure -- FetchBMHListFailure is an error condition occurring
-    when the controller is unable to fetch BareMetalHost from BMO.
-  * ProfileMisConfigured -- ProfileMisConfigured is an error condition
-    occurring when the extracted profile is misconfigured.
+ **errorType* -- errorType indicates the type of failure encountered
+   * LabelUpdateFailure -- LabelUpdateFailure is an error condition occurring
+     when the controller is unable to update label of BareMetalHost.
+   * LabelDeleteFailure -- LabelDeleteFailure is an error condition occurring
+     when the controller is unable to delete label of BareMetalHost.
+   * FetchBMHListFailure -- FetchBMHListFailure is an error condition occurring
+     when the controller is unable to fetch BareMetalHost from BMO.
+   * ProfileMisConfigured -- ProfileMisConfigured is an error condition
+     occurring when the extracted profile is misconfigured.
 
-* *profileMatchStatus* -- profileMatchStatus indicates whether expected
+ **profileMatchStatus* -- profileMatchStatus indicates whether expected
   hardwareCharacteristics matches to any of BareMetalHost or not.
-  * ProfileMatchStatusEmpty -- default is empty
-  * ProfileMatchStatusMatched -- profileMatchStatusMatched is the status value
-    when the profile matches to one of the BareMetalHost.
-  * ProfileMatchStatusUnMatched -- profileMatchStatusUnMatched is the status
-    value when the profile does not matches to any of the BareMetalHost.
+   * ProfileMatchStatusEmpty -- default is empty
+   * ProfileMatchStatusMatched -- profileMatchStatusMatched is the status value
+     when the profile matches to one of the BareMetalHost.
+   * ProfileMatchStatusUnMatched -- profileMatchStatusUnMatched is the status
+     value when the profile does not matches to any of the BareMetalHost.
 
-* *errorMessage* -- Details of the last error reported by the
-  hardwareclassification system.
+ **errorMessage* -- Details of the last error reported by the
+   hardwareclassification system.
 
 ### HardwareClassificationController Example
 
@@ -101,10 +114,27 @@ spec:
          maximumCount: 8
          minimumIndividualSizeGB: 200
          maximumIndividualSizeGB: 3000
+         diskSelector:
+                - hctl: "0:N:N:0"
+                  rotational: true
+                - hctl: "0:N:0:0"
+                  rotational : false
       ram:
          minimumSizeGB: 6
          maximumSizeGB: 180
       nic:
          minimumCount: 1
          maximumCount: 7
+         nicSelector:
+                vendor:
+                   - "0x8086"
+                   - "0x1af5"
+      firmware:
+         bios:
+             vendor: "Dell Inc."
+             minorVersion: "1.5.6"
+             majorVersion: "2.5.6"
+      systemVendor:
+         manufacturer: "QEMU"
+         productName: "Standard PC"
 ```
