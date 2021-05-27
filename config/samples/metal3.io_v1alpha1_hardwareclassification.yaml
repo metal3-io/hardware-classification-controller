@@ -11,15 +11,19 @@ spec:
          architecture : "x86_64"
          minimumCount: 48
          maximumCount: 72
-         minimumSpeedMHz: 2600
+         minimumSpeedMHz: 1000
          maximumSpeedMHz: 3600
       disk:
          minimumCount: 1
          maximumCount: 8
-         minimumIndividualSizeGB: 200
+         minimumIndividualSizeGB: 20
          maximumIndividualSizeGB: 3000
+         diskSelector:
+                - hctl: "0:0:0:0"
+                  rotational: true
+             
       ram:
-         minimumSizeGB: 6
+         minimumSizeGB: 2
          maximumSizeGB: 180
       nic:
          minimumCount: 1
