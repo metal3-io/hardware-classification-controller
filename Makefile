@@ -2,7 +2,7 @@
 # Image URL to use all building/pushing image targets
 IMG ?= controller:latest
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
-CRD_OPTIONS ?= "crd:trivialVersions=true,crdVersions=v1beta1"
+CRD_OPTIONS ?= "crd:trivialVersions=true,crdVersions=v1"
 
 BIN_DIR := $(PWD)/tools/bin
 KUSTOMIZE := $(BIN_DIR)/kustomize
