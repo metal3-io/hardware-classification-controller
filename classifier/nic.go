@@ -31,11 +31,11 @@ func checkNICs(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bo
 	)
 
 	if !ok {
-		return ok
+		return false
 	}
 
 	if len(nicDetails.NicSelector.Vendor) == 0 {
-		return ok
+		return true
 	}
 
 	for i := 0; i < len(host.Status.HardwareDetails.NIC); i++ {
@@ -55,8 +55,11 @@ func checkNICs(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) bo
 		"Actual Nics Vendor", nicVendors,
 		"ok", ok,
 	)
+	if !ok {
+		return false
+	}
 
-	return ok
+	return true
 }
 
 //checkVendor check NICs on the basis of Vendor
