@@ -143,7 +143,15 @@ type Disk struct {
 }
 
 // Nic contains nic details extracted from the hardware profile
+type NicSelector struct {
+	//optional
+	Vendor []string `json:"vendor,omitempty"`
+}
+
+// Nic contains nic details extracted from the hardware profile
 type Nic struct {
+	// +optional
+	NicSelector NicSelector `json:"nicSelector,omitempty"`
 	// +optional
 	// +kubebuilder:validation:Minimum=1
 	// Minimum count should be greater than 0
