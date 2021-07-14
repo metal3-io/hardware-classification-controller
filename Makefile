@@ -1,18 +1,30 @@
 
+SHELL:=/usr/bin/env bash
 # Image URL to use all building/pushing image targets
 IMG ?= controller:latest
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true,crdVersions=v1"
 
+TOOLS_DIR := hack/tools
+TOOLS_BIN_DIR := $(TOOLS_DIR)/bin
 BIN_DIR := $(PWD)/tools/bin
 KUSTOMIZE := $(BIN_DIR)/kustomize
 CONTROLLER_GEN := $(BIN_DIR)/controller-gen
 COVER_PROFILE = cover.out
+KUBEBUILDER := $(TOOLS_BIN_DIR)/kubebuilder
+KUSTOMIZE := $(TOOLS_BIN_DIR)/kustomize
 
 all: manager
 
 # Run tests
-test: generate fmt vet manifests unit
+#test: generate fmt vet manifests unit
+
+.PHONY: testprereqs
+testprereqs: $(KUBEBUILDER) $(KUSTOMIZE)
+
+.PHONY: test
+test: testprereqs fmt ## Run tests
+	source ./hack/fetch_ext_bins.sh; fetch_tools; setup_envs; go test -v ./api/... ./controllers/... -coverprofile ./cover.out
 
 unit:
 	go test ./... -coverprofile $(COVER_PROFILE)
@@ -52,6 +64,13 @@ fmt:
 # Run go vet against code
 vet:
 	go vet ./...
+
+$(KUBEBUILDER): $(TOOLS_DIR)/go.mod
+	cd $(TOOLS_DIR); ./install_kubebuilder.sh
+
+.PHONY: $(KUSTOMIZE)
+$(KUSTOMIZE): $(TOOLS_DIR)/go.mod
+	cd $(TOOLS_DIR); ./install_kustomize.sh
 
 # Generate code
 generate: $(CONTROLLER_GEN)
