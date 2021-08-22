@@ -7,7 +7,7 @@ CRD_OPTIONS ?= "crd:trivialVersions=true,crdVersions=v1"
 
 TOOLS_DIR := hack/tools
 TOOLS_BIN_DIR := $(TOOLS_DIR)/bin
-BIN_DIR := $(PWD)/tools/bin
+BIN_DIR := $(PWD)/hack/tools/bin
 KUSTOMIZE := $(BIN_DIR)/kustomize
 CONTROLLER_GEN := $(BIN_DIR)/controller-gen
 COVER_PROFILE = cover.out
@@ -17,7 +17,6 @@ KUSTOMIZE := $(TOOLS_BIN_DIR)/kustomize
 all: manager
 
 # Run tests
-#test: generate fmt vet manifests unit
 
 .PHONY: testprereqs
 testprereqs: $(KUBEBUILDER) $(KUSTOMIZE)
@@ -85,9 +84,9 @@ docker-push:
 	docker push ${IMG}
 
 $(KUSTOMIZE):
-	./tools/install_kustomize.sh
+	./hack/tools/install_kustomize.sh
 
 # find or download controller-gen
 # download controller-gen if necessary
 $(CONTROLLER_GEN):
-	./tools/install_controller_gen.sh
+	./hack/tools/install_controller_gen.sh

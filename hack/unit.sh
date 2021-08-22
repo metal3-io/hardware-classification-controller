@@ -3,7 +3,6 @@
 set -eux
 
 IS_CONTAINER=${IS_CONTAINER:-false}
-#ARTIFACTS=${ARTIFACTS:-/tmp}
 CONTAINER_RUNTIME="${CONTAINER_RUNTIME:-docker}"
 
 if [ "${IS_CONTAINER}" != "false" ]; then
