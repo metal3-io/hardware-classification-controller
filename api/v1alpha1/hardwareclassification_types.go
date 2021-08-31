@@ -190,6 +190,9 @@ const (
 	// ProfileMatchStatusUnMatched is the status value when the profile
 	// does not match to one of the BareMetalHost.
 	ProfileMatchStatusUnMatched ProfileMatchStatus = "unmatched"
+	// NoBareMetalHosts is the status value when the profile
+	// does not found no BareMetalHosts.
+	NoBareMetalHosts ProfileMatchStatus = "No BareMetalHosts Found"
 )
 
 // ErrorType indicates the class of problem that has caused the HCC resource
