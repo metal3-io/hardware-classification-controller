@@ -138,6 +138,10 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 	if matchCount == 0 {
 		status = hwcc.ProfileMatchStatusUnMatched
 	}
+	if len(bmhHostList.Items) == 0 {
+		status = hwcc.NoBareMetalHosts
+	}
+
 	if hardwareClassification.Status.ProfileMatchStatus != status {
 		hwcLog.Info("updating match status", "newValue", status)
 		hardwareClassification.Status.ProfileMatchStatus = status
