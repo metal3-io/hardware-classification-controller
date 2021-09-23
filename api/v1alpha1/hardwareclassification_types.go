@@ -34,7 +34,7 @@ type HardwareClassificationSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// HardwareCharacteristics defines expected hardware configurations for Cpu, Disk, Nic and Ram.
+	// HardwareCharacteristics defines expected hardware configurations for Cpu, Disk, Nic, Ram, SystemVendor and Firmware.
 	HardwareCharacteristics HardwareCharacteristics `json:"hardwareCharacteristics,omitempty"`
 }
 
