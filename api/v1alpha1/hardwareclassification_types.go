@@ -216,6 +216,70 @@ const (
 	Empty ErrorType = ""
 )
 
+// MatchedCount will provide matched count of Hosts per profile
+type MatchedCount int
+
+// UnmatchedCount will provide unmatched count of Hosts per profile
+type UnmatchedCount int
+
+const (
+	// MatchedCount is the default status value
+	MatchedCountEmpty MatchedCount = 0
+	// MatchedCount is the default status value
+	UnmatchedCountEmpty UnmatchedCount = 0
+)
+
+// Total hosts in error state
+type ErrorHosts int
+
+// Total hosts in registration error state
+type RegistrationErrorHosts int
+
+// Total hosts in Introspection error state
+type IntrospectionErrorHosts int
+
+// Total hosts in Provisioning error state
+type ProvisioningErrorHosts int
+
+// Total hosts in Power Management error state
+type PowerMgmtErrorHosts int
+
+// Total hosts in Provisioned Registration Error state
+type ProvisionedRegistrationErrorHosts int
+
+// Total hosts in Preparation Error state
+type PreparationErrorHosts int
+
+// Total hosts in Detach Error state
+type DetachErrorHosts int
+
+const (
+	// ErrorHosts is count of Hosts in error state
+	ErrorHostsEmpty ErrorHosts = 0
+
+	// RegistrationErrorHosts is count of Hosts in Registration error state
+	RegistrationErrorHostsEmpty RegistrationErrorHosts = 0
+
+	// IntrospectionErrorHosts is count of Hosts in Introspection error state
+	IntrospectionErrorHostsEmpty IntrospectionErrorHosts = 0
+
+	// ProvisioningErrorHosts is count of Hosts in Provisioning error state
+	ProvisioningErrorHostsEmpty ProvisioningErrorHosts = 0
+
+	// PowerMgmtHosts is count of Hosts in Power Management error state
+	PowerMgmtHostsEmpty PowerMgmtErrorHosts = 0
+
+	// ProvisionedRegistrationErrorHosts is count of Hosts in Provisioned
+	// Registration error state
+	ProvisionedRegistrationErrorHostsEmpty ProvisionedRegistrationErrorHosts = 0
+
+	// PreparationErrorHostsEmpty is count of hosts in Preparation Error state
+	PreparationErrorHostsEmpty PreparationErrorHosts = 0
+
+	// DetachErrorHostsEmpty is count in Detach Error state
+	DetachErrorHostsEmpty DetachErrorHosts = 0
+)
+
 const (
 	//NoBaremetalHost no bmo host found message
 	NoBaremetalHost string = "No BareMetalHost Found"
@@ -234,6 +298,26 @@ type HardwareClassificationStatus struct {
 	ErrorType ErrorType `json:"errorType,omitempty"`
 	// ProfileMatchStatus identifies whether a applied profile is matches or not
 	ProfileMatchStatus ProfileMatchStatus `json:"profileMatchStatus,omitempty"`
+	// The count of matched Hosts per profile reported by hardwareclassification system
+	MatchedCount MatchedCount `json:"matchedCount,omitempty"`
+	// The count of unmatched Hosts per profile reported by hardwareclassification system
+	UnmatchedCount UnmatchedCount `json:"unmatchedCount,omitempty"`
+	// The count of Hosts in error state
+	ErrorHosts ErrorHosts `json:"errorHosts,omitempty"`
+	// The count of hosts in registration error state
+	RegistrationErrorHosts RegistrationErrorHosts `json:"registrationErrorHosts,omitempty"`
+	// The count of hosts in introspection error state
+	IntrospectionErrorHosts IntrospectionErrorHosts `json:"introspectionErrorHosts,omitempty"`
+	// The count of hosts in provisioning error state
+	ProvisioningErrorHosts ProvisioningErrorHosts `json:"provisioningErrorHosts,omitempty"`
+	// The count of hosts in power management error state
+	PowerMgmtErrorHosts PowerMgmtErrorHosts `json:"powerMgmtErrorHosts,omitempty"`
+	// The count of hosts in Provisioned Registration error state
+	ProvisionedRegistrationErrorHosts ProvisionedRegistrationErrorHosts `json:"provisionedRegistrationErrorHosts,omitempty"`
+	// The count of hosts in Preparation error state
+	PreparationErrorHosts PreparationErrorHosts `json:"preparationErrorHosts,omitempty"`
+	// The count of hosts in Detach error state
+	DetachErrorHosts DetachErrorHosts `json:"detachErrorHosts,omitempty"`
 	// The last error message reported by the hardwareclassification system
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
@@ -242,6 +326,16 @@ type HardwareClassificationStatus struct {
 // +kubebuilder:resource:shortName=hwc;hc
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="ProfileMatchStatus",type="string",JSONPath=".status.profileMatchStatus",description="Profile Match Status"
+// +kubebuilder:printcolumn:name="MatchedHosts",type="integer",JSONPath=".status.matchedCount",description="Total Matched hosts."
+// +kubebuilder:printcolumn:name="UnmatchedHosts",type="integer",JSONPath=".status.unmatchedCount",description="Total Unmatched hosts."
+// +kubebuilder:printcolumn:name="ErrorHosts",type="integer",JSONPath=".status.errorHosts",description="Total error hosts."
+// +kubebuilder:printcolumn:name="RegistrationErrorHosts",type="integer",priority=1,JSONPath=".status.registrationErrorHosts",description="Total hosts in Registration error state."
+// +kubebuilder:printcolumn:name="IntrospectionErrorHosts",type="integer",priority=1,JSONPath=".status.introspectionErrorHosts",description="Total hosts in Introspection error state."
+// +kubebuilder:printcolumn:name="ProvisioningErrorHosts",type="integer",priority=1,JSONPath=".status.provisioningErrorHosts",description="Total hosts in Provisioning error state."
+// +kubebuilder:printcolumn:name="PowerMgmtErrorHosts",type="integer",priority=1,JSONPath=".status.powerMgmtErrorHosts",description="Total hosts in Power Management error state."
+// +kubebuilder:printcolumn:name="ProvisionedRegistrationErrorHosts",priority=1,type="integer",JSONPath=".status.provisionedRegistrationErrorHosts",description="Total hosts in Provisioned Registration error state."
+// +kubebuilder:printcolumn:name="PreparationErrorHosts",type="integer",priority=1,JSONPath=".status.preparationErrorHosts",description="Total hosts in Preparation error state."
+// +kubebuilder:printcolumn:name="DetachErrorHosts",type="integer",priority=1,JSONPath=".status.detachErrorHosts",description="Total hosts in Detach error state."
 // +kubebuilder:printcolumn:name="Error",type="string",JSONPath=".status.errorMessage",description="Most recent error"
 
 // HardwareClassification is the Schema for the hardwareclassifications API

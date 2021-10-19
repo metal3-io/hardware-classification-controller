@@ -5,6 +5,7 @@ metadata:
   namespace: metal3
   labels:
     hardwareclassification-sample: matches
+    hardwareclassification-error: All
 spec:
   hardwareCharacteristics:
       cpu:
