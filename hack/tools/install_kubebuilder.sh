@@ -5,11 +5,11 @@
 version=2.2.0
 arch=amd64
 
-mkdir -p ./bin
+mkdir -p ./hack/tools/bin
 curl -L -O "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v${version}/kubebuilder_${version}_linux_${arch}.tar.gz"
 
 tar -zxvf kubebuilder_${version}_linux_${arch}.tar.gz
-mv kubebuilder_${version}_linux_${arch}/bin/* bin
+mv kubebuilder_${version}_linux_${arch}/bin/* ./hack/tools/bin
 
 rm kubebuilder_${version}_linux_${arch}.tar.gz
 rm -r kubebuilder_${version}_linux_${arch}

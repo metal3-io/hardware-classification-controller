@@ -8,15 +8,15 @@ verify_kustomize_version() {
 
   echo "Verifying kustomize version"
   # If kustomize is available on the path, verify the version
-  if [ -x "$(command -v ./bin/kustomize)" ]; then
+  if [ -x "$(command -v ./hack/tools/bin/kustomize)" ]; then
     local kustomize_version
-    kustomize_version=$(./bin/kustomize version | grep -P '(?<=kustomize/v)[0-9]+\.[0-9]+\.[0-9]+' -o)
+    kustomize_version=$(./hack/tools/bin/kustomize version | grep -P '(?<=kustomize/v)[0-9]+\.[0-9]+\.[0-9]+' -o)
     if [[ "${MINIMUM_KUSTOMIZE_VERSION}" != $(echo -e "${MINIMUM_KUSTOMIZE_VERSION}\n${kustomize_version}" | sort -s -t. -k 1,1 -k 2,2n -k 3,3n | head -n1) ]]; then
       case "${OSTYPE}" in
 	linux-gnu|darwin*)
 	  echo "Kustomize version ${kustomize_version}, expected ${MINIMUM_KUSTOMIZE_VERSION}"
 	  echo "Updating, removing the old version"
-	  rm ./bin/kustomize
+	  rm ./hack/tools/bin/kustomize
 	  ;;
 	*)
 	  cat <<EOF
@@ -31,7 +31,7 @@ EOF
   fi
 
   # If kustomize is not available on the path, get it
-  if ! [ -x "$(command -v ./bin/kustomize)" ]; then
+  if ! [ -x "$(command -v ./hack/tools/bin/kustomize)" ]; then
     case "${OSTYPE}" in
       linux-gnu)
 	OS='linux'
@@ -45,12 +45,12 @@ EOF
 	;;
     esac
     echo 'kustomize not found, installing'
-    if ! [ -d "./bin" ]; then
-      mkdir -p "./bin"
+    if ! [ -d "./hack/tools/bin" ]; then
+      mkdir -p "./hack/tools/bin"
     fi
     curl -L -O "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${MINIMUM_KUSTOMIZE_VERSION}/kustomize_v${MINIMUM_KUSTOMIZE_VERSION}_${OS}_${ARCH}.tar.gz"
     tar -xzvf kustomize_v${MINIMUM_KUSTOMIZE_VERSION}_${OS}_${ARCH}.tar.gz
-    mv kustomize ./bin
+    mv kustomize ./hack/tools/bin
     rm kustomize_v${MINIMUM_KUSTOMIZE_VERSION}_${OS}_${ARCH}.tar.gz
   fi
 }

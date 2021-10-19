@@ -8,7 +8,6 @@ CRD_OPTIONS ?= "crd:trivialVersions=true,crdVersions=v1"
 TOOLS_DIR := hack/tools
 TOOLS_BIN_DIR := $(TOOLS_DIR)/bin
 BIN_DIR := $(PWD)/hack/tools/bin
-KUSTOMIZE := $(BIN_DIR)/kustomize
 CONTROLLER_GEN := $(BIN_DIR)/controller-gen
 COVER_PROFILE = cover.out
 KUBEBUILDER := $(TOOLS_BIN_DIR)/kubebuilder
@@ -82,9 +81,6 @@ docker-build: test
 # Push the docker image
 docker-push:
 	docker push ${IMG}
-
-$(KUSTOMIZE):
-	./hack/tools/install_kustomize.sh
 
 # find or download controller-gen
 # download controller-gen if necessary
