@@ -39,7 +39,7 @@ func checkDisks(profile *hwcc.HardwareClassification, host *bmh.BareMetalHost) b
 		diskDetails.MaximumCount,
 		len(newDisk),
 	)
-	log.Info("Disk Pattern",
+	log.Info("Disk Count",
 		"host", host.Name,
 		"profile", profile.Name,
 		"namespace", host.Namespace,
