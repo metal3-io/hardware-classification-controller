@@ -47,8 +47,7 @@ type HardwareClassificationReconciler struct {
 }
 
 // Reconcile reconcile function
-func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request) (_ ctrl.Result, reterr error) {
-	ctx := context.Background()
+func (hcReconciler *HardwareClassificationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (_ ctrl.Result, reterr error) {
 
 	// Initialize the logger with namespace
 	hwcLog := hcReconciler.Log.WithValues("hardwareclassification", req.NamespacedName)
@@ -158,48 +157,42 @@ func hasFinalizer(profile *hwcc.HardwareClassification) bool {
 // SetupWithManager will add watches for this controller
 func (hcReconciler *HardwareClassificationReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
-	mapper := classificationMapper{
-		client: mgr.GetClient(),
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&hwcc.HardwareClassification{}).
 		Named("hardware-classification").
 		Watches(&source.Kind{Type: &bmh.BareMetalHost{}},
-			&handler.EnqueueRequestsFromMapFunc{ToRequests: &mapper}).
+			handler.EnqueueRequestsFromMapFunc(hcReconciler.Map)).
 		Complete(hcReconciler)
 }
 
-type classificationMapper struct {
-	client client.Client
-}
-
-func (m *classificationMapper) Map(obj handler.MapObject) []ctrl.Request {
-	log := ctrl.Log.WithName("controllers").WithName("HardwareClassification").WithName("mapper").
-		WithValues("BareMetalHost",
-			fmt.Sprintf("%s/%s", obj.Meta.GetNamespace(), obj.Meta.GetName()))
-
-	hwcList := hwcc.HardwareClassificationList{}
-	opts := &client.ListOptions{
-		// We only want to apply profiles to classification rules in
-		// the same namespace.
-		Namespace: obj.Meta.GetNamespace(),
-	}
-	err := m.client.List(context.TODO(), &hwcList, opts)
-	if err != nil {
-		log.Error(err, "could not fetch hardware classification list")
-		return nil
-	}
-
+func (m *HardwareClassificationReconciler) Map(obj client.Object) []ctrl.Request {
 	requests := []ctrl.Request{}
-	for _, profile := range hwcList.Items {
-		log.Info("found hardwareclassification", "name", profile.Name)
-		requests = append(requests, ctrl.Request{
-			NamespacedName: types.NamespacedName{
-				Name:      profile.Name,
-				Namespace: profile.Namespace,
-			},
-		})
+	if hwc, ok := obj.(*hwcc.HardwareClassification); ok {
+		log := ctrl.Log.WithName("controllers").WithName("HardwareClassification").WithName("mapper").
+			WithValues("BareMetalHost",
+				fmt.Sprintf("%s/%s", hwc.ObjectMeta.Namespace, hwc.ObjectMeta.Name))
+
+		hwcList := hwcc.HardwareClassificationList{}
+		opts := &client.ListOptions{
+			// We only want to apply profiles to classification rules in
+			// the same namespace.
+			Namespace: hwc.ObjectMeta.Namespace,
+		}
+		err := m.Client.List(context.TODO(), &hwcList, opts)
+		if err != nil {
+			log.Error(err, "could not fetch hardware classification list")
+			return nil
+		}
+
+		for _, profile := range hwcList.Items {
+			log.Info("found hardwareclassification", "name", profile.Name)
+			requests = append(requests, ctrl.Request{
+				NamespacedName: types.NamespacedName{
+					Name:      profile.Name,
+					Namespace: profile.Namespace,
+				},
+			})
+		}
 	}
 	return requests
 }

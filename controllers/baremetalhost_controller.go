@@ -46,7 +46,7 @@ type BareMetalHostReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-func (r *BareMetalHostReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+func (r *BareMetalHostReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = context.Background()
 	logger := r.Log.WithValues("host", req.NamespacedName)
 
@@ -167,49 +167,46 @@ func setLabel(host *bmh.BareMetalHost, labelKey string, labelValue string) bool 
 }
 
 func (r *BareMetalHostReconciler) SetupWithManager(mgr ctrl.Manager) error {
-
-	mapper := hostMapper{
-		client: mgr.GetClient(),
-	}
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&bmh.BareMetalHost{}).
 		Named("baremetalhost").
-		Watches(&source.Kind{Type: &hwcc.HardwareClassification{}},
-			&handler.EnqueueRequestsFromMapFunc{ToRequests: &mapper}).
+		Watches(
+			&source.Kind{Type: &hwcc.HardwareClassification{}},
+			handler.EnqueueRequestsFromMapFunc(r.Map),
+		).
 		Complete(r)
 }
 
-type hostMapper struct {
-	client client.Client
-}
-
-func (m *hostMapper) Map(obj handler.MapObject) []ctrl.Request {
-	log := ctrl.Log.WithName("controllers").WithName("BareMetalHost").WithName("mapper").
-		WithValues("HardwareClassification",
-			fmt.Sprintf("%s/%s", obj.Meta.GetNamespace(), obj.Meta.GetName()))
-
-	bmhHostList := bmh.BareMetalHostList{}
-	opts := &client.ListOptions{
-		// We only want to apply profiles to hosts in the same
-		// namespace.
-		Namespace: obj.Meta.GetNamespace(),
-	}
-	err := m.client.List(context.TODO(), &bmhHostList, opts)
-	if err != nil {
-		log.Error(err, "could not fetch host list")
-		return nil
-	}
-
+func (m *BareMetalHostReconciler) Map(obj client.Object) []ctrl.Request {
 	requests := []ctrl.Request{}
-	for _, host := range bmhHostList.Items {
-		log.Info("found host", "name", host.Name)
-		requests = append(requests, ctrl.Request{
-			NamespacedName: types.NamespacedName{
-				Name:      host.Name,
-				Namespace: host.Namespace,
-			},
-		})
+
+	if bmhs, ok := obj.(*bmh.BareMetalHost); ok {
+
+		log := ctrl.Log.WithName("controllers").WithName("BareMetalHost").WithName("mapper").
+			WithValues("HardwareClassification",
+				fmt.Sprintf("%s/%s", bmhs.ObjectMeta.Namespace, bmhs.ObjectMeta.Name))
+
+		bmhHostList := bmh.BareMetalHostList{}
+		opts := &client.ListOptions{
+			// We only want to apply profiles to hosts in the same
+			// namespace.
+			Namespace: bmhs.ObjectMeta.Namespace,
+		}
+		err := m.Client.List(context.TODO(), &bmhHostList, opts)
+		if err != nil {
+			log.Error(err, "could not fetch host list")
+			return nil
+		}
+
+		for _, host := range bmhHostList.Items {
+			log.Info("found host", "name", host.Name)
+			requests = append(requests, ctrl.Request{
+				NamespacedName: types.NamespacedName{
+					Name:      host.Name,
+					Namespace: host.Namespace,
+				},
+			})
+		}
 	}
 	return requests
 }
