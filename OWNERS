@@ -2,10 +2,10 @@
 
 approvers:
  - zaneb
- - digambar15
+ - ravipwaghmare
+ - ashughorla
+
+emeritus_approvers:
  - russellb
  - maelk
-
-reviewers:
- - ashughorla
- - ravipwaghmare
+ - digambar15
