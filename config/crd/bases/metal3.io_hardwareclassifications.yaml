@@ -24,6 +24,53 @@ spec:
       jsonPath: .status.profileMatchStatus
       name: ProfileMatchStatus
       type: string
+    - description: Total Matched hosts.
+      jsonPath: .status.matchedCount
+      name: MatchedHosts
+      type: integer
+    - description: Total Unmatched hosts.
+      jsonPath: .status.unmatchedCount
+      name: UnmatchedHosts
+      type: integer
+    - description: Total error hosts.
+      jsonPath: .status.errorHosts
+      name: ErrorHosts
+      type: integer
+    - description: Total hosts in Registration error state.
+      jsonPath: .status.registrationErrorHosts
+      name: RegistrationErrorHosts
+      priority: 1
+      type: integer
+    - description: Total hosts in Introspection error state.
+      jsonPath: .status.introspectionErrorHosts
+      name: IntrospectionErrorHosts
+      priority: 1
+      type: integer
+    - description: Total hosts in Provisioning error state.
+      jsonPath: .status.provisioningErrorHosts
+      name: ProvisioningErrorHosts
+      priority: 1
+      type: integer
+    - description: Total hosts in Power Management error state.
+      jsonPath: .status.powerMgmtErrorHosts
+      name: PowerMgmtErrorHosts
+      priority: 1
+      type: integer
+    - description: Total hosts in Provisioned Registration error state.
+      jsonPath: .status.provisionedRegistrationErrorHosts
+      name: ProvisionedRegistrationErrorHosts
+      priority: 1
+      type: integer
+    - description: Total hosts in Preparation error state.
+      jsonPath: .status.preparationErrorHosts
+      name: PreparationErrorHosts
+      priority: 1
+      type: integer
+    - description: Total hosts in Detach error state.
+      jsonPath: .status.detachErrorHosts
+      name: DetachErrorHosts
+      priority: 1
+      type: integer
     - description: Most recent error
       jsonPath: .status.errorMessage
       name: Error
@@ -168,15 +215,45 @@ spec:
           status:
             description: HardwareClassificationStatus defines the observed state of HardwareClassification
             properties:
+              detachErrorHosts:
+                description: The count of hosts in Detach error state
+                type: integer
+              errorHosts:
+                description: The count of Hosts in error state
+                type: integer
               errorMessage:
                 description: The last error message reported by the hardwareclassification system
                 type: string
               errorType:
                 description: ErrorType indicates the type of failure encountered
                 type: string
+              introspectionErrorHosts:
+                description: The count of hosts in introspection error state
+                type: integer
+              matchedCount:
+                description: The count of matched Hosts per profile reported by hardwareclassification system
+                type: integer
+              powerMgmtErrorHosts:
+                description: The count of hosts in power management error state
+                type: integer
+              preparationErrorHosts:
+                description: The count of hosts in Preparation error state
+                type: integer
               profileMatchStatus:
                 description: ProfileMatchStatus identifies whether a applied profile is matches or not
                 type: string
+              provisionedRegistrationErrorHosts:
+                description: The count of hosts in Provisioned Registration error state
+                type: integer
+              provisioningErrorHosts:
+                description: The count of hosts in provisioning error state
+                type: integer
+              registrationErrorHosts:
+                description: The count of hosts in registration error state
+                type: integer
+              unmatchedCount:
+                description: The count of unmatched Hosts per profile reported by hardwareclassification system
+                type: integer
             type: object
         type: object
     served: true
