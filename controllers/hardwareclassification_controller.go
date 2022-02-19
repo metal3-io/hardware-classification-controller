@@ -18,6 +18,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	bmh "github.com/metal3-io/baremetal-operator/apis/metal3.io/v1alpha1"
 	hwcc "github.com/metal3-io/hardware-classification-controller/api/v1alpha1"
@@ -37,6 +38,7 @@ import (
 const (
 	//HWControllerName Name to show in the logs
 	HWControllerName = "HardwareClassification-Controller"
+	failedLabelName  = "hardwareclassification-error"
 )
 
 // HardwareClassificationReconciler reconciles a HardwareClassification object
@@ -133,11 +135,22 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 		return ctrl.Result{}, nil
 	}
 
+	failedHostList := fetchFailedBmhHostList(bmhHostList)
+	if len(failedHostList) > 0 {
+		if changed := labelFailedHost(hcReconciler, failedHostList, ctx); changed != false {
+			hwcLog.Info("set label ", "failed host list", failedHostList)
+		}
+	}
+
 	// Update our status to report whether we have matched a host or not.
 	status := hwcc.ProfileMatchStatusMatched
 	if matchCount == 0 {
 		status = hwcc.ProfileMatchStatusUnMatched
 	}
+	if len(bmhHostList.Items) == 0 {
+		status = hwcc.NoBareMetalHosts
+	}
+
 	if hardwareClassification.Status.ProfileMatchStatus != status {
 		hwcLog.Info("updating match status", "newValue", status)
 		hardwareClassification.Status.ProfileMatchStatus = status
@@ -148,7 +161,58 @@ func (hcReconciler *HardwareClassificationReconciler) Reconcile(req ctrl.Request
 		return ctrl.Result{}, nil
 	}
 
+	setHostCount(hardwareClassification, hwcc.MatchedCount(matchCount), hwcc.UnmatchedCount(len(bmhHostList.Items)-(len(failedHostList)+matchCount)))
+	setErrHostCount(hardwareClassification, failedHostList)
+	err = hcReconciler.Status().Update(context.TODO(), hardwareClassification)
+	if err != nil {
+		return ctrl.Result{}, errors.Wrap(err, "failed to update status")
+	}
+
 	return ctrl.Result{}, nil
+}
+
+func setHostCount(hwc *hwcc.HardwareClassification, MatchedHost hwcc.MatchedCount, UnmatchedHost hwcc.UnmatchedCount) {
+	hwc.Status.MatchedCount = MatchedHost
+	fmt.Println("Updating Matched host count")
+	hwc.Status.UnmatchedCount = UnmatchedHost
+	fmt.Println("Updating Unmatched host count")
+}
+
+func setErrHostCount(hwc *hwcc.HardwareClassification, failedHosts []bmh.BareMetalHost) {
+	registrationErrorCount := 0
+	introspectionErrorCount := 0
+	provisioningErrorCount := 0
+	powerMgmtErrorCount := 0
+	proviRegisErrorCount := 0
+	preprationErrorCount := 0
+	detachErrorCount := 0
+	for _, host := range failedHosts {
+		switch host.Status.ErrorType {
+		case "registration error":
+			registrationErrorCount += 1
+		case "inspection error":
+			introspectionErrorCount += 1
+		case "provisioning error":
+			provisioningErrorCount += 1
+		case "power management error":
+			powerMgmtErrorCount += 1
+		case "provisioned registration error":
+			proviRegisErrorCount += 1
+		case "preparation error":
+			preprationErrorCount += 1
+		case "detach error":
+			detachErrorCount += 1
+		}
+	}
+	fmt.Println("Updating ErrorHost count")
+	hwc.Status.ErrorHosts = hwcc.ErrorHosts(len(failedHosts))
+	hwc.Status.RegistrationErrorHosts = hwcc.RegistrationErrorHosts(registrationErrorCount)
+	hwc.Status.IntrospectionErrorHosts = hwcc.IntrospectionErrorHosts(introspectionErrorCount)
+	hwc.Status.ProvisioningErrorHosts = hwcc.ProvisioningErrorHosts(provisioningErrorCount)
+	hwc.Status.PowerMgmtErrorHosts = hwcc.PowerMgmtErrorHosts(powerMgmtErrorCount)
+	hwc.Status.ProvisionedRegistrationErrorHosts = hwcc.ProvisionedRegistrationErrorHosts(proviRegisErrorCount)
+	hwc.Status.PreparationErrorHosts = hwcc.PreparationErrorHosts(preprationErrorCount)
+	hwc.Status.DetachErrorHosts = hwcc.DetachErrorHosts(detachErrorCount)
 }
 
 func hasFinalizer(profile *hwcc.HardwareClassification) bool {
@@ -168,6 +232,39 @@ func (hcReconciler *HardwareClassificationReconciler) SetupWithManager(mgr ctrl.
 		Watches(&source.Kind{Type: &bmh.BareMetalHost{}},
 			&handler.EnqueueRequestsFromMapFunc{ToRequests: &mapper}).
 		Complete(hcReconciler)
+}
+
+func labelFailedHost(hcReconciler *HardwareClassificationReconciler, failedHostList []bmh.BareMetalHost, ctx context.Context) bool {
+	for _, host := range failedHostList {
+		labels := host.GetLabels()
+		if labels == nil {
+			labels = make(map[string]string)
+		}
+		labelValue := strings.ReplaceAll(string(host.Status.ErrorType), " ", "-")
+		// If we already have a label with the same value no change is
+		// needed.
+		if val, ok := labels[failedLabelName]; ok {
+			if val == labelValue {
+				return false
+			}
+		}
+		labels[failedLabelName] = labelValue
+		host.SetLabels(labels)
+		if err := hcReconciler.Client.Update(ctx, &host); err != nil {
+			return false
+		}
+	}
+	return true
+}
+
+func fetchFailedBmhHostList(bmhHostList bmh.BareMetalHostList) (failedHostList []bmh.BareMetalHost) {
+	// Get hosts in error status from bmhHostList
+	for _, host := range bmhHostList.Items {
+		if host.Status.HardwareDetails == nil && host.Status.OperationalStatus == "error" {
+			failedHostList = append(failedHostList, host)
+		}
+	}
+	return failedHostList
 }
 
 type classificationMapper struct {

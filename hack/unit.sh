@@ -3,14 +3,14 @@
 set -eux
 
 IS_CONTAINER=${IS_CONTAINER:-false}
-ARTIFACTS=${ARTIFACTS:-/tmp}
-CONTAINER_RUNTIME="${CONTAINER_RUNTIME:-podman}"
+CONTAINER_RUNTIME="${CONTAINER_RUNTIME:-docker}"
 
 if [ "${IS_CONTAINER}" != "false" ]; then
-  eval "$(go env)"
-  cd "${GOPATH}"/src/github.com/metal3-io/hardware-classification-controller
-  export XDG_CACHE_HOME="/tmp/.cache"
-  go test -v ./api/... ./controllers/... -coverprofile "${ARTIFACTS}"/cover.out
+  export XDG_CACHE_HOME=/tmp/.cache
+  mkdir /tmp/unit
+  cp -r . /tmp/unit
+  cd /tmp/unit
+  make test
 else
   "${CONTAINER_RUNTIME}" run --rm \
     --env IS_CONTAINER=TRUE \
